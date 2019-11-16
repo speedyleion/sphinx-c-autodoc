@@ -6,7 +6,7 @@
 
 /*************************
 *
-* Thi is a function comment
+* This is a function comment
 *
 ***************************/
 

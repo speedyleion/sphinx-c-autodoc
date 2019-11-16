@@ -28,7 +28,7 @@ def parse_comment(comment):
     comment = comment.splitlines()[1:-1]
 
     # Remove any leading '*'s
-    #???
+    comment = [c.lstrip('*') for c in comment]
 
     comment = '\n'.join(comment).strip()
 
