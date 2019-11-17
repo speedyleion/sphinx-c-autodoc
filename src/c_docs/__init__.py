@@ -1,4 +1,5 @@
 from sphinx.ext.autodoc import Documenter
+from docutils.parsers.rst import Directive
 
 class CFileDocumenter(Documenter):
     """
@@ -29,6 +30,19 @@ class CFileDocumenter(Documenter):
         """Never import anything."""
         return True
 
+class CModule(Directive):
+    """
+    """
+    has_content = True
+    required_arguemnts = 1
+
+    pass
+
+    def run(self):
+        """
+        Not sure yet
+        """
+        return[]
 
 def setup(app):
     """
@@ -36,3 +50,4 @@ def setup(app):
     """
     app.require_sphinx('1.8')
     app.add_autodocumenter(CFileDocumenter)
+    app.add_directive_to_domain('c', 'module', CModule)
