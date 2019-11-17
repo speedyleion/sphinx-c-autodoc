@@ -1,4 +1,5 @@
 from sphinx.ext.autodoc import Documenter
+from sphinx.util.docstrings import prepare_docstring
 from docutils.parsers.rst import Directive
 from docutils.statemachine import ViewList
 from docutils import nodes
@@ -51,6 +52,8 @@ class CFileDocumenter(Documenter):
     def get_doc(self, encoding=None, ignore=1):
         """Decode and return lines of the docstring(s) for the object."""
         docstring = self.file_doc
+        tab_width = self.directive.state.document.settings.tab_width
+        return [prepare_docstring(docstring, ignore, tab_width)]
 
 
 class CModule(Directive):
@@ -68,7 +71,7 @@ class CModule(Directive):
         state = self.state
         node = nodes.section()
 
-        rst = ViewList(['Hello What is Up?'], 'testing')
+        rst = ViewList(self.content, 'testing')
 
         # Parse the restructured text into nodes.
         state.nested_parse(rst, 0, node, match_titles=1)
