@@ -13,8 +13,8 @@ def test_autodoc_of_c_file(tmp_path):
     source_dir = os.path.join(SCRIPT_DIR, 'assets')
     main(['-a', source_dir, str(tmp_path)])
 
-    file_name = tmp_path / 'foo.html'
+    file_name = tmp_path / 'example.html'
     with file_name.open() as f:
         contents = f.read()
 
-    assert 'hello' in contents
+    assert 'Hello What is Up?' in contents

@@ -47,7 +47,7 @@ class CModule(Directive):
         state = self.state
         node = nodes.section()
 
-        rst = ViewList(['Hello', 'What\'s', 'Up?'], 'testing')
+        rst = ViewList(['Hello What is Up?'], 'testing')
 
         # Parse the restructured text into nodes.
         state.nested_parse(rst, 0, node, match_titles=1)
