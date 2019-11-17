@@ -17,4 +17,4 @@ def test_autodoc_of_c_file(tmp_path):
     with file_name.open() as f:
         contents = f.read()
 
-    assert 'Hello What is Up?' in contents
+    assert 'This is a file comment' in contents

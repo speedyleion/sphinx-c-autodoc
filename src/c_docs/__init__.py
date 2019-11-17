@@ -10,6 +10,10 @@ class CFileDocumenter(Documenter):
     objtype = 'cfile'
     directivetype = 'module'
 
+    # HACK for dev/testing
+    file_doc = 'This is a file comment'
+
+
     def resolve_name(self, modname, parents, path, base):
         """
         Not sure yet
@@ -31,6 +35,23 @@ class CFileDocumenter(Documenter):
     def import_object(self) -> bool:
         """Never import anything."""
         return True
+
+    def get_real_modname(self) -> str:
+        """Get the real module name of an object to document.
+
+        It can differ from the name of the module through which the object was
+        imported.
+        """
+        return f'{self.modname}.c'
+
+    def get_sourcename(self) -> str:
+        return f'docstring of {self.fullname}.c'
+
+
+    def get_doc(self, encoding=None, ignore=1):
+        """Decode and return lines of the docstring(s) for the object."""
+        docstring = self.file_doc
+
 
 class CModule(Directive):
     """
