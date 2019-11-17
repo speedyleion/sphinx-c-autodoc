@@ -76,9 +76,7 @@ class CModule(Directive):
     """
     """
     has_content = True
-    required_arguemnts = 1
-
-    pass
+    required_arguments = 1
 
     def run(self):
         """
