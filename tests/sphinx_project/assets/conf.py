@@ -40,6 +40,7 @@ release = u'0.0.1'
 # ones.
 extensions = [
     'sphinx.ext.viewcode',
+    'sphinx.ext.autodoc',
     'c_docs',
 ]
 
