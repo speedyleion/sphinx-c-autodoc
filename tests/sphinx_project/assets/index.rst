@@ -11,6 +11,7 @@ Welcome to Test project for C sphinx extension's documentation!
    :caption: Contents:
 
    example
+   file_2
 
 
 Indices and tables

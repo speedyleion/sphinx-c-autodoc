@@ -18,3 +18,7 @@ def test_autodoc_of_c_file(tmp_path):
         contents = f.read()
 
     assert 'This is a file comment' in contents
+
+    # Not ideal but sphinx takes a while to run...
+    assert 'This is file 2' in contents
+    assert 'It has a multi-line comment' in contents
