@@ -1,3 +1,47 @@
+"""
+C_docs is a package which provide c source file parsing for sphinx.
+
+It is composed of multiple directives and settings:
+
+.. rst:directive:: .. autocmodule:: filename
+
+    A directive which will automatically parse `filename` and create the
+    documentation for it.  The `filename` is relative to the config value
+    `c_root`.  This can be used for both c source files as
+    well as c header files.
+    
+    This will basically in place expand into:
+    
+        .. c:module:: filename
+
+            Any text from the *first* comment in the file, provided that the
+            comment is not for some other construct.
+        
+            .. c:type:: some_struct
+
+                .. c:member:: member_1
+                    
+                    any comments about this.
+
+            .. c:function:: some_funtion(int param_1, char param_2)
+                
+                Comment from the function header.  The function header comment
+                is the closest preceding comment.
+
+            ...
+
+                
+    Any and all :rst:dir:`c:function`, :rst:dir:`c:type`, etc at the
+    root of `filename` will be expanded into the documentation.
+
+.. rst:directive:: .. c:module:: filename
+
+    A directive to document a c file.  This is similar to :rst:dir:`py:module`
+    except it's for the C domain.  This can be used for both c source files as
+    well as c header files.
+
+
+"""
 from sphinx.ext.autodoc import Documenter
 from sphinx.util.docstrings import prepare_docstring
 from docutils.parsers.rst import Directive
@@ -6,21 +50,25 @@ from docutils import nodes
 from c_docs import parser
 import os
 
-class CFileDocumenter(Documenter):
+class CModuleDocumenter(Documenter):
     """
-    A C file autodocument class to work with 
+    A C module autodocument class to work with 
     `autodoc https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc`_
     extension for sphinx.
 
     This auto documenter will be registered as a directive named `autocmodule`,
     there may be a way to override the python `automodule`, just not sure yet...
+
+    .. rst:directive:: .. autocmodule:: filename
+
+        A directive which will automatically parse `filename` and create the
+        documentation for it.  The `filename` is relative to the config value
+        `c_root`.  See `c_root`.
+
     """
     domain = 'c'
     objtype = 'cmodule'
     directivetype = 'module'
-
-    # HACK for dev/testing
-    file_doc = 'This is a file comment'
 
 
     def resolve_name(self, modname, parents, path, base):
@@ -59,6 +107,8 @@ class CFileDocumenter(Documenter):
         It can differ from the name of the module through which the object was
         imported.
         """
+        # hack need to let projects call this, and update the "resolve" name as
+        # needed.
         return f'{self.modname}.c'
 
     def get_sourcename(self) -> str:
@@ -97,6 +147,6 @@ def setup(app):
     Setup function for registering this with sphinx
     """
     app.require_sphinx('1.8')
-    app.add_autodocumenter(CFileDocumenter)
+    app.add_autodocumenter(CModuleDocumenter)
     app.add_directive_to_domain('c', 'module', CModule)
     app.add_config_value('c_root', '', 'env')
