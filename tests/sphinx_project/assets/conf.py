@@ -177,3 +177,5 @@ epub_exclude_files = ['search.html']
 
 
 # -- Extension configuration -------------------------------------------------
+
+primary_domain = 'c'

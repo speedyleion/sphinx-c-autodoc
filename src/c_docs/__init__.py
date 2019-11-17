@@ -3,7 +3,9 @@ from sphinx.ext.autodoc import Documenter
 class CFileDocumenter(Documenter):
     """
     """
+    domain = 'c'
     objtype = 'cfile'
+    directivetype = 'module'
 
     def resolve_name(self, modname, parents, path, base):
         """
