@@ -2,17 +2,19 @@
 Performs end to end testing of the c extension
 """
 import os
-import sphinx
+from sphinx.cmd.build import main
+
 
 SCRIPT_DIR = os.path.dirname(__file__)
-def test_autodoc_of_c_file():
+def test_autodoc_of_c_file(tmp_path):
     """
     Tests the creation of the documented C file.
     """
     source_dir = os.path.join(SCRIPT_DIR, 'assets')
-    output_dir = os.path.join(SCRIPT_DIR, 'assets', '_build')
-    sphinx.main(['-a', source_dir, output_dir])
-    with open(os.path.join(output_dir, 'foo.html'), 'r') as f:
+    main(['-a', source_dir, str(tmp_path)])
+
+    file_name = tmp_path / 'foo.html'
+    with file_name.open() as f:
         contents = f.read()
 
     assert 'hello' in contents
