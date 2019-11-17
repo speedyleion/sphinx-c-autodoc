@@ -1,4 +1,4 @@
 Example C file
 ==============
 
-.. autocmodule:: example
+.. autocmodule:: example.c

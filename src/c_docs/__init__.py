@@ -59,11 +59,6 @@ class CModuleDocumenter(Documenter):
     This auto documenter will be registered as a directive named `autocmodule`,
     there may be a way to override the python `automodule`, just not sure yet...
 
-    .. rst:directive:: .. autocmodule:: filename
-
-        A directive which will automatically parse `filename` and create the
-        documentation for it.  The `filename` is relative to the config value
-        `c_root`.  See `c_root`.
 
     """
     domain = 'c'
@@ -87,7 +82,7 @@ class CModuleDocumenter(Documenter):
         Returns:
             Not sure yet..
         """
-        return base, []
+        return path + base, []
 
     def import_object(self) -> bool:
         """Parse the C file and build up the document structure.
@@ -100,20 +95,6 @@ class CModuleDocumenter(Documenter):
         self._c_doc = parser.parse(filename)
         
         return True
-
-    def get_real_modname(self) -> str:
-        """Get the real module name of an object to document.
-
-        It can differ from the name of the module through which the object was
-        imported.
-        """
-        # hack need to let projects call this, and update the "resolve" name as
-        # needed.
-        return f'{self.modname}.c'
-
-    def get_sourcename(self) -> str:
-        return f'docstring of {self.fullname}.c'
-
 
     def get_doc(self, encoding=None, ignore=1):
         """Decode and return lines of the docstring(s) for the object."""
