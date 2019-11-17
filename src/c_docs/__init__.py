@@ -23,6 +23,11 @@ class CFileDocumenter(Documenter):
         """
         return base, []
 
+    def import_object(self) -> bool:
+        """Never import anything."""
+        return True
+
+
 def setup(app):
     """
     Setup function for registering this with sphinx
