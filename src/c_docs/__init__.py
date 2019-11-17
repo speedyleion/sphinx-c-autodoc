@@ -67,7 +67,7 @@ class CFileDocumenter(Documenter):
 
     def get_doc(self, encoding=None, ignore=1):
         """Decode and return lines of the docstring(s) for the object."""
-        docstring = self.file_doc
+        docstring = '\n'.join(self._c_doc)
         tab_width = self.directive.state.document.settings.tab_width
         return [prepare_docstring(docstring, ignore, tab_width)]
 
