@@ -1,4 +1,4 @@
 A second file
 =============
 
-.. autocfile:: file_2
+.. autocmodule:: file_2

@@ -3,12 +3,20 @@ from sphinx.util.docstrings import prepare_docstring
 from docutils.parsers.rst import Directive
 from docutils.statemachine import ViewList
 from docutils import nodes
+from c_docs import parser
+import os
 
 class CFileDocumenter(Documenter):
     """
+    A C file autodocument class to work with 
+    `autodoc https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc`_
+    extension for sphinx.
+
+    This auto documenter will be registered as a directive named `autocmodule`,
+    there may be a way to override the python `automodule`, just not sure yet...
     """
     domain = 'c'
-    objtype = 'cfile'
+    objtype = 'cmodule'
     directivetype = 'module'
 
     # HACK for dev/testing
@@ -34,7 +42,15 @@ class CFileDocumenter(Documenter):
         return base, []
 
     def import_object(self) -> bool:
-        """Never import anything."""
+        """Parse the C file and build up the document structure.
+        
+        This will parse the C file and store the document structure into
+        :attr:`_c_doc`
+        """
+        path = os.path.join(self.env.app.confdir, self.env.config.c_root)
+        filename = os.path.join(path, self.get_real_modname())
+        self._c_doc = parser.parse(filename)
+        
         return True
 
     def get_real_modname(self) -> str:
@@ -85,3 +101,4 @@ def setup(app):
     app.require_sphinx('1.8')
     app.add_autodocumenter(CFileDocumenter)
     app.add_directive_to_domain('c', 'module', CModule)
+    app.add_config_value('c_root', '', 'env')
