@@ -10,6 +10,7 @@ Welcome to Test project for C sphinx extension's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+.. autocfile:: example
 
 
 Indices and tables
