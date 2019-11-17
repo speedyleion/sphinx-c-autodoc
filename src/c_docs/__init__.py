@@ -1,5 +1,7 @@
 from sphinx.ext.autodoc import Documenter
 from docutils.parsers.rst import Directive
+from docutils.statemachine import ViewList
+from docutils import nodes
 
 class CFileDocumenter(Documenter):
     """
@@ -42,7 +44,15 @@ class CModule(Directive):
         """
         Not sure yet
         """
-        return[]
+        state = self.state
+        node = nodes.section()
+
+        rst = ViewList(['Hello', 'What\'s', 'Up?'], 'testing')
+
+        # Parse the restructured text into nodes.
+        state.nested_parse(rst, 0, node, match_titles=1)
+
+        return node.children
 
 def setup(app):
     """
