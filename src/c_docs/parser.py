@@ -7,13 +7,22 @@ import textwrap
 from clang import cindex
 from itertools import chain, dropwhile
 
+CURSORKIND_TO_ITEM_TYPES = {cindex.CursorKind.ENUM_DECL: 'file', 
+                            cindex.CursorKind.FUNCTION_DECL: 'function',
+                            cindex.CursorKind.STRUCT_DECL: 'struct',
+                            cindex.CursorKind.TYPEDEF_DECL: 'type'}
+
 class DocumentedItem:
     """
     A representation of a parsed c file focusing on the documentation of the
     elements.
+
+    Attributes:
+        type (str): The type of this item one of 
     """
     def __init__(self):
         self.doc = ''
+        self.type = 'undefined'
         self.children = []
 
     def __str__(self):
@@ -58,6 +67,7 @@ def parse(filename):
     cursor = tu.cursor
                           
     root_document.doc = get_file_comment(cursor)
+    root_document.type = 'file'
     
     # Skip past all the nodes that show up due to the includes as well as the
     # compiler provided ones.
@@ -68,6 +78,7 @@ def parse(filename):
         if n.raw_comment:
             item = DocumentedItem()
             item.doc = parse_comment(n.raw_comment)
+            item.type = CURSORKIND_TO_ITEM_TYPES[n.kind]
             root_document.children.append(item)
 
     return root_document
