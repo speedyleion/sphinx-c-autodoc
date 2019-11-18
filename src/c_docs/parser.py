@@ -7,7 +7,7 @@ import textwrap
 from clang import cindex
 from itertools import chain, dropwhile
 
-CURSORKIND_TO_ITEM_TYPES = {cindex.CursorKind.ENUM_DECL: 'file', 
+CURSORKIND_TO_ITEM_TYPES = {cindex.CursorKind.TRANSLATION_UNIT: 'file', 
                             cindex.CursorKind.FUNCTION_DECL: 'function',
                             cindex.CursorKind.STRUCT_DECL: 'struct',
                             cindex.CursorKind.TYPEDEF_DECL: 'type'}
@@ -68,7 +68,7 @@ def parse(filename):
     cursor = tu.cursor
                           
     root_document.doc = get_file_comment(cursor)
-    root_document.type = 'file'
+    root_document.type = CURSORKIND_TO_ITEM_TYPES[cursor.kind]
     
     # Skip past all the nodes that show up due to the includes as well as the
     # compiler provided ones.
