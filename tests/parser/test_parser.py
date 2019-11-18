@@ -25,5 +25,5 @@ def test_basic_file_parsing(filename, expected):
     Test that a simple C file is turned into 2 sections one for the module level
     comment and one for the function level comment
     """
-    comments = parser.parse(os.path.join(SCRIPT_DIR, 'assets', filename))
-    assert comments == expected
+    doc_item = parser.parse(os.path.join(SCRIPT_DIR, 'assets', filename))
+    assert str(doc_item) == expected
