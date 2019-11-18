@@ -34,9 +34,13 @@ class DocumentedItem:
         Create an instance from a :class:`cindex.Cursor`
         """
         doc = cls()
-        doc.doc = parse_comment(cursor.raw_comment)
-        doc.type = CURSORKIND_TO_ITEM_TYPES[cursor.kind]
+
+        # Spelling is always good on the "primary" node.
         doc.name = cursor.spelling
+
+        nested_cursor = get_nested_node(cursor)
+        doc.doc = parse_comment(nested_cursor.raw_comment)
+        doc.type = CURSORKIND_TO_ITEM_TYPES[nested_cursor.kind]
 
         if doc.doc and doc.name:
             return doc
@@ -59,12 +63,24 @@ class DocumentedItem:
 
         return json.dumps(obj_dict)
 
+def get_nested_node(cursor):
+    """
+    Retrieve the nested node that `cursor` may be shadowing
+    """
+    if cursor.kind in (cindex.CursorKind.TYPEDEF_DECL,):
+        underlying_node = next(cursor.get_children())
+        if underlying_node.kind in (cindex.CursorKind.STRUCT_DECL,):
+            return underlying_node
+
+    return cursor
+
 def get_file_comment(cursor):
     """
     """
     token = next(cursor.get_tokens())
 
-    # TODO look for being attached to a cursor
+    # TODO look for being attached to a cursor or maybe just look for comment
+    # being the first line...
     if token.kind == cindex.TokenKind.COMMENT:
         return parse_comment(token.spelling)
 

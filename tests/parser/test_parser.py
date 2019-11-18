@@ -18,6 +18,7 @@ testdata = [('one_function.c', {'doc': 'This is a file comment',
                                      # 'signature': 'my_func(void)'
                                      }]}),
             ('typedef.c', {'doc': 'This is a file comment',
+                           'name': 'typedef.c',
                            'type': 'file',
                            'children': [
                                {'doc': 'This is a type comment',
