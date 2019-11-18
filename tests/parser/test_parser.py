@@ -9,9 +9,11 @@ from c_docs import parser
 
 SCRIPT_DIR = os.path.dirname(__file__)
 testdata = [('one_function.c', {'doc': 'This is a file comment',
+                                'name': 'one_function.c',
                                 'type': 'file',
                                 'children': [
                                     {'doc': 'This is a function comment',
+                                     'name': 'my_func',
                                      'type': 'function',
                                      # 'signature': 'my_func(void)'
                                      }]}),
@@ -19,8 +21,10 @@ testdata = [('one_function.c', {'doc': 'This is a file comment',
                            'type': 'file',
                            'children': [
                                {'doc': 'This is a type comment',
+                                'name': 'unknown_member',
                                 'type': 'struct'},
                                {'doc': 'This is a function comment',
+                                'name': 'my_func',
                                 'type': 'function',
                                 # 'signature': 'my_func(void)'
                                 }]}),
