@@ -51,7 +51,8 @@ def parse(filename):
     
     for n in node_iter:
         item = DocumentedItem()
-        item.doc = n.raw_comment
+        if n.raw_comment:
+            item.doc = parse_comment(n.raw_comment)
         root_document.children.append(item)
 
     return root_document

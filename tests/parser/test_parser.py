@@ -1,6 +1,7 @@
 """
 Test the parsing of C files into the needed pieces.
 """
+import json
 import os
 import pytest
 
@@ -26,4 +27,4 @@ def test_basic_file_parsing(filename, expected):
     comment and one for the function level comment
     """
     doc_item = parser.parse(os.path.join(SCRIPT_DIR, 'assets', filename))
-    assert str(doc_item) == expected
+    assert json.loads(str(doc_item)) == expected
