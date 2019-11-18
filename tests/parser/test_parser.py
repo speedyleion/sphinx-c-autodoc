@@ -7,8 +7,15 @@ import pytest
 from c_docs import parser
 
 SCRIPT_DIR = os.path.dirname(__file__)
-testdata = [('one_function.c', ["This is a file comment", "This is a function comment"]),
-            ('typedef.c', ["This is a file comment", "This is a type comment", "This is a function comment"]),
+testdata = [('one_function.c', {'doc': 'This is a file comment',
+                                'children': [
+                                    {'doc': 'This is a function comment',
+                                     'signature': 'my_func(void)'}]}),
+            ('typedef.c', {'doc': 'This is a file comment',
+                           'children': [
+                               {'doc': 'This is a type comment'},
+                               {'doc': 'This is a function comment',
+                                'signature': 'my_func(void)'}]}),
            ]
 
 
