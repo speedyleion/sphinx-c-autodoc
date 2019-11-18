@@ -31,6 +31,7 @@ class DocumentedItem:
         """
         obj_dict = {}
         obj_dict['doc'] = self.doc
+        obj_dict['type'] = self.type
         if self.children:
             obj_dict['children'] = []
             for c in self.children:
