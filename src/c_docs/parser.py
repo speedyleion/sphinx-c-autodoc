@@ -5,7 +5,7 @@ Parser of c files
 import json
 import textwrap
 from clang import cindex
-from itertools import dropwhile
+from itertools import chain, dropwhile
 
 class DocumentedItem:
     """
@@ -25,11 +25,22 @@ class DocumentedItem:
         if self.children:
             obj_dict['children'] = []
             for c in self.children:
-                obj_dict['children'] = str(c)
+                obj_dict['children'].append(json.loads(str(c)))
 
         return json.dumps(obj_dict)
 
+def get_file_comment(cursor):
+    """
+    """
+    token = next(cursor.get_tokens())
 
+    # TODO look for being attached to a cursor
+    if token.kind == cindex.TokenKind.COMMENT:
+        return parse_comment(token.spelling)
+
+    return ''
+
+    
 def parse(filename):
     """
     Parse a C file into a tree of :class:`DocumentedItem`\'s
@@ -41,14 +52,18 @@ def parse(filename):
         :class:`DocumentedItem`: The documented version of `filename`.
         
     """
+    root_document = DocumentedItem()
+
     tu = cindex.TranslationUnit.from_source(filename)
     cursor = tu.cursor
                           
+    root_document.doc = get_file_comment(cursor)
+    
+    # Skip past all the nodes that show up due to the includes as well as the
+    # compiler provided ones.
     node_iter = dropwhile(lambda x: not x.location.isFromMainFile(),
                           cursor.get_children())
 
-    root_document = DocumentedItem()
-    
     for n in node_iter:
         item = DocumentedItem()
         if n.raw_comment:

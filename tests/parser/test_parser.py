@@ -11,12 +11,14 @@ SCRIPT_DIR = os.path.dirname(__file__)
 testdata = [('one_function.c', {'doc': 'This is a file comment',
                                 'children': [
                                     {'doc': 'This is a function comment',
-                                     'signature': 'my_func(void)'}]}),
+                                     # 'signature': 'my_func(void)'
+                                     }]}),
             ('typedef.c', {'doc': 'This is a file comment',
                            'children': [
                                {'doc': 'This is a type comment'},
                                {'doc': 'This is a function comment',
-                                'signature': 'my_func(void)'}]}),
+                                # 'signature': 'my_func(void)'
+                                }]}),
            ]
 
 
