@@ -6,7 +6,6 @@ import json
 import textwrap
 from clang import cindex
 from itertools import dropwhile
-from types import MethodType
 
 class DocumentedItem:
     """
@@ -45,13 +44,13 @@ def parse(filename):
     tu = cindex.TranslationUnit.from_source(filename)
     cursor = tu.cursor
                           
-    node_iter = dropwhile(lambda x: not x.isFromMainFile(),
-                          curosr.get_children())
+    node_iter = dropwhile(lambda x: not x.location.isFromMainFile(),
+                          cursor.get_children())
 
-    root_document = DocumentItem()
+    root_document = DocumentedItem()
     
     for n in node_iter:
-        item = DocmentItem()
+        item = DocumentedItem()
         item.doc = n.raw_comment
         root_document.children.append(item)
 
@@ -113,7 +112,7 @@ def patch_cindex():
         if f[0] not in known_names:
             cindex.functionList.append(f)
 
-    cindex.SourceLocation.isFromMainFile = MethodType(SourceLocation_isFromMainFile, cindex.SourceLocation)
+    cindex.SourceLocation.isFromMainFile = SourceLocation_isFromMainFile
 
 # Must do this prior to calling into clang
 patch_cindex()
