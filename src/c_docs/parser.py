@@ -3,7 +3,9 @@ Parser of c files
 """
 
 import json
+import os
 import textwrap
+
 from clang import cindex
 from itertools import chain, dropwhile
 
@@ -22,7 +24,8 @@ class DocumentedItem:
     """
     def __init__(self):
         self.doc = ''
-        self.type = 'undefined'
+        self.type = ''
+        self.name = ''
         self.children = []
 
     def __str__(self):
@@ -32,6 +35,7 @@ class DocumentedItem:
         obj_dict = {}
         obj_dict['doc'] = self.doc
         obj_dict['type'] = self.type
+        obj_dict['name'] = self.name
         if self.children:
             obj_dict['children'] = []
             for c in self.children:
@@ -69,6 +73,7 @@ def parse(filename):
                           
     root_document.doc = get_file_comment(cursor)
     root_document.type = CURSORKIND_TO_ITEM_TYPES[cursor.kind]
+    root_document.name = os.path.basename(cursor.spelling)
     
     # Skip past all the nodes that show up due to the includes as well as the
     # compiler provided ones.
@@ -80,6 +85,7 @@ def parse(filename):
             item = DocumentedItem()
             item.doc = parse_comment(n.raw_comment)
             item.type = CURSORKIND_TO_ITEM_TYPES[n.kind]
+            item.name = n.spelling
             root_document.children.append(item)
 
     return root_document
