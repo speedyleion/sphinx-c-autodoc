@@ -28,6 +28,22 @@ class DocumentedItem:
         self.name = ''
         self.children = []
 
+    @classmethod
+    def from_cursor(cls, cursor):
+        """
+        Create an instance from a :class:`cindex.Cursor`
+        """
+        doc = cls()
+        doc.doc = parse_comment(cursor.raw_comment)
+        doc.type = CURSORKIND_TO_ITEM_TYPES[cursor.kind]
+        doc.name = cursor.spelling
+
+        if doc.doc and doc.name:
+            return doc
+
+        return None
+        
+
     def __str__(self):
         """
         Will turn this instance into a JSON like representation.
@@ -66,11 +82,11 @@ def parse(filename):
         :class:`DocumentedItem`: The documented version of `filename`.
         
     """
-    root_document = DocumentedItem()
 
     tu = cindex.TranslationUnit.from_source(filename)
     cursor = tu.cursor
                           
+    root_document = DocumentedItem()
     root_document.doc = get_file_comment(cursor)
     root_document.type = CURSORKIND_TO_ITEM_TYPES[cursor.kind]
     root_document.name = os.path.basename(cursor.spelling)
@@ -81,11 +97,8 @@ def parse(filename):
                           cursor.get_children())
 
     for n in node_iter:
-        if n.raw_comment:
-            item = DocumentedItem()
-            item.doc = parse_comment(n.raw_comment)
-            item.type = CURSORKIND_TO_ITEM_TYPES[n.kind]
-            item.name = n.spelling
+        item = DocumentedItem.from_cursor(n)
+        if item:
             root_document.children.append(item)
 
     return root_document
@@ -102,6 +115,9 @@ def parse_comment(comment):
     Returns:
         str: The comment with the c comment syntax removed.
     """
+    if not comment:
+        return ''
+
     # Remove leading and trailing blocks, needs to be more logical
     comment = comment.splitlines()[1:-1]
 
