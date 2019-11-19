@@ -1,6 +1,6 @@
 sphinx-c-doc
 ============
-|build-status|
+|build-status| |coverage|
 
 
 Use C with `autodoc`_.
@@ -25,3 +25,8 @@ Similar Tools
     :alt: build status
     :scale: 100%
     :target: https://github.com/speedyleion/sphinx-c-doc/actions?query=workflow%3A%22Python+package%22
+
+.. |coverage| image:: https://codecov.io/gh/speedyleion/sphinx-c-doc/branch/master/graph/badge.svg
+    :alt: build status
+    :scale: 100%
+    :target: https://codecov.io/gh/speedyleion/sphinx-c-doc/branch/master
