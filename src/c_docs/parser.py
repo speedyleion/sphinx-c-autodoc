@@ -6,13 +6,15 @@ import json
 import os
 import textwrap
 
-from clang import cindex
-from itertools import chain, dropwhile
+from itertools import dropwhile
 
-CURSORKIND_TO_ITEM_TYPES = {cindex.CursorKind.TRANSLATION_UNIT: 'file', 
+from clang import cindex
+
+CURSORKIND_TO_ITEM_TYPES = {cindex.CursorKind.TRANSLATION_UNIT: 'file',
                             cindex.CursorKind.FUNCTION_DECL: 'function',
                             cindex.CursorKind.STRUCT_DECL: 'struct',
                             cindex.CursorKind.TYPEDEF_DECL: 'type'}
+
 
 class DocumentedItem:
     """
@@ -20,7 +22,7 @@ class DocumentedItem:
     elements.
 
     Attributes:
-        type (str): The type of this item one of 
+        type (str): The type of this item one of
     """
     def __init__(self):
         self.doc = ''
@@ -46,7 +48,6 @@ class DocumentedItem:
             return doc
 
         return None
-        
 
     def __str__(self):
         """
@@ -58,10 +59,11 @@ class DocumentedItem:
         obj_dict['name'] = self.name
         if self.children:
             obj_dict['children'] = []
-            for c in self.children:
-                obj_dict['children'].append(json.loads(str(c)))
+            for child in self.children:
+                obj_dict['children'].append(json.loads(str(child)))
 
         return json.dumps(obj_dict)
+
 
 def get_nested_node(cursor):
     """
@@ -74,8 +76,10 @@ def get_nested_node(cursor):
 
     return cursor
 
+
 def get_file_comment(cursor):
     """
+    Get's the comment at the top of the file
     """
     token = next(cursor.get_tokens())
 
@@ -86,7 +90,7 @@ def get_file_comment(cursor):
 
     return ''
 
-    
+
 def parse(filename):
     """
     Parse a C file into a tree of :class:`DocumentedItem`\'s
@@ -96,24 +100,24 @@ def parse(filename):
 
     Returns:
         :class:`DocumentedItem`: The documented version of `filename`.
-        
+
     """
 
     tu = cindex.TranslationUnit.from_source(filename)
     cursor = tu.cursor
-                          
+
     root_document = DocumentedItem()
     root_document.doc = get_file_comment(cursor)
     root_document.type = CURSORKIND_TO_ITEM_TYPES[cursor.kind]
     root_document.name = os.path.basename(cursor.spelling)
-    
+
     # Skip past all the nodes that show up due to the includes as well as the
     # compiler provided ones.
     node_iter = dropwhile(lambda x: not x.location.isFromMainFile(),
                           cursor.get_children())
 
-    for n in node_iter:
-        item = DocumentedItem.from_cursor(n)
+    for node in node_iter:
+        item = DocumentedItem.from_cursor(node)
         if item:
             root_document.children.append(item)
 
@@ -145,22 +149,25 @@ def parse_comment(comment):
     return textwrap.dedent(comment)
 
 
+# pylint: disable=invalid-name
 def SourceLocation_isFromMainFile(self):
     """
-    Tests if a :class:`cindex.SourceLocation` is in the main translation unit being parsed.
+    Tests if a :class:`cindex.SourceLocation` is in the main translation unit
+    being parsed.
 
     Returns:
-        bool: True if this location is in the main file of the translation unit.  False
-              otherwise.
+        bool: True if this location is in the main file of the translation unit.
+            False otherwise.
     """
     return cindex.conf.lib.clang_Location_isFromMainFile(self)
 
 
 # List of functions which are in the native libclang but aren't normally
 # provided by the python bindings of clang.
-functionList = [
+FUNCTION_LIST = [
     ('clang_Location_isFromMainFile', [cindex.SourceLocation], bool),
 ]
+
 
 def patch_cindex():
     """
@@ -174,13 +181,12 @@ def patch_cindex():
     known_names = tuple(f[0] for f in cindex.functionList)
 
     # Add any unknown versions in
-    for f in functionList:
-        if f[0] not in known_names:
-            cindex.functionList.append(f)
+    for func in FUNCTION_LIST:
+        if func[0] not in known_names:
+            cindex.functionList.append(func)
 
     cindex.SourceLocation.isFromMainFile = SourceLocation_isFromMainFile
 
+
 # Must do this prior to calling into clang
 patch_cindex()
-
-

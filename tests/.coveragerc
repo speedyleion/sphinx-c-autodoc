@@ -1,0 +1,18 @@
+[run]
+source = ../src/c_docs
+branch = True
+omit = test*
+
+[html]
+directory = coverage
+title = C Sphinx Autodoc
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    def __str__
+    raise NotImplementedError
+    pass
+    if 0:
+    if __name__ == .__main__.:

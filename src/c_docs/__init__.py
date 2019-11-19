@@ -9,28 +9,28 @@ It is composed of multiple directives and settings:
     documentation for it.  The `filename` is relative to the config value
     `c_root`.  This can be used for both c source files as
     well as c header files.
-    
+
     This will basically in place expand into:
-    
+
         .. c:module:: filename
 
             Any text from the *first* comment in the file, provided that the
             comment is not for some other construct.
-        
+
             .. c:type:: some_struct
 
                 .. c:member:: member_1
-                    
+
                     any comments about this.
 
             .. c:function:: some_funtion(int param_1, char param_2)
-                
+
                 Comment from the function header.  The function header comment
                 is the closest preceding comment.
 
             ...
 
-                
+
     Any and all :rst:dir:`c:function`, :rst:dir:`c:type`, etc at the
     root of `filename` will be expanded into the documentation.
 
@@ -42,17 +42,21 @@ It is composed of multiple directives and settings:
 
 
 """
-from sphinx.ext.autodoc import Documenter
-from sphinx.util.docstrings import prepare_docstring
+import os
+
 from docutils.parsers.rst import Directive
 from docutils.statemachine import ViewList
 from docutils import nodes
+from sphinx.ext.autodoc import Documenter
+from sphinx.util.docstrings import prepare_docstring
+
 from c_docs import parser
-import os
+
 
 class CModuleDocumenter(Documenter):
+    # pylint: disable=line-too-long
     """
-    A C module autodocument class to work with 
+    A C module autodocument class to work with
     `autodoc https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc`_
     extension for sphinx.
 
@@ -61,39 +65,51 @@ class CModuleDocumenter(Documenter):
 
 
     """
+    # pylint: enable=line-too-long
     domain = 'c'
     objtype = 'cmodule'
     directivetype = 'module'
 
+    def __init__(self, *args, **kwargs):
+        self._c_doc = None
+        super().__init__(*args, **kwargs)
+
+    @classmethod
+    def can_document_member(cls, member, membername, isattr, parent):
+        """
+        Not sure yet...
+        """
+        return True
 
     def resolve_name(self, modname, parents, path, base):
         """
         Not sure yet
+
         Args:
-            modname (str|None): Believe this is only for sub elements, i.e.
+            modname (str): Believe this is only for sub elements, i.e.
                 `some_c_file::some_function`, then `some_c_file` would be
                 provided.
-            parents (list[]): This is for python modules of hte form
+            parents (list): This is for python modules of hte form
                 `package.sub_dir.sub.module` the parents of `module` would be
                 [`package`, `sub_dir`, `sub`].
-            path (str|None): It seems that this is the unsplit version of `parents`
+            path (str): It seems that this is the unsplit version of `parents`
             base (str): Appears to be the c file name.
 
         Returns:
-            Not sure yet..
+            tuple: Not sure yet..
         """
         return path + base, []
 
-    def import_object(self) -> bool:
+    def import_object(self):
         """Parse the C file and build up the document structure.
-        
+
         This will parse the C file and store the document structure into
         :attr:`_c_doc`
         """
         path = os.path.join(self.env.app.confdir, self.env.config.c_root)
         filename = os.path.join(path, self.get_real_modname())
         self._c_doc = parser.parse(filename)
-        
+
         return True
 
     def get_doc(self, encoding=None, ignore=1):
@@ -105,6 +121,7 @@ class CModuleDocumenter(Documenter):
 
 class CModule(Directive):
     """
+    Module directive for C files
     """
     has_content = True
     required_arguments = 1
@@ -122,6 +139,7 @@ class CModule(Directive):
         state.nested_parse(rst, 0, node, match_titles=1)
 
         return node.children
+
 
 def setup(app):
     """
