@@ -20,7 +20,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install tox # tox-gh-actions
+        pip install tox codecov
     - name: Lint with flake8
       run: |
         pip install flake8
@@ -33,3 +33,4 @@ jobs:
         # Make libclang available for the parsing of the c files with the python clang package
         sudo ln -s /usr/lib/x86_64-linux-gnu/libclang-6.0.so.1 /usr/lib/x86_64-linux-gnu/libclang.so
         tox
+        $(cd tests && codecov -t cd83b216-a59c-4ec6-93bf-bde3ecb160e8)
