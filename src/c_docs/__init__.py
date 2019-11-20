@@ -44,13 +44,20 @@ It is composed of multiple directives and settings:
 """
 import os
 
-from docutils.parsers.rst import Directive
+from typing import Any, Callable, Dict, List, Tuple
+
+from docutils.parsers.rst import Directive, directives
 from docutils.statemachine import ViewList
 from docutils import nodes
-from sphinx.ext.autodoc import Documenter
+from sphinx.domains import c
+from sphinx.ext.autodoc import Documenter, members_option
 from sphinx.util.docstrings import prepare_docstring
 
 from c_docs import parser
+
+# HACK monkey patch, probably need to update autodoc to *not* use the :module:
+# option on function directives.
+c.CObject.option_spec.update({'module': directives.unchanged})
 
 
 class CModuleDocumenter(Documenter):
@@ -70,6 +77,13 @@ class CModuleDocumenter(Documenter):
     objtype = 'cmodule'
     directivetype = 'module'
 
+    # must be higher than the AttributeDocumenter, else it will steal these types
+    priority = 11
+
+    option_spec = {
+        'members': members_option,
+    }  # type: Dict[str, Callable]
+
     def __init__(self, *args, **kwargs):
         self._c_doc = None
         super().__init__(*args, **kwargs)
@@ -77,27 +91,39 @@ class CModuleDocumenter(Documenter):
     @classmethod
     def can_document_member(cls, member, membername, isattr, parent):
         """
-        Not sure yet...
+        Returns:
+            bool: True if this class can document the `member`.
         """
-        return True
+        return member.type == cls.directivetype
 
     def resolve_name(self, modname, parents, path, base):
         """
-        Not sure yet
+        Resolve the module and object name of the object to document.
+        This can be derived in two ways:
+        - Naked: Where the argument is only the file/module name `my_file.c`
+        - Double colons: Where the argument to the directive is of the form
+          `my_file.c::some_func`.
 
         Args:
-            modname (str): Believe this is only for sub elements, i.e.
-                `some_c_file::some_function`, then `some_c_file` would be
-                provided.
-            parents (list): This is for python modules of hte form
-                `package.sub_dir.sub.module` the parents of `module` would be
-                [`package`, `sub_dir`, `sub`].
-            path (str): It seems that this is the unsplit version of `parents`
-            base (str): Appears to be the c file name.
+            modname (str): Only set when called with double colons.  This will
+                be the left side of the double colons.
+            parents (list): This doesn't seem to ever come back when working
+                with c files.
+            path (str): Two possible states:
+                - The file name without extension when naked argument is used.
+                - None when a double colon argument is used.
+            base (str): The name of the object:
+                - This will be the file extension when naked argument is used.
+                - This will be the object, function, type, etc when double colon
+                  argument is used.
 
         Returns:
-            tuple: Not sure yet..
+            tuple: (str, [str]) The module name, and the object names (if any).
+                The object names will be joined with a `.`.
         """
+        # As mentioned when path is None then a double colon argument was used
+        if path is None:
+            return modname, [base]
         return path + base, []
 
     def import_object(self):
@@ -117,6 +143,62 @@ class CModuleDocumenter(Documenter):
         docstring = self._c_doc.doc
         tab_width = self.directive.state.document.settings.tab_width
         return [prepare_docstring(docstring, ignore, tab_width)]
+
+    def get_object_members(self, want_all: bool):
+        """Return `(members_check_module, members)` where `members` is a
+        list of `(membername, member)` pairs of the members of *self.object*.
+
+        If *want_all* is True, return all members.  Else, only return those
+        members given by *self.options.members* (which may also be none).
+        """
+        return False, list(self._c_doc.children.items())
+
+    def filter_members(self, members: List[Tuple[str, Any]], want_all: bool
+                       ) -> List[Tuple[str, Any, bool]]:
+        """Filter the given member list.
+
+        Members are skipped if
+
+        - they are private (except if given explicitly or the private-members
+          option is set)
+        - they are special methods (except if given explicitly or the
+          special-members option is set)
+        - they are undocumented (except if the undoc-members option is set)
+
+        The user can override the skipping decision by connecting to the
+        ``autodoc-skip-member`` event.
+        """
+        ret = []
+        isattr = False
+        for (membername, member) in members:
+            ret.append((membername, member, isattr))
+
+        return ret
+
+
+class CFunctionDocumenter(CModuleDocumenter):
+    """
+    The documenter for the autocfunction directive.
+    """
+    domain = 'c'
+    objtype = 'cfunction'
+    directivetype = 'function'
+
+    def get_doc(self, encoding=None, ignore=1):
+        """Decode and return lines of the docstring(s) for the object."""
+        name = self.objpath[0]
+        docstring = self._c_doc.children[name].doc
+        tab_width = self.directive.state.document.settings.tab_width
+        return [prepare_docstring(docstring, ignore, tab_width)]
+
+    def get_object_members(self, want_all: bool):
+        """Return `(members_check_module, members)` where `members` is a
+        list of `(membername, member)` pairs of the members of *self.object*.
+
+        If *want_all* is True, return all members.  Else, only return those
+        members given by *self.options.members* (which may also be none).
+        """
+        return False, []
 
 
 class CModule(Directive):
@@ -146,6 +228,8 @@ def setup(app):
     Setup function for registering this with sphinx
     """
     app.require_sphinx('1.8')
+    app.setup_extension('sphinx.ext.autodoc')
     app.add_autodocumenter(CModuleDocumenter)
+    app.add_autodocumenter(CFunctionDocumenter)
     app.add_directive_to_domain('c', 'module', CModule)
     app.add_config_value('c_root', '', 'env')

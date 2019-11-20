@@ -7,6 +7,7 @@ import os
 import textwrap
 
 from itertools import dropwhile
+from collections import OrderedDict
 
 from clang import cindex
 
@@ -28,7 +29,7 @@ class DocumentedItem:
         self.doc = ''
         self.type = ''
         self.name = ''
-        self.children = []
+        self.children = OrderedDict()
 
     @classmethod
     def from_cursor(cls, cursor):
@@ -59,7 +60,9 @@ class DocumentedItem:
         obj_dict['name'] = self.name
         if self.children:
             obj_dict['children'] = []
-            for child in self.children:
+
+            # TODO update this JSON representation to reflect the ordered dict
+            for child in self.children.values():
                 obj_dict['children'].append(json.loads(str(child)))
 
         return json.dumps(obj_dict)
@@ -119,7 +122,7 @@ def parse(filename):
     for node in node_iter:
         item = DocumentedItem.from_cursor(node)
         if item:
-            root_document.children.append(item)
+            root_document.children[item.name] = item
 
     return root_document
 
