@@ -27,6 +27,6 @@ Similar Tools
     :target: https://github.com/speedyleion/sphinx-c-doc/actions?query=workflow%3A%22Python+package%22
 
 .. |coverage| image:: https://codecov.io/gh/speedyleion/sphinx-c-doc/branch/master/graph/badge.svg
-    :alt: build status
+    :alt: Coverage
     :scale: 100%
-    :target: https://codecov.io/gh/speedyleion/sphinx-c-doc/branch/master
+    :target: https://codecov.io/gh/speedyleion/sphinx-c-doc
