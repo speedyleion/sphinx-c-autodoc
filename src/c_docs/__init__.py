@@ -214,6 +214,14 @@ class CTypeDocumenter(CObjectDocumenter):
     objtype = 'ctype'
     directivetype = 'type'
 
+    @classmethod
+    def can_document_member(cls, member, membername, isattr, parent):
+        """
+        Returns:
+            bool: True if this class can document the `member`.
+        """
+        return member.type in ('struct', 'type', 'union')
+
 
 class CFunctionDocumenter(CObjectDocumenter):
     """

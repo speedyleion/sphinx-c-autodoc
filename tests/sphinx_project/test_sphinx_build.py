@@ -26,3 +26,4 @@ def test_autodoc_of_c_file(tmp_path):
     # Not ideal but sphinx takes a while to run...
     assert 'This is file 2' in contents
     assert 'It has a multi-line comment' in contents
+    assert 'unknown_member' in contents
