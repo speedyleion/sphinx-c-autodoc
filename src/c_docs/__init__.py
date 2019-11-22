@@ -60,33 +60,23 @@ from c_docs import parser
 c.CObject.option_spec.update({'module': directives.unchanged})
 
 
-class CModuleDocumenter(Documenter):
+class CObjectDocumenter(Documenter):
     # pylint: disable=line-too-long
     """
-    A C module autodocument class to work with
+    A C object autodocument class to work with
     `autodoc https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc`_
     extension for sphinx.
-
-    This auto documenter will be registered as a directive named `autocmodule`,
-    there may be a way to override the python `automodule`, just not sure yet...
-
-
     """
     # pylint: enable=line-too-long
     domain = 'c'
-    objtype = 'cmodule'
-    directivetype = 'module'
 
-    # must be higher than the AttributeDocumenter, else it will steal these types
+    # must be higher than the AttributeDocumenter, else it will steal the c
+    # objects
     priority = 11
 
     option_spec = {
         'members': members_option,
     }  # type: Dict[str, Callable]
-
-    def __init__(self, *args, **kwargs):
-        self._c_doc = None
-        super().__init__(*args, **kwargs)
 
     @classmethod
     def can_document_member(cls, member, membername, isattr, parent):
@@ -130,17 +120,28 @@ class CModuleDocumenter(Documenter):
         """Parse the C file and build up the document structure.
 
         This will parse the C file and store the document structure into
-        :attr:`_c_doc`
+        :attr:`object`
         """
         path = os.path.join(self.env.app.confdir, self.env.config.c_root)
         filename = os.path.join(path, self.get_real_modname())
-        self._c_doc = parser.parse(filename)
+        self.module = parser.parse(filename)
+
+        # TODO may need to do nested parse for structure members
+
+        # objpath is set when double colons are used in :meth:`resolve_name`.
+        # i.e. this is a node or sub-node in a module.
+        if self.objpath:
+            self.object_name = self.objpath[0]
+            self.object = self.module.children[self.object_name]
+        else:
+            self.object_name = self.name
+            self.object = self.module
 
         return True
 
     def get_doc(self, encoding=None, ignore=1):
         """Decode and return lines of the docstring(s) for the object."""
-        docstring = self._c_doc.doc
+        docstring = self.object.doc
         tab_width = self.directive.state.document.settings.tab_width
         return [prepare_docstring(docstring, ignore, tab_width)]
 
@@ -151,7 +152,7 @@ class CModuleDocumenter(Documenter):
         If *want_all* is True, return all members.  Else, only return those
         members given by *self.options.members* (which may also be none).
         """
-        return False, list(self._c_doc.children.items())
+        return False, list(self.object.children.items())
 
     def filter_members(self, members: List[Tuple[str, Any]], want_all: bool
                        ) -> List[Tuple[str, Any, bool]]:
@@ -176,29 +177,48 @@ class CModuleDocumenter(Documenter):
         return ret
 
 
-class CFunctionDocumenter(CModuleDocumenter):
+class CModuleDocumenter(CObjectDocumenter):
+    """
+    This auto documenter will be registered as a directive named `autocmodule`,
+    there may be a way to override the python `automodule`, just not sure yet...
+    """
+    objtype = 'cmodule'
+    directivetype = 'module'
+
+    @classmethod
+    def can_document_member(cls, member, membername, isattr, parent):
+        """
+        Modules are top levels so should never be included as a child of another
+        c object.
+
+        Returns:
+            bool: True if this class can document the `member`.
+        """
+        return False
+
+
+class CTypeDocumenter(CObjectDocumenter):
+    """
+    The documenter for the autoctype directive.
+
+    This handles:
+        - types
+        - structs
+        - unions
+
+    """
+    domain = 'c'
+    objtype = 'ctype'
+    directivetype = 'type'
+
+
+class CFunctionDocumenter(CObjectDocumenter):
     """
     The documenter for the autocfunction directive.
     """
     domain = 'c'
     objtype = 'cfunction'
     directivetype = 'function'
-
-    def get_doc(self, encoding=None, ignore=1):
-        """Decode and return lines of the docstring(s) for the object."""
-        name = self.objpath[0]
-        docstring = self._c_doc.children[name].doc
-        tab_width = self.directive.state.document.settings.tab_width
-        return [prepare_docstring(docstring, ignore, tab_width)]
-
-    def get_object_members(self, want_all: bool):
-        """Return `(members_check_module, members)` where `members` is a
-        list of `(membername, member)` pairs of the members of *self.object*.
-
-        If *want_all* is True, return all members.  Else, only return those
-        members given by *self.options.members* (which may also be none).
-        """
-        return False, []
 
 
 class CModule(Directive):
@@ -231,5 +251,6 @@ def setup(app):
     app.setup_extension('sphinx.ext.autodoc')
     app.add_autodocumenter(CModuleDocumenter)
     app.add_autodocumenter(CFunctionDocumenter)
+    app.add_autodocumenter(CTypeDocumenter)
     app.add_directive_to_domain('c', 'module', CModule)
     app.add_config_value('c_root', '', 'env')

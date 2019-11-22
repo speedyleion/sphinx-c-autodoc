@@ -74,9 +74,13 @@ def get_nested_node(cursor):
     Retrieve the nested node that `cursor` may be shadowing
     """
     if cursor.kind in (cindex.CursorKind.TYPEDEF_DECL,):
-        underlying_node = next(cursor.get_children())
-        if underlying_node.kind in (cindex.CursorKind.STRUCT_DECL,):
-            return underlying_node
+        try:
+            underlying_node = next(cursor.get_children())
+            if underlying_node.kind in (cindex.CursorKind.STRUCT_DECL,):
+                return underlying_node
+        except StopIteration:
+            # No children for typedefs of native types, i.e. `typedef int some_int;`
+            pass
 
     return cursor
 
