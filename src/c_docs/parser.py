@@ -4,6 +4,7 @@ Parser of c files
 
 import json
 import os
+import re
 import textwrap
 
 from itertools import dropwhile
@@ -141,15 +142,29 @@ def parse_comment(comment):
     if not comment:
         return ''
 
-    # Remove leading and trailing blocks, needs to be more logical
-    comment = comment.splitlines()[1:-1]
+    # Notes on the regex here.
+    #   Option 1 '\s?\*/?'
+    #       This piece will match comment lines that start with '*' or ' *'.
+    #       This will also match a trailing '*/' for the end of a comment
+    #
+    #   Option 2 '^/\*+'
+    #       This will match the start of a comment '/*' and consume any
+    #       subsequent '*'.
+    #
+    #   Option 3 '\*+/'
+    #       Matches any and all '*' up to the end of the comment string.
+    contents = re.sub(r'^\s?\*/?|^/\*+|\*+/', lambda x: len(x.group(0)) * ' ',
+                      comment, flags=re.MULTILINE)
 
-    # Remove any leading '*'s
-    comment = [c.lstrip('*') for c in comment]
+    # Dedent doesn't work with carriage returns, \r
+    contents = contents.replace('\r\n', '\n')
+    contents = textwrap.dedent(contents)
 
-    comment = '\n'.join(comment).strip()
+    # there may still be left over newlines so only strip those but leave any
+    # whitespaces.
+    contents = contents.strip('\n')
 
-    return textwrap.dedent(comment)
+    return contents
 
 
 # pylint: disable=invalid-name

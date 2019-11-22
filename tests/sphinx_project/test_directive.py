@@ -123,8 +123,37 @@ class TestAutoCFunction:
         my_func
         This is a function comment"""
 
+    single_line_comment = """\
+            single_line_function_comment
+            A Single line function comment"""
+
+    return_value_function = """\
+            return_value_function
+            Function with a return value"""
+
+    multiple_parameters = """\
+            multiple_parameters
+            Function with multiple parameters"""
+
+    # Note this doesn't look as nice as it will in actual HTML but you can get
+    # an idea of the parameters and returns sections
+    documented_parameters = """\
+            documented_parameters
+            Function with documented parameters
+            Parameters
+            param1 -- The first parameter which is on multiple lines
+            with this being the second line.
+            param2 -- An alternative second parameter
+            Returns
+            Some return value."""
+
+
     doc_data = [
         ('autocfunction', ['example.c::my_func'], expected_function),
+        ('autocfunction', ['functions.c::single_line_function_comment'], single_line_comment),
+        ('autocfunction', ['functions.c::return_value_function'], return_value_function),
+        ('autocfunction', ['functions.c::multiple_parameters'], multiple_parameters),
+        ('autocfunction', ['functions.c::documented_parameters'], documented_parameters),
     ]
 
     @pytest.mark.parametrize('directive, args, expected_doc', doc_data)
