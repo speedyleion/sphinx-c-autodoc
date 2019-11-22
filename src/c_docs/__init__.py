@@ -70,6 +70,9 @@ class CObjectDocumenter(Documenter):
     # pylint: enable=line-too-long
     domain = 'c'
 
+    # Filler type, this base class isn't used directly
+    directivetype = 'object'
+
     # must be higher than the AttributeDocumenter, else it will steal the c
     # objects
     priority = 11
