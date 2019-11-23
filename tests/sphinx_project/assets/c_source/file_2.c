@@ -21,7 +21,7 @@ typedef struct
 *
 ***************************/
 
-void my_func(void)
+int * my_func(int * first_one, char * second)
 {
     printf('hello');
 }

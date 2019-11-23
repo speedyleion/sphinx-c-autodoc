@@ -87,7 +87,7 @@ class TestAutoCModule:
     expected_example_c = """\
         This is a file comment
 
-        my_func
+        void my_funcvoid
 
         This is a function comment"""
 
@@ -164,27 +164,30 @@ class TestAutoCModule:
 class TestAutoCFunction:
     """
     Testing class for the autocfunction directive
+
+    .. note:: Parens are missing in the signature for astext(), but they show up in
+        html output.
     """
     expected_function = """\
-        my_func
+        void my_funcvoid
         This is a function comment"""
 
     single_line_comment = """\
-            single_line_function_comment
+            void single_line_function_commentvoid
             A Single line function comment"""
 
     return_value_function = """\
-            return_value_function
+            int return_value_functionvoid
             Function with a return value"""
 
     multiple_parameters = """\
-            multiple_parameters
+            int multiple_parametersint a, int b
             Function with multiple parameters"""
 
     # Note this doesn't look as nice as it will in actual HTML but you can get
     # an idea of the parameters and returns sections
     documented_parameters = """\
-            documented_parameters
+            char * documented_parametersint param1, int param2
             Function with documented parameters
             Parameters
             param1 -- The first parameter which is on multiple lines

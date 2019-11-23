@@ -30,6 +30,7 @@ class DocumentedItem:
         self.doc = ''
         self.type = ''
         self.name = ''
+        self.node = None
         self.children = OrderedDict()
 
     @classmethod
@@ -45,12 +46,13 @@ class DocumentedItem:
         nested_cursor = get_nested_node(cursor)
         doc.doc = parse_comment(nested_cursor.raw_comment)
         doc.type = CURSORKIND_TO_ITEM_TYPES[nested_cursor.kind]
+        doc.node = nested_cursor
 
         # Don't document anonymouse items
-        if doc.name:
-            return doc
+        if not doc.name:
+            return None
 
-        return None
+        return doc
 
     def __str__(self):
         """

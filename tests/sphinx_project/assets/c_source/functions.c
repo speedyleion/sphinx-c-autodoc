@@ -33,7 +33,7 @@ int multiple_parameters(int a, int b)
  *
  * :returns: Some return value.
  */
-int documented_parameters(int param1, int param2)
+char * documented_parameters(int param1, int param2)
 {
     return param1 - param2;
 }
