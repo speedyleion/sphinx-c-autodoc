@@ -32,7 +32,14 @@ load-plugins=pylint.extensions.check_docs
 # it should appear only once).
 # I0011 : locally-disabled
 #     used when an inline option disables a message or a messages category.
-disable=I0011
+# misplaced-comparison-constant
+#     Since this project is doing string comparison asserts, pytest will take the
+#     left side as the '-' and the right side as the '+' in the verbose diff
+#     output. It may the original authors lack of experience, but it feels more
+#     intuitive to see the '+' as _new_ content or the result of the tested
+#     functionality and the '-' as the _old_ content or the previously expected and
+#     approved output.
+disable=I0011,misplaced-comparison-constant
 
 
 [REPORTS]

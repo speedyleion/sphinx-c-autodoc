@@ -12,13 +12,8 @@ from collections import OrderedDict
 
 from clang import cindex
 
-CURSORKIND_TO_ITEM_TYPES = {cindex.CursorKind.TRANSLATION_UNIT: 'file',
-                            cindex.CursorKind.FUNCTION_DECL: 'function',
-                            cindex.CursorKind.STRUCT_DECL: 'struct',
-                            cindex.CursorKind.TYPEDEF_DECL: 'type'}
 
-
-class DocumentedItem:
+class DocumentedObject:
     """
     A representation of a parsed c file focusing on the documentation of the
     elements.
@@ -26,33 +21,30 @@ class DocumentedItem:
     Attributes:
         type (str): The type of this item one of
     """
+    _type = 'object'
+
     def __init__(self):
         self.doc = ''
-        self.type = ''
         self.name = ''
         self.node = None
+        self.type = self._type
         self.children = OrderedDict()
 
-    @classmethod
-    def from_cursor(cls, cursor):
+    # pylint: disable=no-self-use, unused-argument
+    def format_args(self, **kwargs) -> str:
         """
-        Create an instance from a :class:`cindex.Cursor`
+        Creates the parenthesis version of the function signature.  i.e. this
+        will be the `(int hello, int what)` portion of a function.
         """
-        doc = cls()
+        return ''
 
-        # Spelling is always good on the "primary" node.
-        doc.name = cursor.spelling
+    def format_name(self) -> str:
+        """
+        The name of the object.
 
-        nested_cursor = get_nested_node(cursor)
-        doc.doc = parse_comment(nested_cursor.raw_comment)
-        doc.type = CURSORKIND_TO_ITEM_TYPES[nested_cursor.kind]
-        doc.node = nested_cursor
-
-        # Don't document anonymouse items
-        if not doc.name:
-            return None
-
-        return doc
+        For things like functions and others this will include the return type.
+        """
+        return self.name
 
     def __str__(self):
         """
@@ -70,6 +62,104 @@ class DocumentedItem:
                 obj_dict['children'].append(json.loads(str(child)))
 
         return json.dumps(obj_dict)
+
+
+class DocumentedFile(DocumentedObject):
+    """
+    A documented file
+    """
+    _type = 'file'
+
+
+class DocumentedStructure(DocumentedObject):
+    """
+    A documented structure
+    """
+    _type = 'struct'
+
+
+class DocumentedType(DocumentedObject):
+    """
+    A documented type(def)
+    """
+    _type = 'type'
+
+
+class DocumentedFunction(DocumentedObject):
+    """
+    A function specific documented object.
+    """
+    _type = 'function'
+
+    def format_args(self, **kwargs) -> str:
+        """
+        Creates the parenthesis version of the function signature.  i.e. this
+        will be the `(int hello, int what)` portion of the header.
+        """
+        func = self.node
+        args = []
+        for arg in func.get_arguments():
+            args.append(' '.join(t.spelling for t in arg.get_tokens()))
+
+        if not args:
+            args = ['void']
+
+        return '({})'.format(', '.join(args))
+
+    def format_name(self) -> str:
+        """Format the name of *self.object*.
+
+        This normally should be something that can be parsed by the generated
+        directive, but doesn't need to be (Sphinx will display it unparsed
+        then).
+
+        For things like functions and others this will include the return type.
+        """
+        func = self.node
+
+        # The Cursor kinds have translation units as protected, underscore, but
+        # one can't do very much querying without access to the translation unit
+        tu = func._tu  # pylint: disable=protected-access
+
+        # For functions the extent encompasses the return value, and the
+        # location is the beginning of the functions name.  So we can consume
+        # all tokens in between.
+        end = cindex.SourceLocation.from_offset(tu, func.location.file,
+                                                func.location.offset - 1)
+        extent = cindex.SourceRange.from_locations(func.extent.start, end)
+
+        return_type = ' '.join(t.spelling for t in
+                               cindex.TokenGroup.get_tokens(tu, extent=extent))
+
+        return '{} {}'.format(return_type, func.spelling)
+
+
+CURSORKIND_TO_OBJECT_CLASS = {cindex.CursorKind.TRANSLATION_UNIT: DocumentedFile,
+                              cindex.CursorKind.FUNCTION_DECL: DocumentedFunction,
+                              cindex.CursorKind.STRUCT_DECL: DocumentedStructure,
+                              cindex.CursorKind.TYPEDEF_DECL: DocumentedType}
+
+
+def object_from_cursor(cursor):
+    """
+    Create an instance from a :class:`cindex.Cursor`
+    """
+    # Spelling is always good on the "primary" node.
+    name = cursor.spelling
+
+    # Don't document anonymouse items
+    if not name:
+        return None
+
+    nested_cursor = get_nested_node(cursor)
+    class_ = CURSORKIND_TO_OBJECT_CLASS[nested_cursor.kind]
+    doc = class_()
+
+    doc.name = name
+    doc.doc = parse_comment(nested_cursor.raw_comment)
+    doc.node = nested_cursor
+
+    return doc
 
 
 def get_nested_node(cursor):
@@ -115,22 +205,21 @@ def get_file_comment(cursor):
 
 def parse(filename):
     """
-    Parse a C file into a tree of :class:`DocumentedItem`\'s
+    Parse a C file into a tree of :class:`DocumentedObject`\'s
 
     Args:
         filename (str): The c file to parse into a documented item
 
     Returns:
-        :class:`DocumentedItem`: The documented version of `filename`.
+        :class:`DocumentedObject`: The documented version of `filename`.
 
     """
 
     tu = cindex.TranslationUnit.from_source(filename)
     cursor = tu.cursor
 
-    root_document = DocumentedItem()
+    root_document = DocumentedFile()
     root_document.doc = get_file_comment(cursor)
-    root_document.type = CURSORKIND_TO_ITEM_TYPES[cursor.kind]
     root_document.name = os.path.basename(cursor.spelling)
 
     # Skip past all the nodes that show up due to the includes as well as the
@@ -139,7 +228,7 @@ def parse(filename):
                           cursor.get_children())
 
     for node in node_iter:
-        item = DocumentedItem.from_cursor(node)
+        item = object_from_cursor(node)
         if item:
             root_document.children[item.name] = item
 

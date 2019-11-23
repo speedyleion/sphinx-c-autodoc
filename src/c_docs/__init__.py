@@ -186,7 +186,14 @@ class CObjectDocumenter(Documenter):
 
         For things like functions and others this will include the return type.
         """
-        return self.object.name
+        return self.object.format_name()
+
+    def format_args(self, **kwargs) -> str:
+        """
+        Creates the parenthesis version of the function signature.  i.e. this
+        will be the `(int hello, int what)` portion of the header.
+        """
+        return self.object.format_args(**kwargs)
 
     def add_directive_header(self, sig: str) -> None:
         """Add the directive header and options to the generated content."""
@@ -249,48 +256,6 @@ class CFunctionDocumenter(CObjectDocumenter):
     domain = 'c'
     objtype = 'cfunction'
     directivetype = 'function'
-
-    def format_args(self, **kwargs) -> str:
-        """
-        Creates the parenthesis version of the function signature.  i.e. this
-        will be the `(int hello, int what)` portion of the header.
-        """
-        func = self.object.node
-        args = []
-        for arg in func.get_arguments():
-            args.append(' '.join(t.spelling for t in arg.get_tokens()))
-
-        if not args:
-            args = ['void']
-
-        return '({})'.format(', '.join(args))
-
-    def format_name(self) -> str:
-        """Format the name of *self.object*.
-
-        This normally should be something that can be parsed by the generated
-        directive, but doesn't need to be (Sphinx will display it unparsed
-        then).
-
-        For things like functions and others this will include the return type.
-        """
-        func = self.object.node
-
-        # The Cursor kinds have translation units as protected, underscore, but
-        # one can't do very much querying without access to the translation unit
-        tu = func._tu  # pylint: disable=protected-access
-
-        # For functions the extent encompasses the return value, and the
-        # location is the beginning of the functions name.  So we can consume
-        # all tokens in between.
-        end = cindex.SourceLocation.from_offset(tu, func.location.file,
-                                                func.location.offset - 1)
-        extent = cindex.SourceRange.from_locations(func.extent.start, end)
-
-        return_type = ' '.join(t.spelling for t in
-                               cindex.TokenGroup.get_tokens(tu, extent=extent))
-
-        return '{} {}'.format(return_type, func.spelling)
 
 
 class CModule(Directive):
