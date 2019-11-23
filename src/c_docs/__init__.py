@@ -98,11 +98,14 @@ class CObjectDocumenter(Documenter):
         Args:
             modname (str): Only set when called with double colons.  This will
                 be the left side of the double colons.
-            parents (list): This doesn't seem to ever come back when working
-                with c files.
+            parents (list): The list split('.') version of path.
+                - The filename without the extension when naked argument is used.
+                - Any parents when double colon argument is used. For example
+                  structs or unions of `my_struct.member_name` would have a
+                  parents entry of ['my_struct']
             path (str): Two possible states:
-                - The file name without extension when naked argument is used.
-                - None when a double colon argument is used.
+                - None if `parents` is the empty list.
+                - The '.'.join() version of `parents`, with a trailing `.`
             base (str): The name of the object:
                 - This will be the file extension when naked argument is used.
                 - This will be the object, function, type, etc when double colon
@@ -112,9 +115,9 @@ class CObjectDocumenter(Documenter):
             tuple: (str, [str]) The module name, and the object names (if any).
                 The object names will be joined with a `.`.
         """
-        # As mentioned when path is None then a double colon argument was used
-        if path is None:
-            return modname, [base]
+        if modname:
+            return modname, parents + [base]
+
         return path + base, []
 
     def import_object(self):
@@ -127,16 +130,15 @@ class CObjectDocumenter(Documenter):
         filename = os.path.join(path, self.get_real_modname())
         self.module = parser.parse(filename)
 
-        # TODO may need to do nested parse for structure members
+        self.object = self.module
+        self.object_name = self.name
 
         # objpath is set when double colons are used in :meth:`resolve_name`.
         # i.e. this is a node or sub-node in a module.
         if self.objpath:
-            self.object_name = self.objpath[0]
-            self.object = self.module.children[self.object_name]
-        else:
-            self.object_name = self.name
-            self.object = self.module
+            for obj in self.objpath:
+                self.object_name = obj
+                self.object = self.object.children[self.object_name]
 
         return True
 
@@ -249,6 +251,17 @@ class CTypeDocumenter(CObjectDocumenter):
         return member.type in ('struct', 'type', 'union')
 
 
+class CMemberDocumenter(CObjectDocumenter):
+    """
+    The documenter for the autocmember directive.
+
+    This handles structure and union fields.
+    """
+    domain = 'c'
+    objtype = 'cmember'
+    directivetype = 'member'
+
+
 class CFunctionDocumenter(CObjectDocumenter):
     """
     The documenter for the autocfunction directive.
@@ -289,5 +302,6 @@ def setup(app):
     app.add_autodocumenter(CModuleDocumenter)
     app.add_autodocumenter(CFunctionDocumenter)
     app.add_autodocumenter(CTypeDocumenter)
+    app.add_autodocumenter(CMemberDocumenter)
     app.add_directive_to_domain('c', 'module', CModule)
     app.add_config_value('c_root', '', 'env')

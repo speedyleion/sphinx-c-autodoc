@@ -15,7 +15,6 @@ testdata = [('one_function.c', {'doc': 'This is a file comment',
                                     {'doc': 'This is a function comment',
                                      'name': 'my_func',
                                      'type': 'function',
-                                     # 'signature': 'my_func(void)'
                                      }]}),
             ('typedef.c', {'doc': 'This is a file comment',
                            'name': 'typedef.c',
@@ -23,11 +22,16 @@ testdata = [('one_function.c', {'doc': 'This is a file comment',
                            'children': [
                                {'doc': 'This is a type comment',
                                 'name': 'unknown_member',
-                                'type': 'struct'},
+                                'type': 'struct',
+                                'children': [
+                                    {'doc': '',
+                                     'name': 'foo',
+                                     'type': 'member'
+                                    }
+                                ]},
                                {'doc': 'This is a function comment',
                                 'name': 'my_func',
                                 'type': 'function',
-                                # 'signature': 'my_func(void)'
                                 }]}),
            ]
 

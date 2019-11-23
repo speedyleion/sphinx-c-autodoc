@@ -12,6 +12,11 @@ from collections import OrderedDict
 
 from clang import cindex
 
+from c_docs.clang_patches import patch_clang
+
+# Must do this prior to calling into clang
+patch_clang()
+
 
 class DocumentedObject:
     """
@@ -28,7 +33,17 @@ class DocumentedObject:
         self.name = ''
         self.node = None
         self.type = self._type
-        self.children = OrderedDict()
+        self._children = None
+
+    @property
+    def children(self) -> dict:
+        """
+        The child objects of this object.
+        """
+        if self._children is None:
+            self._children = OrderedDict()
+
+        return self._children
 
     # pylint: disable=no-self-use, unused-argument
     def format_args(self, **kwargs) -> str:
@@ -71,11 +86,33 @@ class DocumentedFile(DocumentedObject):
     _type = 'file'
 
 
+class DocumentedMember(DocumentedObject):
+    """
+    A documented file
+    """
+    _type = 'member'
+
+
 class DocumentedStructure(DocumentedObject):
     """
     A documented structure
     """
     _type = 'struct'
+    _children = None
+
+    @property
+    def children(self) -> dict:
+        """
+        Gets the children, members, of the structure.
+        """
+        if self._children is None:
+            # Parse the first level of the structures members.
+            struct = self.node
+            self._children = OrderedDict()
+            for member in struct.get_children():
+                self._children[member.spelling] = object_from_cursor(member)
+
+        return self._children
 
 
 class DocumentedType(DocumentedObject):
@@ -137,6 +174,7 @@ class DocumentedFunction(DocumentedObject):
 CURSORKIND_TO_OBJECT_CLASS = {cindex.CursorKind.TRANSLATION_UNIT: DocumentedFile,
                               cindex.CursorKind.FUNCTION_DECL: DocumentedFunction,
                               cindex.CursorKind.STRUCT_DECL: DocumentedStructure,
+                              cindex.CursorKind.FIELD_DECL: DocumentedMember,
                               cindex.CursorKind.TYPEDEF_DECL: DocumentedType}
 
 
@@ -227,10 +265,13 @@ def parse(filename):
     node_iter = dropwhile(lambda x: not x.location.isFromMainFile(),
                           cursor.get_children())
 
+    # TODO need to consider a better way to build this up, taking the
+    # dictionary and modifying in place isn't ideal.
+    children = root_document.children
     for node in node_iter:
         item = object_from_cursor(node)
         if item:
-            root_document.children[item.name] = item
+            children[item.name] = item
 
     return root_document
 
@@ -256,13 +297,13 @@ def parse_comment(comment):
     #       This piece will match comment lines that start with '*' or ' *'.
     #       This will also match a trailing '*/' for the end of a comment
     #
-    #   Option 2 '^/\*+'
+    #   Option 2 '^/\*+<?'
     #       This will match the start of a comment '/*' and consume any
-    #       subsequent '*'.
+    #       subsequent '*'. This is also meant to catch '/**<' for trailing comments.
     #
     #   Option 3 '\*+/'
     #       Matches any and all '*' up to the end of the comment string.
-    contents = re.sub(r'^\s?\*/?|^/\*+|\*+/', lambda x: len(x.group(0)) * ' ',
+    contents = re.sub(r'^\s?\*/?|^/\*+<?|\*+/', lambda x: len(x.group(0)) * ' ',
                       comment, flags=re.MULTILINE)
 
     # Dedent doesn't work with carriage returns, \r
@@ -274,46 +315,3 @@ def parse_comment(comment):
     contents = contents.strip('\n')
 
     return contents
-
-
-# pylint: disable=invalid-name
-def SourceLocation_isFromMainFile(self):
-    """
-    Tests if a :class:`cindex.SourceLocation` is in the main translation unit
-    being parsed.
-
-    Returns:
-        bool: True if this location is in the main file of the translation unit.
-            False otherwise.
-    """
-    return cindex.conf.lib.clang_Location_isFromMainFile(self)
-
-
-# List of functions which are in the native libclang but aren't normally
-# provided by the python bindings of clang.
-FUNCTION_LIST = [
-    ('clang_Location_isFromMainFile', [cindex.SourceLocation], bool),
-]
-
-
-def patch_cindex():
-    """
-    This will patch the variables and classes in cindex to provide more
-    functionality than usual.
-
-    Monkeypatching is utilized so that people can more easily upgrade the
-    libclang version with its cindex file and not have to merge it.
-    """
-    # Create a sequence of all of the currently known function names in cindex.
-    known_names = tuple(f[0] for f in cindex.functionList)
-
-    # Add any unknown versions in
-    for func in FUNCTION_LIST:
-        if func[0] not in known_names:
-            cindex.functionList.append(func)
-
-    cindex.SourceLocation.isFromMainFile = SourceLocation_isFromMainFile
-
-
-# Must do this prior to calling into clang
-patch_cindex()

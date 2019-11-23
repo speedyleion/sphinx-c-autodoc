@@ -28,3 +28,14 @@ struct some_struct
 typedef some_struct typedefed_struct;
 
 typedef char undocumented;
+
+/**
+ * A struct with documented members
+ */
+struct documented_members
+{
+    // Note the '<' to be marked as trailing documentation comments
+    // See https://llvm.org/devmtg/2012-11/Gribenko_CommentParsing.pdf
+    float a; /**< The string for member a */
+    float b; /**< Some other string for member b */
+};

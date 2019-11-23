@@ -19,28 +19,6 @@ class TestAutoCModule:
 
         This is a function comment"""
 
-    types_c = """\
-
-        my_int
-
-        This is basic typedef from a native type to another name.
-
-        my_struct_type
-
-        A struct that is actually anonymouse but is typedefed in place.
-
-        some_struct
-
-        A plain struct that is not typedefed.
-
-        typedefed_struct
-
-        A typedef of a struct after the fact.
-
-        undocumented
-
-        """
-
     file_with_only_comment = """\
         This is an empty file with only a comment.  Maybe someone needs a
         configuration header and nothing is in it..."""
@@ -58,9 +36,15 @@ class TestAutoCModule:
 
         This type is documented"""
 
+    no_file_comment = """\
+
+        some_type
+
+        Description of type"""
+
     doc_data = [
         ('example.c', expected_example_c),
-        ('types.c', types_c),
+        ('no_file_comment.c', no_file_comment),
         ('file_with_only_comment.c', file_with_only_comment),
         ('empty_file.c', empty_file),
         ('no_leading_comment.c', no_leading_comment),

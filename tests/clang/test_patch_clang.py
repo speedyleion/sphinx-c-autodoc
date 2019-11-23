@@ -1,7 +1,7 @@
 """
 Focus on testing the patching of clang
 """
-from c_docs.parser import patch_cindex
+from c_docs.clang_patches import patch_clang
 from clang import cindex
 
 def test_re_patch():
@@ -12,9 +12,7 @@ def test_re_patch():
     doesn't add another entry for the package functions into the clang function
     list.
     """
-    patch_cindex()
+    patch_clang()
 
     functions = tuple(f[0] for f in cindex.functionList)
     assert len(functions) == len(set(functions))
-
-
