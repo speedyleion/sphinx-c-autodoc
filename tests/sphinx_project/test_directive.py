@@ -88,10 +88,53 @@ class TestAutoCModule:
         This is a file comment
 
         my_func
+
         This is a function comment"""
+
+    types_c = """\
+
+        my_int
+
+        This is basic typedef from a native type to another name.
+
+        my_struct_type
+
+        A struct that is actually anonymouse but is typedefed in place.
+
+        some_struct
+
+        A plain struct that is not typedefed.
+
+        typedefed_struct
+
+        A typedef of a struct after the fact.
+
+        undocumented
+
+        """
+
+    file_with_only_comment = """\
+        This is an empty file with only a comment.  Maybe someone needs a
+        configuration header and nothing is in it..."""
+
+    empty_file = ""
+
+    no_leading_comment = """\
+
+        some_undocumented_type
+
+
+
+        documented_type
+
+        This type is documented"""
 
     doc_data = [
         ('autocmodule', ['example.c'], expected_example_c),
+        ('autocmodule', ['types.c'], types_c),
+        ('autocmodule', ['file_with_only_comment.c'], file_with_only_comment),
+        ('autocmodule', ['empty_file.c'], empty_file),
+        ('autocmodule', ['no_leading_comment.c'], no_leading_comment),
     ]
 
     @pytest.mark.parametrize('directive, args, expected_doc', doc_data)
@@ -105,14 +148,17 @@ class TestAutoCModule:
         #  1. Module paragraph
         #  2. Index entry for function
         #  3. Function paragraph
-        assert 3 == len(output)
+        #  4. Index entry for next function
+        #  5. Function paragraph
+        #  ...
+        docs = (o.astext() for o in output[::1])
 
         # Triple newlines for the double knockdown below
-        body = '\n\n\n'.join((output[0].astext(), output[2].astext()))
+        body = '\n'.join(docs)
 
         # For whatever reason the as text comes back with double newlines, so we
         # knock it down to single spacing to make the expected string smaller.
-        assert dedent(expected_doc) == body.replace('\n\n', '\n')
+        assert dedent(expected_doc) == body
 
 
 class TestAutoCFunction:
@@ -195,11 +241,16 @@ class TestAutoCType:
             typedefed_struct
             A typedef of a struct after the fact."""
 
+    # This will have the title and a newline, but no content as it didn't exist
+    undocumented = """\
+            undocumented
+            """
     doc_data = [
         ('autoctype', ['types.c::my_int'], my_int),
         ('autoctype', ['types.c::my_struct_type'], my_struct_type),
         ('autoctype', ['types.c::some_struct'], some_struct),
         ('autoctype', ['types.c::typedefed_struct'], typedefed_struct),
+        ('autoctype', ['types.c::undocumented'], undocumented),
     ]
 
     @pytest.mark.parametrize('directive, args, expected_doc', doc_data)

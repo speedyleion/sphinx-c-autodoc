@@ -26,3 +26,5 @@ struct some_struct
  * A typedef of a struct after the fact.
  */
 typedef some_struct typedefed_struct;
+
+typedef char undocumented;

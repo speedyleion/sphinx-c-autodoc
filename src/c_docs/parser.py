@@ -46,7 +46,8 @@ class DocumentedItem:
         doc.doc = parse_comment(nested_cursor.raw_comment)
         doc.type = CURSORKIND_TO_ITEM_TYPES[nested_cursor.kind]
 
-        if doc.doc and doc.name:
+        # Don't document anonymouse items
+        if doc.name:
             return doc
 
         return None
@@ -89,12 +90,23 @@ def get_file_comment(cursor):
     """
     Get's the comment at the top of the file
     """
-    token = next(cursor.get_tokens())
+    try:
+        token = next(cursor.get_tokens())
+    except StopIteration:
+        # Only happens with a completely empty file
+        return ''
 
-    # TODO look for being attached to a cursor or maybe just look for comment
-    # being the first line...
     if token.kind == cindex.TokenKind.COMMENT:
-        return parse_comment(token.spelling)
+        try:
+            node = next(cursor.get_children())
+            node_comment = node.raw_comment
+        except StopIteration:
+            node_comment = ''
+
+        # When the first comment is for the first node then the file lacks a
+        # dedicated comment.
+        if node_comment != token.spelling:
+            return parse_comment(token.spelling)
 
     return ''
 
@@ -143,7 +155,9 @@ def parse_comment(comment):
     Returns:
         str: The comment with the c comment syntax removed.
     """
-    if not comment:
+    # Happens when there is no documentation comment in the source file for the
+    # item.
+    if comment is None:
         return ''
 
     # Notes on the regex here.
