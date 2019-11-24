@@ -33,9 +33,20 @@ class TestAutoCFunction:
 
     # Note this doesn't look as nice as it will in actual HTML but you can get
     # an idea of the parameters and returns sections
-    documented_parameters = """\
+    sphinx_documented_parameters = """\
             char * documented_parametersint param1, int param2
-            Function with documented parameters
+            Function with sphinx documented parameters
+            Parameters
+            param1 -- The first parameter which is on multiple lines
+            with this being the second line.
+            param2 -- An alternative second parameter
+            Returns
+            Some return value."""
+
+
+    doxy_documented_parameters = """\
+            char * doxy_documented_parametersint param1, int param2
+            Function with doxygen style documented parameters
             Parameters
             param1 -- The first parameter which is on multiple lines
             with this being the second line.
@@ -49,7 +60,8 @@ class TestAutoCFunction:
         ('functions.c::single_line_function_comment', single_line_comment),
         ('functions.c::return_value_function', return_value_function),
         ('functions.c::multiple_parameters', multiple_parameters),
-        ('functions.c::documented_parameters', documented_parameters),
+        ('functions.c::sphinx_documented_parameters', sphinx_documented_parameters),
+        ('functions.c::doxy_documented_parameters', doxy_documented_parameters),
     ]
 
     @pytest.mark.parametrize('function, expected_doc', doc_data)
