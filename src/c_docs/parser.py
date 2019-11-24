@@ -12,7 +12,7 @@ from collections import OrderedDict
 
 from clang import cindex
 
-from c_docs.clang_patches import patch_clang
+from c_docs.clang.patches import patch_clang
 
 # Must do this prior to calling into clang
 patch_clang()

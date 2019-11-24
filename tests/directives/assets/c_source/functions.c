@@ -39,28 +39,19 @@ char * sphinx_documented_parameters(int param1, int param2)
 }
 
 /**
- * Function with doxygen style documented parameters
+ * This is the description of some function
+ * It contains multiple lines of text
  *
- * @param[in] param1 The first parameter which is on multiple lines
- *      with this being the second line.
- * @param[out] param2 An alternative second parameter
+ * Here is a new paragraph as someone would interpret
+ * from a markdown style syntax
  *
- * @returns Some return value.
+ * @param foo A parameter with no direction
+ * @param [in] bar A parameter with an `in` direction
+ *
+ * @returns
+ *     Some interesting value
  */
-char * doxy_documented_parameters(int param1, int param2)
+char * doxy_documented_parameters(int foo, int bar)
 {
-    return param1 - param2;
-}
-
-/**
- * Function with inline doxygen style documented parameters
- *
- * @returns Something better
- */
-char * inline_doxy_documented_parameters(
-    int foo, /**< The documentation for the foo parameter */
-    int baz /**< The documentation for the baz parameter */
-    )
-{
-    return (char*)(foo - baz);
+    return foo - bar;
 }
