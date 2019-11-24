@@ -5,7 +5,7 @@ It is composed of multiple directives and settings:
 
 .. rst:directive:: .. autocmodule:: filename
 
-    A directive which will automatically parse `filename` and create the
+    A directive which will automatically load `filename` and create the
     documentation for it.  The `filename` is relative to the config value
     `c_root`.  This can be used for both c source files as
     well as c header files.
@@ -55,7 +55,7 @@ from sphinx.util.docstrings import prepare_docstring
 
 from clang import cindex
 
-from c_docs import parser
+from c_docs import loader
 
 
 class CObjectDocumenter(Documenter):
@@ -121,14 +121,13 @@ class CObjectDocumenter(Documenter):
         return path + base, []
 
     def import_object(self):
-        """Parse the C file and build up the document structure.
+        """Load the C file and build up the document structure.
 
-        This will parse the C file and store the document structure into
-        :attr:`object`
+        This will load the C file's documented structure into :attr:`object`
         """
         path = os.path.join(self.env.app.confdir, self.env.config.c_root)
         filename = os.path.join(path, self.get_real_modname())
-        self.module = parser.parse(filename)
+        self.module = loader.load(filename)
 
         self.object = self.module
         self.object_name = self.name
@@ -144,7 +143,7 @@ class CObjectDocumenter(Documenter):
 
     def get_doc(self, encoding=None, ignore=1):
         """Decode and return lines of the docstring(s) for the object."""
-        docstring = self.object.doc
+        docstring = self.object.get_doc()
         tab_width = self.directive.state.document.settings.tab_width
         return [prepare_docstring(docstring, ignore, tab_width)]
 

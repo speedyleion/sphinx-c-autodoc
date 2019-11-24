@@ -1,5 +1,5 @@
 """
-Parser of c files
+Load the c file objects
 """
 
 import json
@@ -10,9 +10,10 @@ import textwrap
 from itertools import dropwhile
 from collections import OrderedDict
 
+from bs4 import BeautifulSoup
 from clang import cindex
 
-from c_docs.clang_patches import patch_clang
+from c_docs.clang.patches import patch_clang
 
 # Must do this prior to calling into clang
 patch_clang()
@@ -20,7 +21,7 @@ patch_clang()
 
 class DocumentedObject:
     """
-    A representation of a parsed c file focusing on the documentation of the
+    A representation of a loaded c file focusing on the documentation of the
     elements.
 
     Attributes:
@@ -78,6 +79,13 @@ class DocumentedObject:
 
         return json.dumps(obj_dict)
 
+    def get_doc(self) -> str:
+        """
+        Get the documentation paragraph of the item
+
+        """
+        return self.doc
+
 
 class DocumentedFile(DocumentedObject):
     """
@@ -106,7 +114,7 @@ class DocumentedStructure(DocumentedObject):
         Gets the children, members, of the structure.
         """
         if self._children is None:
-            # Parse the first level of the structures members.
+            # Get the first level of the structures members.
             struct = self.node
             self._children = OrderedDict()
             for member in struct.get_children():
@@ -127,21 +135,82 @@ class DocumentedFunction(DocumentedObject):
     A function specific documented object.
     """
     _type = 'function'
+    _soup = None
+
+    @property
+    def soup(self):
+        """
+        Get the beautifulsoup representation of this object's comment.
+
+        Returns:
+            BeautifulSoup: The xml comment for this C object turned into soup.
+        """
+        if self._soup is None:
+            self._soup = BeautifulSoup(self.node.getParsedComment().as_xml(),
+                                       features="html.parser")
+
+        return self._soup
+
+    @staticmethod
+    def get_paragraph(tag) -> str:
+        """
+        Get the paragraph contents from `tag`.
+
+        Args:
+            tag (:class:`~BeautifulSoup.tag`): The tag to get the paragraph
+                contents from.
+
+        Returns:
+            str: One of two things:
+                - An empty string if `tag` is None.
+                - All of the paragraph contents of `tag` with newlines
+                  between them along with a trailing newline, otherwise.
+        """
+        if tag is None:
+            return ''
+
+        paragraph = '\n'.join(p.text.strip() for p in tag.find_all('para'))
+        paragraph += '\n'
+        return paragraph
+
+    def get_soup_doc(self) -> str:
+        """
+        Gets the documentation from the :attr:`_soup`.
+        """
+        root = self.soup.contents[0]
+        body = self.get_paragraph(root.find('abstract', recursive=False))
+        body += self.get_paragraph(root.find('discussion', recursive=False))
+
+        for param in root.find_all('parameter'):
+            name = param.find('name').text
+            param_doc = self.get_paragraph(param.discussion)
+            body += f'\n:param {name}: {param_doc}'
+
+        returns = self.get_paragraph(root.find('resultdiscussion', recursive=False))
+        if returns:
+            body += f'\n:returns: {returns}'
+
+        return body
+
+    def get_doc(self) -> str:
+        """
+        Get the documentation paragraph of the item
+        """
+        root = self.soup.contents[0]
+        if root.find('parameters', recursive=False) or root.find('resultdiscussion'):
+            return self.get_soup_doc()
+
+        return self.doc
 
     def format_args(self, **kwargs) -> str:
         """
         Creates the parenthesis version of the function signature.  i.e. this
         will be the `(int hello, int what)` portion of the header.
         """
-        func = self.node
-        args = []
-        for arg in func.get_arguments():
-            args.append(' '.join(t.spelling for t in arg.get_tokens()))
-
-        if not args:
-            args = ['void']
-
-        return '({})'.format(', '.join(args))
+        root = self.soup.contents[0]
+        decl = root.find('declaration')
+        _, args = decl.text.split('(', 1)
+        return '(' + args
 
     def format_name(self) -> str:
         """Format the name of *self.object*.
@@ -152,23 +221,10 @@ class DocumentedFunction(DocumentedObject):
 
         For things like functions and others this will include the return type.
         """
-        func = self.node
-
-        # The Cursor kinds have translation units as protected, underscore, but
-        # one can't do very much querying without access to the translation unit
-        tu = func._tu  # pylint: disable=protected-access
-
-        # For functions the extent encompasses the return value, and the
-        # location is the beginning of the functions name.  So we can consume
-        # all tokens in between.
-        end = cindex.SourceLocation.from_offset(tu, func.location.file,
-                                                func.location.offset - 1)
-        extent = cindex.SourceRange.from_locations(func.extent.start, end)
-
-        return_type = ' '.join(t.spelling for t in
-                               cindex.TokenGroup.get_tokens(tu, extent=extent))
-
-        return '{} {}'.format(return_type, func.spelling)
+        root = self.soup.contents[0]
+        decl = root.find('declaration')
+        name, _ = decl.text.split('(', 1)
+        return name
 
 
 CURSORKIND_TO_OBJECT_CLASS = {cindex.CursorKind.TRANSLATION_UNIT: DocumentedFile,
@@ -241,12 +297,12 @@ def get_file_comment(cursor):
     return ''
 
 
-def parse(filename):
+def load(filename):
     """
-    Parse a C file into a tree of :class:`DocumentedObject`\'s
+    Load a C file into a tree of :class:`DocumentedObject`\'s
 
     Args:
-        filename (str): The c file to parse into a documented item
+        filename (str): The c file to load into a documented item
 
     Returns:
         :class:`DocumentedObject`: The documented version of `filename`.

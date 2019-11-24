@@ -9,9 +9,9 @@ method names are in camel case, matching the cindex method name conventions.
 """
 # pylint: disable=invalid-name
 
-import ctypes
-
 from clang import cindex
+
+from c_docs.clang.comments import Comment
 
 
 def SourceLocation_isFromMainFile(self):
@@ -36,29 +36,14 @@ def Cursor_getParsedComment(self):
     return cindex.conf.lib.clang_Cursor_getParsedComment(self)
 
 
-# pylint: disable=too-few-public-methods
-class Comment(ctypes.Structure):
-    """
-    A CXComment from clang
-    """
-    _fields_ = [("node", ctypes.c_void_p),
-                ("tu", ctypes.POINTER(ctypes.c_void_p))]
-
-    def as_XML(self):
-        """
-        Return this comment as an xml string
-        """
-        return cindex.conf.lib.clang_FullComment_getAsXML(self)
-
-
 # List of functions which are in the native libclang but aren't normally
 # provided by the python bindings of clang.
 # pylint: disable=protected-access
 FUNCTION_LIST = [
     ('clang_Location_isFromMainFile', [cindex.SourceLocation], bool),
+    ('clang_Cursor_getParsedComment', [cindex.Cursor], Comment),
     ('clang_FullComment_getAsXML', [Comment], cindex._CXString,
      cindex._CXString.from_result),
-    ('clang_Cursor_getParsedComment', [cindex.Cursor], Comment),
 ]
 
 

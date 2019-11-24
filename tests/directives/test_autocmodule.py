@@ -15,7 +15,7 @@ class TestAutoCModule:
     expected_example_c = """\
         This is a file comment
 
-        void my_funcvoid
+        void my_func
 
         This is a function comment"""
 

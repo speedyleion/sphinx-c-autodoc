@@ -16,15 +16,15 @@ class TestAutoCFunction:
         html output.
     """
     expected_function = """\
-        void my_funcvoid
+        void my_func
         This is a function comment"""
 
     single_line_comment = """\
-            void single_line_function_commentvoid
+            void single_line_function_comment
             A Single line function comment"""
 
     return_value_function = """\
-            int return_value_functionvoid
+            int return_value_function
             Function with a return value"""
 
     multiple_parameters = """\
@@ -33,9 +33,9 @@ class TestAutoCFunction:
 
     # Note this doesn't look as nice as it will in actual HTML but you can get
     # an idea of the parameters and returns sections
-    documented_parameters = """\
-            char * documented_parametersint param1, int param2
-            Function with documented parameters
+    sphinx_documented_parameters = """\
+            char *sphinx_documented_parametersint param1, int param2
+            Function with sphinx documented parameters
             Parameters
             param1 -- The first parameter which is on multiple lines
             with this being the second line.
@@ -44,12 +44,38 @@ class TestAutoCFunction:
             Some return value."""
 
 
+    # The clang/doxygen parsing removes newlines but keeps the indentation
+    # spaces. This should be collapsed in html output.
+    doxy_documented_parameters = """\
+            char *doxy_documented_parametersint param1, int param2
+            Function with doxygen style documented parameters
+            Parameters
+            param1 -- The first parameter which is on multiple lines      with this being the second line.
+            param2 -- An alternative second parameter
+            Returns
+            Some return value."""
+
+    # Currently Don't know why the \xa0 are comming back in the output. Looking
+    # through the debugger it appears that the xml comments from clang have
+    # standard spaces, guessing it's something with the html generation from
+    # sphinx
+    doxy_documented_parameters_no_returns = """\
+        void doxy_documented_parameters_no_returnsint\xa0water, int\xa0air
+        Doxygen style function
+        This function has no returns section, but has a discussion section as described by clang.
+        In Fact this has multiple discussion paragraphs.
+        Parameters
+        water -- An element
+        air -- A different element"""
+
     doc_data = [
         ('example.c::my_func', expected_function),
         ('functions.c::single_line_function_comment', single_line_comment),
         ('functions.c::return_value_function', return_value_function),
         ('functions.c::multiple_parameters', multiple_parameters),
-        ('functions.c::documented_parameters', documented_parameters),
+        ('functions.c::sphinx_documented_parameters', sphinx_documented_parameters),
+        ('functions.c::doxy_documented_parameters', doxy_documented_parameters),
+        ('functions.c::doxy_documented_parameters_no_returns', doxy_documented_parameters_no_returns),
     ]
 
     @pytest.mark.parametrize('function, expected_doc', doc_data)
