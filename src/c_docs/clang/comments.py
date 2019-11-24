@@ -82,21 +82,20 @@ class Comment(ctypes.Structure):
     _fields_ = [("node", ctypes.c_void_p),
                 ("tu", ctypes.POINTER(ctypes.c_void_p))]
 
-    def as_XML(self):
+    _kind = None
+
+    def as_xml(self):
         """
         Return this comment as an xml string
         """
         return cindex.conf.lib.clang_FullComment_getAsXML(self)
 
-    def get_num_children(self):
-        """
-        Return the number of child comments???
-        """
-        return cindex.conf.lib.clang_Comment_getNumChildren(self)
-
     def get_children(self):
         """
-        Iterates through the child comments
+        Iterates through the child comments.
+
+        Yields:
+            Comment: The children
         """
         for i in range(cindex.conf.lib.clang_Comment_getNumChildren(self)):
             yield cindex.conf.lib.clang_Comment_getChild(self, i)
@@ -104,7 +103,10 @@ class Comment(ctypes.Structure):
     @property
     def kind(self):
         """Return the kind of this comment."""
-        return CommentKind.from_id(cindex.conf.lib.clang_Comment_getKind(self))
+        if self._kind is None:
+            self._kind = CommentKind.from_id(cindex.conf.lib.clang_Comment_getKind(self))
+
+        return self._kind
 
     def get_text(self):
         """
@@ -130,16 +132,84 @@ class CommentKind(cindex.BaseEnumeration):
     def __repr__(self):
         return 'CommentKind.%s' % (self.name,)
 
+# Null comment.  No AST node is constructed at the requested location
+# because there is no text or a syntax error.
 CommentKind.NULL = CommentKind(0)
+
+# Plain text.  Inline content.
 CommentKind.TEXT = CommentKind(1)
+
+# A command with word-like arguments that is considered inline content.
+#
+# For example: \\c command.
 CommentKind.INLINE_COMMAND = CommentKind(2)
+
+# HTML start tag with attributes (name-value pairs).  Considered
+# inline content.
+#
+# For example::
+#
+#   <br> <br /> <a href="http://example.org/">
+#
 CommentKind.HTML_START_TAG = CommentKind(3)
+
+# HTML end tag.  Considered inline content.
+#
+# For example::
+#
+#   </a>
+#
 CommentKind.HTML_START_TAG = CommentKind(4)
+
+# A paragraph, contains inline comment.  The paragraph itself is
+# block content.
 CommentKind.PARAGRAPH = CommentKind(5)
+
+# A command that has zero or more word-like arguments (number of
+# word-like arguments depends on command name) and a paragraph as an
+# argument.  Block command is block content.
+#
+# Paragraph argument is also a child of the block command.
+#
+# For example: \has 0 word-like arguments and a paragraph argument.
+#
+# AST nodes of special kinds that parser knows about (e. g., \\param
+# command) have their own node kinds.
 CommentKind.BLOCK_COMMAND = CommentKind(6)
+
+# A \\param or \\arg command that describes the function parameter
+# (name, passing direction, description).
+#
+# For example: \\param [in] ParamName description.
 CommentKind.PARAM_COMMAND = CommentKind(7)
+
+# A \\tparam command that describes a template parameter (name and
+# description).
+#
+# For example: \\tparam T description.
 CommentKind.TEMPLATE_PARAM_COMMAND = CommentKind(8)
+
+# A verbatim block command (e. g., preformatted code).  Verbatim
+# block has an opening and a closing command and contains multiple lines of
+# text (\c CXComment_VerbatimBlockLine child nodes).
+#
+# For example::
+#
+#   \\verbatim
+#   aaa
+#   \\endverbatim
+#
 CommentKind.VERBATIM_BLOCK_COMMAND = CommentKind(9)
+
+# A line of text that is contained within a
+# CXComment_VerbatimBlockCommand node.
 CommentKind.VERBATIM_BLOCK_LINE = CommentKind(10)
+
+# A verbatim line command.  Verbatim line has an opening command,
+# a single line of text (up to the newline after the opening command) and
+# has no closing command.
 CommentKind.VERBATIM_LINE = CommentKind(11)
+
+
+# A full comment attached to a declaration, contains block content.
 CommentKind.FULL_COMMENT = CommentKind(12)
