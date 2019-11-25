@@ -21,11 +21,13 @@ struct some_struct
     int a;
 };
 
+typedef some_struct intermediate_type;
 
 /**
  * A typedef of a struct after the fact.
  */
-typedef some_struct typedefed_struct;
+typedef intermediate_type typedefed_struct;
+
 
 typedef char undocumented;
 
@@ -38,4 +40,13 @@ struct documented_members
     // See https://llvm.org/devmtg/2012-11/Gribenko_CommentParsing.pdf
     float a; /**< The string for member a */
     float b; /**< Some other string for member b */
+};
+
+/**
+ * A union type that can be documented
+ */
+union a_union_type
+{
+    float alias_a;
+    int alias_b;
 };

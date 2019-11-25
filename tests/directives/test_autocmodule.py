@@ -28,17 +28,17 @@ class TestAutoCModule:
     # The extra blank lines will get squashed down in the final HTML output
     no_leading_comment = """\
 
-        some_undocumented_type
+        typedef int some_undocumented_type
 
 
 
-        documented_type
+        typedef float documented_type
 
         This type is documented"""
 
     no_file_comment = """\
 
-        some_type
+        typedef char some_type
 
         Description of type"""
 

@@ -35,6 +35,7 @@ class DocumentedObject:
         self.node = None
         self.type = self._type
         self._children = None
+        self._soup = None
 
     @property
     def children(self) -> dict:
@@ -86,57 +87,6 @@ class DocumentedObject:
         """
         return self.doc
 
-
-class DocumentedFile(DocumentedObject):
-    """
-    A documented file
-    """
-    _type = 'file'
-
-
-class DocumentedMember(DocumentedObject):
-    """
-    A documented file
-    """
-    _type = 'member'
-
-
-class DocumentedStructure(DocumentedObject):
-    """
-    A documented structure
-    """
-    _type = 'struct'
-    _children = None
-
-    @property
-    def children(self) -> dict:
-        """
-        Gets the children, members, of the structure.
-        """
-        if self._children is None:
-            # Get the first level of the structures members.
-            struct = self.node
-            self._children = OrderedDict()
-            for member in struct.get_children():
-                self._children[member.spelling] = object_from_cursor(member)
-
-        return self._children
-
-
-class DocumentedType(DocumentedObject):
-    """
-    A documented type(def)
-    """
-    _type = 'type'
-
-
-class DocumentedFunction(DocumentedObject):
-    """
-    A function specific documented object.
-    """
-    _type = 'function'
-    _soup = None
-
     @property
     def soup(self):
         """
@@ -146,8 +96,8 @@ class DocumentedFunction(DocumentedObject):
             BeautifulSoup: The xml comment for this C object turned into soup.
         """
         if self._soup is None:
-            self._soup = BeautifulSoup(self.node.getParsedComment().as_xml(),
-                                       features="html.parser")
+            comment = self.node.getParsedComment().as_xml()
+            self._soup = BeautifulSoup(comment, features="html.parser")
 
         return self._soup
 
@@ -172,6 +122,39 @@ class DocumentedFunction(DocumentedObject):
         paragraph = '\n'.join(p.text.strip() for p in tag.find_all('para'))
         paragraph += '\n'
         return paragraph
+
+
+class DocumentedFile(DocumentedObject):
+    """
+    A documented file
+    """
+    _type = 'file'
+
+
+class DocumentedMember(DocumentedObject):
+    """
+    A documented file
+    """
+    _type = 'member'
+
+    def format_name(self) -> str:
+        """Format the name of *self.object*.
+
+        This normally should be something that can be parsed by the generated
+        directive, but doesn't need to be (Sphinx will display it unparsed
+        then).
+
+        For things like functions and others this will include the return type.
+        """
+        type_ = self.node.type.spelling
+        return f'{type_} {self.name}'
+
+
+class DocumentedFunction(DocumentedObject):
+    """
+    A function specific documented object.
+    """
+    _type = 'function'
 
     def get_soup_doc(self) -> str:
         """
@@ -227,9 +210,68 @@ class DocumentedFunction(DocumentedObject):
         return name
 
 
+class DocumentedType(DocumentedObject):
+    """
+    A documented type(def)
+    """
+    _type = 'type'
+
+    def format_name(self) -> str:
+        """Format the name of *self.object*.
+
+        This normally should be something that can be parsed by the generated
+        directive, but doesn't need to be (Sphinx will display it unparsed
+        then).
+
+        For things like functions and others this will include the return type.
+        """
+        parent_type = self.node.underlying_typedef_type.spelling
+        return f'typedef {parent_type} {self.name}'
+
+
+class DocumentedStructure(DocumentedObject):
+    """
+    A documented structure
+    """
+    _type = 'struct'
+
+    def format_name(self) -> str:
+        """Format the name of *self.object*.
+
+        This normally should be something that can be parsed by the generated
+        directive, but doesn't need to be (Sphinx will display it unparsed
+        then).
+
+        For things like functions and others this will include the return type.
+        """
+        return f'{self._type} {self.name}'
+
+    @property
+    def children(self) -> dict:
+        """
+        Gets the children, members, of the structure.
+        """
+        if self._children is None:
+            # Get the first level of the structures members.
+            struct = self.node
+            self._children = OrderedDict()
+            for member in struct.get_children():
+                self._children[member.spelling] = object_from_cursor(member)
+
+        return self._children
+
+
+class DocumentedUnion(DocumentedStructure):
+    """
+    Class for unions
+    """
+    _type = 'union'
+
+
 CURSORKIND_TO_OBJECT_CLASS = {cindex.CursorKind.TRANSLATION_UNIT: DocumentedFile,
                               cindex.CursorKind.FUNCTION_DECL: DocumentedFunction,
                               cindex.CursorKind.STRUCT_DECL: DocumentedStructure,
+                              cindex.CursorKind.UNION_DECL: DocumentedUnion,
                               cindex.CursorKind.FIELD_DECL: DocumentedMember,
                               cindex.CursorKind.TYPEDEF_DECL: DocumentedType}
 
@@ -246,7 +288,7 @@ def object_from_cursor(cursor):
         return None
 
     nested_cursor = get_nested_node(cursor)
-    class_ = CURSORKIND_TO_OBJECT_CLASS[nested_cursor.kind]
+    class_ = CURSORKIND_TO_OBJECT_CLASS.get(nested_cursor.kind, DocumentedObject)
     doc = class_()
 
     doc.name = name

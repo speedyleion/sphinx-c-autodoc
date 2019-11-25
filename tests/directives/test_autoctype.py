@@ -13,49 +13,59 @@ class TestAutoCType:
     Testing class for the autoctype directive
     """
     my_int = """\
-        my_int
+        typedef int my_int
         This is basic typedef from a native type to another name."""
 
     my_struct_type = """\
-        my_struct_type
+        struct my_struct_type
         A struct that is actually anonymouse but is typedefed in place.
 
-        bar
+        int bar
 
 
-        baz
+        float baz
         """
 
     # Note the '*' around `not` are bold attributes in html so are stripped away
     # in the as_text()
     some_struct = """\
-        some_struct
+        struct some_struct
         A plain struct that is not typedefed.
 
-        foo
+        my_struct_type foo
 
 
-        a
+        int a
         """
 
     typedefed_struct = """\
-        typedefed_struct
+        typedef intermediate_type typedefed_struct
         A typedef of a struct after the fact."""
 
     # This will have the title and a newline, but no content as it didn't exist
     undocumented = """\
-        undocumented
+        typedef char undocumented
         """
+
     documented_members = """\
-        documented_members
+        struct documented_members
         A struct with documented members
 
-        a
+        float a
         The string for member a
 
-        b
+        float b
         Some other string for member b"""
 
+    a_union_type = """\
+        union a_union_type
+        A union type that can be documented
+
+        float alias_a
+
+
+        int alias_b
+        """
     doc_data = [
         ('types.c::my_int', my_int),
         ('types.c::my_struct_type', my_struct_type),
@@ -63,6 +73,7 @@ class TestAutoCType:
         ('types.c::typedefed_struct', typedefed_struct),
         ('types.c::undocumented', undocumented),
         ('types.c::documented_members', documented_members),
+        ('types.c::a_union_type', a_union_type),
     ]
 
     @pytest.mark.parametrize('type_, expected_doc', doc_data)
