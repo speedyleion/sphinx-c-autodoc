@@ -12,9 +12,10 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+SOURCE_DIR = os.path.abspath(os.path.join('.', '..', 'src'))
+sys.path.insert(0, SOURCE_DIR)
 
 
 # -- Project information -----------------------------------------------------
@@ -46,6 +47,9 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.imgmath',
     'sphinx.ext.viewcode',
+    'sphinx.ext.napoleon',
+    'sphinx_rtd_theme',
+    'c_docs'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -81,7 +85,7 @@ pygments_style = None
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -191,3 +195,34 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
+
+
+# -- Options for c_docs, the extension being documented ----------------------
+
+c_root = '../tests/sphinx_project/assets/c_source'
+
+# -- Force Scan of API ------------------------------------------------------
+
+# Skip scan when running tests, since sphinx extensions are tested.
+if 'PYTEST_CURRENT_TEST' not in os.environ:
+    # This will force scanning the source directory so that the api can be autopopulated.
+    import sphinx.ext.apidoc as apidoc
+    import shutil
+    args = ['-e', '-o', '_api', '-a', '-f', SOURCE_DIR]
+
+    try:
+        shutil.rmtree('_api')
+    except:
+        pass
+
+    apidoc.main(args)
+
+    # Not fond of this but needed to shut up warning about the main modules file not in TOC.
+    try:
+        contents = [':orphan:\n\n']
+        with open('_api/modules.rst', 'r') as mod_file:
+            contents.extend(mod_file.readlines())
+        with open('_api/modules.rst', 'w') as mod_file:
+            mod_file.writelines(contents)
+    except:
+        pass

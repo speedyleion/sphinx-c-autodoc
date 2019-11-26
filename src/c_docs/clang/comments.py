@@ -6,6 +6,7 @@ import ctypes
 from clang import cindex
 
 
+# pylint: disable=too-few-public-methods
 class Comment(ctypes.Structure):
     """
     A CXComment from clang

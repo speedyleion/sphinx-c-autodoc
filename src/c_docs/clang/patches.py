@@ -2,12 +2,15 @@
 Provide functionality to patch the python clang bindings for some missing
 functionality.
 
-pylint invalid-name: This is being disabled because the methods are using the
-c style object nameing convetion of <ClassName>_<methodName>. The
-class name is in title case, matching the python convention for classes. The
-method names are in camel case, matching the cindex method name conventions.
 """
-# pylint: disable=invalid-name
+# invalid-name: This is being disabled because the methods are using the c
+#   style object nameing convetion of <ClassName>_<methodName>. The class name is
+#   in title case, matching the python convention for classes. The method names
+#   are in camel case, matching the cindex method name conventions.
+# protected-access: Due to the monkey patching protected access is needed so
+#   that the other consumers are less affected and so that they don't need to do
+#   protected access.
+# pylint: disable=invalid-name,protected-access
 
 from clang import cindex
 
@@ -106,7 +109,8 @@ def override_methods():
     pythonic and or more efficient.
     """
     cindex.Cursor._raw_comment = None
-    cindex.Cursor.raw_comment = property(Cursor_cached_raw_comment).setter(Cursor_set_raw_comment)
+    cindex.Cursor.raw_comment = \
+        property(Cursor_cached_raw_comment).setter(Cursor_set_raw_comment)
 
 
 def add_new_methods():

@@ -62,7 +62,7 @@ class CObjectDocumenter(Documenter):
     # pylint: disable=line-too-long
     """
     A C object autodocument class to work with
-    `autodoc https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc`_
+    `autodoc <https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc>`_
     extension for sphinx.
     """
     # pylint: enable=line-too-long
@@ -85,12 +85,14 @@ class CObjectDocumenter(Documenter):
         Returns:
             bool: True if this class can document the `member`.
         """
-        return member.type == cls.directivetype
+        return isinstance(parent, CObjectDocumenter) and \
+            member.type == cls.directivetype
 
     def resolve_name(self, modname, parents, path, base):
         """
         Resolve the module and object name of the object to document.
         This can be derived in two ways:
+
         - Naked: Where the argument is only the file/module name `my_file.c`
         - Double colons: Where the argument to the directive is of the form
           `my_file.c::some_func`.
@@ -99,14 +101,19 @@ class CObjectDocumenter(Documenter):
             modname (str): Only set when called with double colons.  This will
                 be the left side of the double colons.
             parents (list): The list split('.') version of path.
+
                 - The filename without the extension when naked argument is used.
                 - Any parents when double colon argument is used. For example
                   structs or unions of `my_struct.member_name` would have a
                   parents entry of ['my_struct']
+
             path (str): Two possible states:
+
                 - None if `parents` is the empty list.
-                - The '.'.join() version of `parents`, with a trailing `.`
+                - The ``'.'.join()`` version of `parents`, with a trailing ``.``.
+
             base (str): The name of the object:
+
                 - This will be the file extension when naked argument is used.
                 - This will be the object, function, type, etc when double colon
                   argument is used.
@@ -247,7 +254,8 @@ class CTypeDocumenter(CObjectDocumenter):
         Returns:
             bool: True if this class can document the `member`.
         """
-        return member.type in ('struct', 'type', 'union')
+        return isinstance(parent, CObjectDocumenter) and \
+            member.type in ('struct', 'type', 'union')
 
 
 class CMemberDocumenter(CObjectDocumenter):

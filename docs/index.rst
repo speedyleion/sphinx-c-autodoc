@@ -6,10 +6,15 @@
 Welcome to C Sphinx Extension's documentation!
 ==============================================
 
+.. include:: ../README.rst
+    :start-after: inclusion_begin
+    :end-before: inclusion_end
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   example_output
 
 
 Indices and tables

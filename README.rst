@@ -2,13 +2,20 @@ sphinx-c-doc
 ============
 |build-status| |coverage|
 
+.. inclusion_begin
 
 Use C with `autodoc`_.
 
 This is a very basic attempt at extending `autodoc`_ to work with c files.
 
 The idea is to add support for the same or similar directives that `autodoc`_
-provides. i.e. ``.. c:autofunction:: <some_file::some_function>``.
+provides. i.e.
+
+    .. rst:directive:: .. autocfunction:: my_c_file.c::my_cool_function
+
+.. _autodoc: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html
+
+.. inclusion_end
 
 Similar Tools
 -------------
@@ -18,8 +25,6 @@ Similar Tools
   want something functional at this time.
 * `breathe <https://github.com/michaeljones/breathe>`_ A doxygen output to
   sphinx tool.
-
-.. _autodoc: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html
 
 .. |build-status| image:: https://github.com/speedyleion/sphinx-c-doc/workflows/Python%20package/badge.svg
     :alt: build status
