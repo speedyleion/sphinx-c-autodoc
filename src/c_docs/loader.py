@@ -21,11 +21,29 @@ patch_clang()
 
 class DocumentedObject:
     """
-    A representation of a loaded c file focusing on the documentation of the
-    elements.
+    A representation of a c object for documentation purposes.
 
     Attributes:
-        type (str): The type of this item one of
+        type (str): The type of this item one of:
+            - object: unknown/unsupported object.
+            - file: Should be the root object of a documentation tree.
+            - member: Member or field of a struct or union
+            - function: A function
+            - type: A typedef
+            - struct: A structure
+            - union: A Union
+
+        doc (str): The default documentation of the object. This is usally
+            the comment with leading '*' removed.
+        name (str): The name of the object. For example functions this would
+            be *only* the name of the function.
+        node (:class:`~clang.cindex.cursor`): The node representing this object.
+        children (dict(DocumentedObject)): The children of the object. For
+            example for structs this would be the members or fields.
+        soup (:class:`~bs4.BeautifulSoup): The soupified version of
+            :attr:`node`'s clang xml comment.
+        declaration (str): The declaration string. For most things this is
+            the type as well as the name.
     """
     _type = 'object'
 
@@ -33,9 +51,16 @@ class DocumentedObject:
         self.doc = ''
         self.name = ''
         self.node = None
-        self.type = self._type
         self._children = None
         self._soup = None
+        self._declaration = None
+
+    @property
+    def type(self) -> str:
+        """
+        The type of object
+        """
+        return self._type
 
     @property
     def children(self) -> dict:
@@ -61,7 +86,7 @@ class DocumentedObject:
 
         For things like functions and others this will include the return type.
         """
-        return self.name
+        return self.declaration
 
     def __str__(self):
         """
@@ -82,10 +107,48 @@ class DocumentedObject:
 
     def get_doc(self) -> str:
         """
-        Get the documentation paragraph of the item
-
+        Get the documentation paragraphs of the item
         """
         return self.doc
+
+    @property
+    def declaration(self) -> str:
+        """
+        Declaration for this object. For things like functions it will be
+        `void foo(int a, int b)` for variables it will be the type and name
+        `char my_var`.
+        """
+        if self._declaration is None:
+            # First try to utilize the clang comment's version as it is assumed
+            # to be the more correct.
+            self._declaration = self.get_soup_declaration()
+
+        if self._declaration is None:
+            # soup failed so fall back to manual parsing
+            self._declaration = self.get_parsed_declaration()
+
+        return self._declaration
+
+    def get_parsed_declaration(self) -> str:
+        """
+        Get the declaration as parsed from the :attr:`node`. This may be
+        specific to each :attr:`type`.
+        """
+        # Declarations are object specific so default to something sane in the
+        # off chance an object fails to implement this.
+        return self.name
+
+    def get_soup_declaration(self) -> str:
+        """
+        Get the declaration element from :attr:`soup`. If there is no soup or
+        no declaration this will return None.
+        """
+        if self.soup is None:
+            return None
+
+        root = self.soup.contents[0]
+
+        return root.declaration.text
 
     @property
     def soup(self):
@@ -97,7 +160,8 @@ class DocumentedObject:
         """
         if self._soup is None:
             comment = self.node.getParsedComment().as_xml()
-            self._soup = BeautifulSoup(comment, features="html.parser")
+            if comment is not None:
+                self._soup = BeautifulSoup(comment, features="html.parser")
 
         return self._soup
 
@@ -133,18 +197,22 @@ class DocumentedFile(DocumentedObject):
 
 class DocumentedMember(DocumentedObject):
     """
-    A documented file
+    A documented member of a struct or union.
     """
     _type = 'member'
 
-    def format_name(self) -> str:
-        """Format the name of *self.object*.
+    def get_parsed_declaration(self) -> str:
+        """
+        Build up the name from the node. This should be the member's type and
+        it's name. i.e. for::
 
-        This normally should be something that can be parsed by the generated
-        directive, but doesn't need to be (Sphinx will display it unparsed
-        then).
+            struct foo
+            {
+                int bar;
+                float hello;
+            };
 
-        For things like functions and others this will include the return type.
+        The parsed declaration of `bar` would be `int bar`.
         """
         type_ = self.node.type.spelling
         return f'{type_} {self.name}'
@@ -179,20 +247,21 @@ class DocumentedFunction(DocumentedObject):
         """
         Get the documentation paragraph of the item
         """
-        root = self.soup.contents[0]
-        if root.find('parameters', recursive=False) or root.find('resultdiscussion'):
-            return self.get_soup_doc()
+        if self.soup is not None:
+            root = self.soup.contents[0]
+            if root.find('parameters', recursive=False) or \
+                    root.find('resultdiscussion'):
+                return self.get_soup_doc()
 
         return self.doc
 
     def format_args(self, **kwargs) -> str:
         """
         Creates the parenthesis version of the function signature.  i.e. this
-        will be the `(int hello, int what)` portion of the header.
+        will be the `(int hello, int what)` portion of the function header.
         """
-        root = self.soup.contents[0]
-        decl = root.find('declaration')
-        _, args = decl.text.split('(', 1)
+        decl = self.declaration
+        _, args = decl.split('(', 1)
         return '(' + args
 
     def format_name(self) -> str:
@@ -204,10 +273,35 @@ class DocumentedFunction(DocumentedObject):
 
         For things like functions and others this will include the return type.
         """
-        root = self.soup.contents[0]
-        decl = root.find('declaration')
-        name, _ = decl.text.split('(', 1)
+        decl = self.declaration
+        name, _ = decl.split('(', 1)
         return name
+
+    def get_parsed_declaration(self) -> str:
+        """
+        Creates the parenthesis version of the function signature.  i.e. this
+        will be the `(int hello, int what)` portion of the header.
+        """
+        func = self.node
+        args = []
+        for arg in func.get_arguments():
+            args.append(' '.join(t.spelling for t in arg.get_tokens()))
+
+        # The Cursor kinds have translation units as protected, underscore, but
+        # one can't do very much querying without access to the translation unit
+        tu = func._tu  # pylint: disable=protected-access
+
+        # For functions the extent encompasses the return value, and the
+        # location is the beginning of the functions name.  So we can consume
+        # all tokens in between.
+        end = cindex.SourceLocation.from_offset(tu, func.location.file,
+                                                func.location.offset - 1)
+        extent = cindex.SourceRange.from_locations(func.extent.start, end)
+
+        return_type = ' '.join(t.spelling for t in
+                               cindex.TokenGroup.get_tokens(tu, extent=extent))
+
+        return '{} {}({})'.format(return_type, func.spelling, ', '.join(args))
 
 
 class DocumentedType(DocumentedObject):
@@ -216,7 +310,7 @@ class DocumentedType(DocumentedObject):
     """
     _type = 'type'
 
-    def format_name(self) -> str:
+    def get_parsed_declaration(self) -> str:
         """Format the name of *self.object*.
 
         This normally should be something that can be parsed by the generated
@@ -235,16 +329,20 @@ class DocumentedStructure(DocumentedObject):
     """
     _type = 'struct'
 
-    def format_name(self) -> str:
-        """Format the name of *self.object*.
-
-        This normally should be something that can be parsed by the generated
-        directive, but doesn't need to be (Sphinx will display it unparsed
-        then).
-
-        For things like functions and others this will include the return type.
+    def get_soup_declaration(self) -> str:
         """
-        return f'{self._type} {self.name}'
+        Since structures can be anonymous the declaration in the soup can end
+        up just being `struct`, so return None here and let
+        :meth:`get_parsed_declaration` to provide back the type and the
+        possible wrapped typedef's name.
+        """
+        return None
+
+    def get_parsed_declaration(self) -> str:
+        """
+        Structures, and similar, are just the type and the name.
+        """
+        return f'{self.type} {self.name}'
 
     @property
     def children(self) -> dict:
@@ -263,7 +361,7 @@ class DocumentedStructure(DocumentedObject):
 
 class DocumentedUnion(DocumentedStructure):
     """
-    Class for unions
+    Class for unions. Same as structures with a different :attr:`type`.
     """
     _type = 'union'
 
@@ -357,6 +455,7 @@ def load(filename):
     root_document = DocumentedFile()
     root_document.doc = get_file_comment(cursor)
     root_document.name = os.path.basename(cursor.spelling)
+    root_document.node = cursor
 
     # Skip past all the nodes that show up due to the includes as well as the
     # compiler provided ones.

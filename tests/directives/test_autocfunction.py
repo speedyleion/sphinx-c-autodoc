@@ -69,7 +69,7 @@ class TestAutoCFunction:
         air -- A different element"""
 
     undocumented_function = """\
-        undocumented_function
+        int undocumented_functionfloat\xa0baz
         """
     doc_data = [
         ('example.c::my_func', expected_function),
@@ -79,8 +79,7 @@ class TestAutoCFunction:
         ('functions.c::sphinx_documented_parameters', sphinx_documented_parameters),
         ('functions.c::doxy_documented_parameters', doxy_documented_parameters),
         ('functions.c::doxy_documented_parameters_no_returns', doxy_documented_parameters_no_returns),
-        # This doesn't work right now, may need to fall back to parsing with clang.
-        # ('functions.c::undocumented_function', undocumented_function),
+        ('functions.c::undocumented_function', undocumented_function),
     ]
 
     @pytest.mark.parametrize('function, expected_doc', doc_data)
