@@ -71,6 +71,10 @@ class TestAutoCFunction:
     undocumented_function = """\
         int undocumented_functionfloat\xa0baz
         """
+    function_like_macro = """\
+        FUNCTION_LIKE_MACRO_x, _y
+        A function like macro with 2 parameters"""
+
     doc_data = [
         ('example.c::my_func', expected_function),
         ('functions.c::single_line_function_comment', single_line_comment),
@@ -80,6 +84,7 @@ class TestAutoCFunction:
         ('functions.c::doxy_documented_parameters', doxy_documented_parameters),
         ('functions.c::doxy_documented_parameters_no_returns', doxy_documented_parameters_no_returns),
         ('functions.c::undocumented_function', undocumented_function),
+        ('macros.c::FUNCTION_LIKE_MACRO', function_like_macro),
     ]
 
     @pytest.mark.parametrize('function, expected_doc', doc_data)

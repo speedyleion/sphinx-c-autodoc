@@ -7,13 +7,16 @@ import os
 import re
 import textwrap
 
-from itertools import dropwhile
 from collections import OrderedDict
+from itertools import takewhile
 
 from bs4 import BeautifulSoup
 from clang import cindex
 
 from c_docs.clang.patches import patch_clang
+
+UNDOCUMENTED_NODES = (cindex.CursorKind.MACRO_DEFINITION,)
+DOCUMENTATION_COMMENT_START = ('/**', '/*!', '///')
 
 # Must do this prior to calling into clang
 patch_clang()
@@ -195,6 +198,84 @@ class DocumentedFile(DocumentedObject):
     _type = 'file'
 
 
+class DocumentedMacro(DocumentedObject):
+    """
+    A documented macro
+    """
+    # Macros can be function like or they can be macro like so look up in the
+    # :attr:`type`.
+    _type = None
+
+    @property
+    def type(self) -> str:
+        """
+        Type of this object
+        :return: The type
+        """
+        if self._type is None:
+            if self.node.is_macro_function_like():
+                self._type = 'function'
+            else:
+                self._type = 'macro'
+
+        return self._type
+
+    def format_args(self, **kwargs) -> str:
+        """
+        If the macro is function like, gets the parenthesis version of the
+        function signature. i.e. this will be the `(_x, _y)` portion of the
+        macro function header.
+        Otherwise this is the empty string.
+
+        Returns:
+            The argument string for this macro.
+        """
+        decl = self.declaration
+
+        # The logic allows this to be used for both function like and non
+        # function like macros.
+        # 'SOME_DEFINE'.partition('(')
+        # >>>  'SOME_DEFINE', '', ''
+        #
+        # 'FUNCTION_LIKE(_a, _b)'.partition('(')
+        # >>>  'FUNCTION_LIKE', '(', '_a, _b)'
+        _, part, args = decl.partition('(')
+        return part + args
+
+    def format_name(self) -> str:
+        """Format the name for use in sphinx.
+
+        For things like functions and others this will include the return type.
+        """
+        decl = self.declaration
+        name, _, _ = decl.partition('(')
+        return name
+
+    def get_parsed_declaration(self) -> str:
+        """
+        Creates the full declaration of the macro. For function like macros
+        this will include the parenthesised arguments.
+        """
+        if self.type == 'macro':
+            return f'{self.name}'
+
+        # We know this must be a function like macro, which means the first 2
+        # tokens are `MACRO_NAME` followed by `(`.
+        token_iter = self.node.get_tokens()
+        next(token_iter)
+        next(token_iter)
+
+        # Consume all identifier tokens until the first closing `)`. This will
+        # skip over `,` as well as any inline comments.
+        # This may have some false positives if there are extra parens in the
+        # argument list
+        ident_iter = takewhile(lambda x: x.spelling != ')', token_iter)
+        tokens = [i.spelling for i in ident_iter
+                  if i.kind == cindex.TokenKind.IDENTIFIER]
+
+        return '{}({})'.format(self.name, ', '.join(tokens))
+
+
 class DocumentedMember(DocumentedObject):
     """
     A documented member of a struct or union.
@@ -287,9 +368,7 @@ class DocumentedFunction(DocumentedObject):
         for arg in func.get_arguments():
             args.append(' '.join(t.spelling for t in arg.get_tokens()))
 
-        # The Cursor kinds have translation units as protected, underscore, but
-        # one can't do very much querying without access to the translation unit
-        tu = func._tu  # pylint: disable=protected-access
+        tu = func.tu
 
         # For functions the extent encompasses the return value, and the
         # location is the beginning of the functions name.  So we can consume
@@ -371,6 +450,7 @@ CURSORKIND_TO_OBJECT_CLASS = {cindex.CursorKind.TRANSLATION_UNIT: DocumentedFile
                               cindex.CursorKind.STRUCT_DECL: DocumentedStructure,
                               cindex.CursorKind.UNION_DECL: DocumentedUnion,
                               cindex.CursorKind.FIELD_DECL: DocumentedMember,
+                              cindex.CursorKind.MACRO_DEFINITION: DocumentedMacro,
                               cindex.CursorKind.TYPEDEF_DECL: DocumentedType}
 
 
@@ -381,7 +461,7 @@ def object_from_cursor(cursor):
     # Spelling is always good on the "primary" node.
     name = cursor.spelling
 
-    # Don't document anonymouse items
+    # Don't document anonymous items
     if not name:
         return None
 
@@ -412,9 +492,9 @@ def get_nested_node(cursor):
     return cursor
 
 
-def get_file_comment(cursor):
+def get_root_comment(cursor, child):
     """
-    Get's the comment at the top of the file
+    Attempts to get the comment at the top of the file.
     """
     try:
         token = next(cursor.get_tokens())
@@ -423,15 +503,14 @@ def get_file_comment(cursor):
         return ''
 
     if token.kind == cindex.TokenKind.COMMENT:
-        try:
-            node = next(cursor.get_children())
-            node_comment = node.raw_comment
-        except StopIteration:
-            node_comment = ''
+        if child is not None:
+            child_comment = child.raw_comment
+        else:
+            child_comment = ''
 
         # When the first comment is for the first node then the file lacks a
         # dedicated comment.
-        if node_comment != token.spelling:
+        if child_comment != token.spelling:
             return parse_comment(token.spelling)
 
     return ''
@@ -449,28 +528,74 @@ def load(filename):
 
     """
 
-    tu = cindex.TranslationUnit.from_source(filename)
+    tu = cindex.TranslationUnit.from_source(filename,
+                                            options=cindex.TranslationUnit.
+                                            PARSE_DETAILED_PROCESSING_RECORD)
     cursor = tu.cursor
 
     root_document = DocumentedFile()
-    root_document.doc = get_file_comment(cursor)
-    root_document.name = os.path.basename(cursor.spelling)
-    root_document.node = cursor
 
-    # Skip past all the nodes that show up due to the includes as well as the
-    # compiler provided ones.
-    node_iter = dropwhile(lambda x: not x.location.isFromMainFile(),
-                          cursor.get_children())
+    # Some nodes show up from header includes as well as compiler defines, so
+    # skip those. Macro instantiations are the locations where macros are
+    # expanded, no need to document these.
+    child_nodes = [c for c in cursor.get_children() if c.location.isFromMainFile()
+                   and c.kind != cindex.CursorKind.MACRO_INSTANTIATION]
+
+    # Macro definitions always come first in the child list, but that may not
+    # be their location in the file, so sort all of the nodes by location
+    sorted_nodes = sorted(child_nodes, key=lambda x: x.extent.start.offset)
+
+    comment_nodes(cursor, sorted_nodes)
 
     # TODO need to consider a better way to build this up, taking the
     # dictionary and modifying in place isn't ideal.
     children = root_document.children
-    for node in node_iter:
+    for node in sorted_nodes:
         item = object_from_cursor(node)
         if item:
             children[item.name] = item
 
+    root_document.doc = cursor.raw_comment
+    root_document.name = os.path.basename(cursor.spelling)
+    root_document.node = cursor
+
     return root_document
+
+
+def comment_nodes(cursor, children):
+    """
+    Comment all nodes that could or might need to be commented. This will
+    modify any nodes in place.
+    """
+    tu = cursor.tu
+    start = cursor.extent.start
+    for child in children:
+        if child.kind not in UNDOCUMENTED_NODES:
+            start = child.extent.end
+            continue
+
+        # This may not be 100% accurate but move the start back to the previous
+        # line. This solves problems like macro defintions not including the
+        # preprocessor `#define` tokens.
+        location = child.extent.start
+        end = cindex.SourceLocation.from_position(tu, location.file,
+                                                  location.line - 1, 1)
+
+        extent = cindex.SourceRange.from_locations(start, end)
+        tokens = list(cindex.TokenGroup.get_tokens(tu, extent=extent))
+
+        start = child.extent.end
+
+        if not tokens:
+            continue
+
+        token = tokens[-1]
+        if token.kind == cindex.TokenKind.COMMENT:
+            if token.spelling.startswith(DOCUMENTATION_COMMENT_START):
+                child.raw_comment = token.spelling
+
+    first_child = children[0] if children else None
+    cursor.raw_comment = get_root_comment(cursor, first_child)
 
 
 def parse_comment(comment):

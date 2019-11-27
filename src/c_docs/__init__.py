@@ -270,6 +270,15 @@ class CFunctionDocumenter(CObjectDocumenter):
     directivetype = 'function'
 
 
+class CMacroDocumenter(CObjectDocumenter):
+    """
+    The documenter for the autocmacro directive.
+    """
+    domain = 'c'
+    objtype = 'cmacro'
+    directivetype = 'macro'
+
+
 class CModule(Directive):
     """
     Module directive for C files
@@ -302,5 +311,6 @@ def setup(app):
     app.add_autodocumenter(CFunctionDocumenter)
     app.add_autodocumenter(CTypeDocumenter)
     app.add_autodocumenter(CMemberDocumenter)
+    app.add_autodocumenter(CMacroDocumenter)
     app.add_directive_to_domain('c', 'module', CModule)
     app.add_config_value('c_root', '', 'env')
