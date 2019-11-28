@@ -1,7 +1,7 @@
 """
 Focus on testing the patching of clang
 """
-from c_docs.clang.patches import patch_clang
+from sphinx_c_autodoc.clang.patches import patch_clang
 from clang import cindex
 
 def test_re_patch():

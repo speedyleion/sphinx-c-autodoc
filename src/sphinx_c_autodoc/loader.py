@@ -13,7 +13,7 @@ from itertools import takewhile
 from bs4 import BeautifulSoup
 from clang import cindex
 
-from c_docs.clang.patches import patch_clang
+from sphinx_c_autodoc.clang.patches import patch_clang
 
 UNDOCUMENTED_NODES = (cindex.CursorKind.MACRO_DEFINITION,)
 DOCUMENTATION_COMMENT_START = ('/**', '/*!', '///')

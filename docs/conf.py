@@ -49,7 +49,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'sphinx_rtd_theme',
-    'c_docs'
+    'sphinx_c_autodoc'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -197,7 +197,7 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 todo_include_todos = True
 
 
-# -- Options for c_docs, the extension being documented ----------------------
+# -- Options for sphinx_c_autodoc, the extension being documented -----------
 
 c_root = '../tests/sphinx_project/assets/c_source'
 

@@ -1,5 +1,5 @@
 """
-C_docs is a package which provide c source file parsing for sphinx.
+sphinx_c_autodoc is a package which provide c source file parsing for sphinx.
 
 It is composed of multiple directives and settings:
 
@@ -55,7 +55,7 @@ from sphinx.util.docstrings import prepare_docstring
 
 from clang import cindex
 
-from c_docs import loader
+from sphinx_c_autodoc import loader
 
 
 class CObjectDocumenter(Documenter):

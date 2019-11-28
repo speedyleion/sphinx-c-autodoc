@@ -5,7 +5,7 @@ import json
 import os
 import pytest
 
-from c_docs import loader
+from sphinx_c_autodoc import loader
 
 SCRIPT_DIR = os.path.dirname(__file__)
 testdata = [('one_function.c', {'doc': 'This is a file comment',

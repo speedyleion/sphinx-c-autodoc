@@ -14,7 +14,7 @@ functionality.
 
 from clang import cindex
 
-from c_docs.clang.comments import Comment
+from sphinx_c_autodoc.clang.comments import Comment
 
 
 def SourceLocation_isFromMainFile(self):
