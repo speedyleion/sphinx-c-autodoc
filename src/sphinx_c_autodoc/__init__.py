@@ -132,8 +132,9 @@ class CObjectDocumenter(Documenter):
 
         This will load the C file's documented structure into :attr:`object`
         """
-        path = os.path.join(self.env.app.confdir, self.env.config.c_root)
-        filename = os.path.join(path, self.get_real_modname())
+        filename = os.path.join(self.env.config.c_root, self.get_real_modname())
+        rel_filename, filename = self.env.relfn2path(filename)
+        self.env.note_dependency(rel_filename)
         self.module = loader.load(filename)
 
         self.object = self.module
