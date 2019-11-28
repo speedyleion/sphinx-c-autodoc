@@ -20,9 +20,9 @@ sys.path.insert(0, SOURCE_DIR)
 
 # -- Project information -----------------------------------------------------
 
-project = u'C Sphinx Extension'
-copyright = u'2019, Tu Can'
-author = u'Tu Can'
+project = u'Sphinx C Autodoc Extension'
+copyright = u'2019, Nick G.'
+author = u'Nick G.'
 
 # The short X.Y version
 version = u''
@@ -140,7 +140,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'CSphinxExtension.tex', u'C Sphinx Extension Documentation',
-     u'Tu Can', 'manual'),
+     u'Nick G.', 'manual'),
 ]
 
 
@@ -204,25 +204,25 @@ c_root = '../tests/sphinx_project/assets/c_source'
 # -- Force Scan of API ------------------------------------------------------
 
 # Skip scan when running tests, since sphinx extensions are tested.
-if 'PYTEST_CURRENT_TEST' not in os.environ:
-    # This will force scanning the source directory so that the api can be autopopulated.
-    import sphinx.ext.apidoc as apidoc
-    import shutil
-    args = ['-e', '-o', '_api', '-a', '-f', SOURCE_DIR]
+# if 'PYTEST_CURRENT_TEST' not in os.environ:
+#     # This will force scanning the source directory so that the api can be autopopulated.
+#     import sphinx.ext.apidoc as apidoc
+#     import shutil
+#     args = ['-e', '-o', '_api', '-a', '-f', SOURCE_DIR]
 
-    try:
-        shutil.rmtree('_api')
-    except:
-        pass
+#     try:
+#         shutil.rmtree('_api')
+#     except:
+#         pass
 
-    apidoc.main(args)
+#     apidoc.main(args)
 
-    # Not fond of this but needed to shut up warning about the main modules file not in TOC.
-    try:
-        contents = [':orphan:\n\n']
-        with open('_api/modules.rst', 'r') as mod_file:
-            contents.extend(mod_file.readlines())
-        with open('_api/modules.rst', 'w') as mod_file:
-            mod_file.writelines(contents)
-    except:
-        pass
+#     # Not fond of this but needed to shut up warning about the main modules file not in TOC.
+#     try:
+#         contents = [':orphan:\n\n']
+#         with open('_api/modules.rst', 'r') as mod_file:
+#             contents.extend(mod_file.readlines())
+#         with open('_api/modules.rst', 'w') as mod_file:
+#             mod_file.writelines(contents)
+#     except:
+#         pass

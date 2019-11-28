@@ -14,7 +14,7 @@ Welcome to C Sphinx Extension's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   example_output
+   examples
 
 
 Indices and tables
