@@ -36,6 +36,42 @@
     some_func((_a))
 
 /**
+ * Structures can be documented.
+ *
+ * When the structure is anonymous and hidden inside a typedef, like this one,
+ * it will be documented using the typedefed name.
+ *
+ * The members can be documented with individual comments, or they can use a
+ * members section. This example struct documents the members with individual
+ * comments.
+ */
+typedef struct
+{
+    float first_member; /**< The first member of this specific structure
+                             using a trailing comment, notice the ``<`` after
+                             the comment start */
+    /**
+     * This member is documented with a comment proceeding the member.
+     */
+    int second_member;
+} a_struct_using_member_comments;
+
+/**
+ * This example structure uses the `Members:` section and lets napoleon format
+ * the members.
+ *
+ * Members:
+ *     int foo: The foo like member for foo like things.
+ *     bar: The bar like member
+ *
+ */
+struct members_documented_with_napoleon
+{
+    int foo;
+    char bar;
+};
+
+/**
 * This is a function comment. The parameters from this are much easier to
 * derive than those from a function like macro so they should always be
 * correct.
@@ -56,3 +92,26 @@ int my_func(float hello, char what)
 
     return (int)hello + 5;
 }
+
+/**
+ * A structure containing an inline declared structure field.
+ *
+ * Members:
+ *     one: The first member of parent struct
+ *     two: This is a structure declared in the parent struct its children are
+ *         documented below.
+ *         Members:
+ *             nested_one: The nested member documentation
+ *             nested_two: The second nested member documentation
+ *     three: The third member of parent struct
+ *
+ */
+struct nested_struct
+{
+    int one;
+    struct {
+        float nested_one;
+        int nested_two;
+    } two;
+    float three;
+};

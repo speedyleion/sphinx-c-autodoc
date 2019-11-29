@@ -41,6 +41,7 @@ release = u'0.0.1'
 extensions = [
     'sphinx.ext.viewcode',
     'sphinx_c_autodoc',
+    'sphinx_c_autodoc.napoleon',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

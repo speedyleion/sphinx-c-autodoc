@@ -44,14 +44,17 @@ It is composed of multiple directives and settings:
 """
 import os
 
+from itertools import groupby
+
 from typing import Any, Callable, Dict, List, Tuple
 
-from docutils.parsers.rst import Directive, directives
-from docutils.statemachine import ViewList
+from docutils.parsers.rst import Directive
+from docutils.statemachine import ViewList, StringList
 from docutils import nodes
 from sphinx.domains import c
 from sphinx.ext.autodoc import Documenter, members_option
 from sphinx.util.docstrings import prepare_docstring
+from sphinx.ext.autodoc.directive import DocumenterBridge
 
 from clang import cindex
 
@@ -135,7 +138,17 @@ class CObjectDocumenter(Documenter):
         filename = os.path.join(self.env.config.c_root, self.get_real_modname())
         rel_filename, filename = self.env.relfn2path(filename)
         self.env.note_dependency(rel_filename)
-        self.module = loader.load(filename)
+
+        # TODO The :attr:`temp_data` is reset for each document ideally want to
+        # use or make an attribute on `self.env` that is reset per run or just
+        # not pickled.
+        if 'c:loaded_modules' not in self.env.temp_data:
+            self.env.temp_data['c:loaded_modules'] = {}
+
+        if filename not in self.env.temp_data['c:loaded_modules']:
+            self.env.temp_data['c:loaded_modules'][filename] = loader.load(filename)
+
+        self.module = self.env.temp_data['c:loaded_modules'][filename]
 
         self.object = self.module
         self.object_name = self.name
@@ -249,6 +262,21 @@ class CTypeDocumenter(CObjectDocumenter):
     objtype = 'ctype'
     directivetype = 'type'
 
+    def __init__(self, directive: DocumenterBridge, name: str,
+                 indent: str = '') -> None:
+        """
+        Override the :attr:`directive` so that some post processing can be
+        performed in :meth:`generate`
+        """
+        super().__init__(directive, name, indent)
+
+        self._original_directive = self.directive
+        self.directive = DocumenterBridge(self.directive.env,
+                                          self.directive.reporter,
+                                          self.directive.genopt,
+                                          self.directive.lineno,
+                                          self.directive.state)
+
     @classmethod
     def can_document_member(cls, member, membername, isattr, parent):
         """
@@ -257,6 +285,140 @@ class CTypeDocumenter(CObjectDocumenter):
         """
         return isinstance(parent, CObjectDocumenter) and \
             member.type in ('struct', 'type', 'union')
+
+    def generate(self, more_content: Any = None, real_modname: str = None,
+                 check_module: bool = False, all_members: bool = False) -> None:
+        """
+        generate stuff
+        """
+        super().generate(more_content=more_content,
+                         real_modname=real_modname,
+                         check_module=check_module, all_members=all_members)
+
+        self._original_directive.result.append(self.consolidate_members())
+
+    def _find_member_directives(self, name):
+        """
+        Find all directive lines which start with `` ..c:<name>::``.
+
+        Creates a sequence of:
+
+            - The short name of the item documented by the directive.
+            - The full signature of the item documented.
+            - The line number in :attr:`directive.results`.
+
+        For intsnace a directive of ``..c:some_directive word1 word2 word3``
+        would result in ``word3`` being the short name and
+        ``word1 word2 word3`` being the full signature.
+
+        Args:
+            name (str): The name of the directive(s) to search for.
+
+        Returns:
+            list(tuple(str, str, int)): The short name, the full signature,
+                and the line in :attr:`directive.results` where the
+                directive occured.
+        """
+        members = []
+        directive_string = f'.. c:{name}::'
+        for line_no, line in enumerate(self.directive.result):
+            if not line.startswith(self.indent):
+                continue
+
+            if line.lstrip().startswith(directive_string):
+                _, signature = line.split(directive_string)
+                sig_parts = signature.strip().split()
+                members.append((sig_parts[-1], signature, line_no))
+
+        return members
+
+    def _remove_directive(self, line):
+        """
+        Remove the directive which starts at `line_no` from
+        :attr:`directive.results`. The locations in :attr:`directive.results`
+        will be replaced with empty lines so that the total line count of
+        :attr:`directive.results` is unaffected.
+
+        Args:
+            line (int): The starting line to remove the directive from.
+
+        Returns:
+            :class:`StringList`: The removed directive which started at `line_no`
+        """
+
+        # Just need to do at least one more indentation than the actual
+        # directive to not end up grabbing the next directive.
+        directive_line = self.directive.result[line]
+        block_indent = (len(directive_line) - len(directive_line.lstrip())) + 1
+        directive, _, _ = self.directive.result.get_indented(line, first_indent=0,
+                                                             block_indent=block_indent,
+                                                             strip_indent=False)
+        directive.disconnect()
+
+        # Setting slices need viewlists/stringlists so just iterate through and
+        # set indices which can take strings
+        directive_length = len(directive)
+        for line_no in range(line, line + directive_length):
+            self.directive.result[line_no] = self.indent
+
+        return directive
+
+    def _merge_directives(self, directives):
+        """
+        Args:
+            directives (list(StringList)): The list of directives to merge.
+
+        Returns:
+            StringList: One directive
+        """
+        merged_heading = None
+        merged_directive = None
+        for directive in directives:
+            directive_heading = directive[0]
+            directive[0] = self.indent
+
+            if merged_directive is None:
+                merged_directive = directive
+                merged_heading = directive_heading
+            else:
+                merged_directive.extend(directive)
+                if len(directive_heading) > len(merged_heading):
+                    merged_heading = directive_heading
+
+        merged_directive[0] = merged_heading
+        return merged_directive
+
+    def consolidate_members(self):
+        """
+        Take any duplicate ``.. c:member:: blah`` directives and consolidate
+        them into one directive. The subsequent contents of duplicate
+        directives will be added as additional paragraphs.
+        """
+        members = self._find_member_directives('member')
+        members += self._find_member_directives('type')
+        members.sort()
+        data_blocks = []
+
+        for _, member_group in groupby(members, lambda m: m[0]):
+            start_line = len(self.directive.result)
+            directives = []
+            for _, _, line in member_group:
+                directives.append(self._remove_directive(line))
+                if line < start_line:
+                    start_line = line
+                    original_length = len(directives[-1])
+
+            merged_directive = self._merge_directives(directives)
+            data_blocks.append((start_line, original_length, merged_directive))
+
+        data_blocks.sort()
+        delta_length = 0
+        for line, original_length, directive in data_blocks:
+            start = line + delta_length
+            self.directive.result[start: start + original_length] = directive
+            delta_length += len(directive) - original_length
+
+        return self.directive.result
 
 
 class CMemberDocumenter(CObjectDocumenter):

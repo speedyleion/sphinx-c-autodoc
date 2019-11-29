@@ -5,7 +5,7 @@
 /** A Single line function comment */
 void single_line_function_comment(void)
 {
-    printf('hello');
+    printf("hello");
 }
 
 /**

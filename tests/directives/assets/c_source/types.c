@@ -5,6 +5,11 @@ typedef int my_int;
 
 /**
  * A struct that is actually anonymouse but is typedefed in place.
+ *
+ * Members:
+ *     bar: The bar like member for bar like things. This is multiple lines to make
+ *         sure the parsing logic is correct.
+ *     baz: The baz like member
  */
 typedef struct
 {
@@ -49,4 +54,47 @@ union a_union_type
 {
     float alias_a;
     int alias_b;
+};
+
+/**
+ * A union type that documents in multiple places, this tests a few things:
+ *
+ *     - Can one put the type in the napoleon documentation? It is undefined if the
+ *       types don't match.
+ *     - Does the merging of the documentation successfully combine into multiple
+ *       paragraphs?
+ *
+ * Members:
+ *     float alias_a: The description for `alias_a` the napoleon style
+ *         documentation includes the type.
+ *     alias_b: This documentation lacks the type description but it will be taken
+ *         from the declaration.
+ */
+union a_multiply_documented_union_type
+{
+    float alias_a;
+    int alias_b; /**< A second paragraph for `alias_b` from the member declaration */
+};
+
+/**
+ * A structure containing an inline declared structure field.
+ *
+ * Members:
+ *     one: The first member of parent struct
+ *     two: This is a structure declared in the parent struct its children are
+ *         documented below.
+ *         Members:
+ *             nested_one: The nested member documentation
+ *             nested_two: The second nested member documentation
+ *     three: The third member of parent struct
+ *
+ */
+struct nested_struct
+{
+    int one;
+    struct {
+        float nested_one;
+        int nested_two;
+    } two;
+    float three;
 };

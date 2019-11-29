@@ -28,6 +28,7 @@ class DocumentedObject:
 
     Attributes:
         type (str): The type of this item one of:
+
             - object: unknown/unsupported object.
             - file: Should be the root object of a documentation tree.
             - member: Member or field of a struct or union
@@ -35,7 +36,6 @@ class DocumentedObject:
             - type: A typedef
             - struct: A structure
             - union: A Union
-
         doc (str): The default documentation of the object. This is usally
             the comment with leading '*' removed.
         name (str): The name of the object. For example functions this would
@@ -43,10 +43,11 @@ class DocumentedObject:
         node (:class:`~clang.cindex.cursor`): The node representing this object.
         children (dict(DocumentedObject)): The children of the object. For
             example for structs this would be the members or fields.
-        soup (:class:`~bs4.BeautifulSoup): The soupified version of
+        soup (:class:`~bs4.BeautifulSoup`): The soupified version of
             :attr:`node`'s clang xml comment.
         declaration (str): The declaration string. For most things this is
             the type as well as the name.
+
     """
     _type = 'object'
 
@@ -298,6 +299,18 @@ class DocumentedMember(DocumentedObject):
         type_ = self.node.type.spelling
         return f'{type_} {self.name}'
 
+    def get_doc(self) -> str:
+        """
+        Get the documentation paragraph of the item
+        """
+        if self.soup is not None:
+            root = self.soup.contents[0]
+            body = self.get_paragraph(root.find('abstract', recursive=False))
+            body += self.get_paragraph(root.find('discussion', recursive=False))
+            return body
+
+        return self.doc
+
 
 class DocumentedFunction(DocumentedObject):
     """
@@ -433,7 +446,9 @@ class DocumentedStructure(DocumentedObject):
             struct = self.node
             self._children = OrderedDict()
             for member in struct.get_children():
-                self._children[member.spelling] = object_from_cursor(member)
+                item = object_from_cursor(member)
+                if item:
+                    self._children[member.spelling] = item
 
         return self._children
 
@@ -480,7 +495,7 @@ def get_nested_node(cursor):
     """
     Retrieve the nested node that `cursor` may be shadowing
     """
-    if cursor.kind in (cindex.CursorKind.TYPEDEF_DECL,):
+    if cursor.kind in (cindex.CursorKind.TYPEDEF_DECL, cindex.CursorKind.FIELD_DECL):
         try:
             underlying_node = next(cursor.get_children())
             if underlying_node.kind in (cindex.CursorKind.STRUCT_DECL,):

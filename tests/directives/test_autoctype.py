@@ -21,10 +21,11 @@ class TestAutoCType:
         A struct that is actually anonymouse but is typedefed in place.
 
         int bar
-
+        The bar like member for bar like things. This is multiple lines to make
+        sure the parsing logic is correct.
 
         float baz
-        """
+        The baz like member"""
 
     # Note the '*' around `not` are bold attributes in html so are stripped away
     # in the as_text()
@@ -66,6 +67,45 @@ class TestAutoCType:
 
         int alias_b
         """
+
+    a_multiply_documented_union_type = """\
+        union a_multiply_documented_union_type
+        A union type that documents in multiple places, this tests a few things:
+        Can one put the type in the napoleon documentation? It is undefined if the
+        types don't match.
+        Does the merging of the documentation successfully combine into multiple
+        paragraphs?
+
+        float alias_a
+        The description for alias_a the napoleon style
+        documentation includes the type.
+
+        int alias_b
+        This documentation lacks the type description but it will be taken
+        from the declaration.
+        A second paragraph for alias_b from the member declaration"""
+
+    nested_struct = """\
+        struct nested_struct
+        A structure containing an inline declared structure field.
+
+        int one
+        The first member of parent struct
+
+        struct two
+        This is a structure declared in the parent struct its children are
+        documented below.
+
+        float nested_one
+        The nested member documentation
+
+        int nested_two
+        The second nested member documentation
+
+        float three
+        The third member of parent struct"""
+
+
     doc_data = [
         ('types.c::my_int', my_int),
         ('types.c::my_struct_type', my_struct_type),
@@ -74,6 +114,8 @@ class TestAutoCType:
         ('types.c::undocumented', undocumented),
         ('types.c::documented_members', documented_members),
         ('types.c::a_union_type', a_union_type),
+        ('types.c::a_multiply_documented_union_type', a_multiply_documented_union_type),
+        ('types.c::nested_struct', nested_struct),
     ]
 
     @pytest.mark.parametrize('type_, expected_doc', doc_data)

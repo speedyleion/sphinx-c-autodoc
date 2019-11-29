@@ -12,7 +12,7 @@ class TestAutoCModule:
     """
     Testing class for the autocmodule directive
     """
-    expected_example_c = """\
+    module_c = """\
         This is a file comment
 
         void my_func
@@ -43,7 +43,7 @@ class TestAutoCModule:
         Description of type"""
 
     doc_data = [
-        ('example.c', expected_example_c),
+        ('module.c', module_c),
         ('no_file_comment.c', no_file_comment),
         ('file_with_only_comment.c', file_with_only_comment),
         ('empty_file.c', empty_file),

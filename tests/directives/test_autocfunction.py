@@ -15,45 +15,41 @@ class TestAutoCFunction:
     .. note:: Parens are missing in the signature for astext(), but they show up in
         html output.
     """
-    expected_function = """\
-        void my_func
-        This is a function comment"""
-
     single_line_comment = """\
-            void single_line_function_comment
-            A Single line function comment"""
+        void single_line_function_comment
+        A Single line function comment"""
 
     return_value_function = """\
-            int return_value_function
-            Function with a return value"""
+        int return_value_function
+        Function with a return value"""
 
     multiple_parameters = """\
-            int multiple_parametersint a, int b
-            Function with multiple parameters"""
+        int multiple_parametersint a, int b
+        Function with multiple parameters"""
 
     # Note this doesn't look as nice as it will in actual HTML but you can get
     # an idea of the parameters and returns sections
     sphinx_documented_parameters = """\
-            char *sphinx_documented_parametersint param1, int param2
-            Function with sphinx documented parameters
-            Parameters
-            param1 -- The first parameter which is on multiple lines
-            with this being the second line.
-            param2 -- An alternative second parameter
-            Returns
-            Some return value."""
+        char *sphinx_documented_parametersint param1, int param2
+        Function with sphinx documented parameters
+        Parameters
+        param1 -- The first parameter which is on multiple lines
+        with this being the second line.
+        param2 -- An alternative second parameter
+        Returns
+        Some return value."""
 
 
     # The clang/doxygen parsing removes newlines but keeps the indentation
     # spaces. This should be collapsed in html output.
     doxy_documented_parameters = """\
-            char *doxy_documented_parametersint param1, int param2
-            Function with doxygen style documented parameters
-            Parameters
-            param1 -- The first parameter which is on multiple lines      with this being the second line.
-            param2 -- An alternative second parameter
-            Returns
-            Some return value."""
+        char *doxy_documented_parametersint param1, int param2
+        Function with doxygen style documented parameters
+        Parameters
+        param1 -- The first parameter which is on multiple lines      with this being the second line.
+        param2 -- An alternative second parameter
+        Returns
+        Some return value."""
 
     # Currently Don't know why the \xa0 are comming back in the output. Looking
     # through the debugger it appears that the xml comments from clang have
@@ -76,7 +72,6 @@ class TestAutoCFunction:
         A function like macro with 2 parameters"""
 
     doc_data = [
-        ('example.c::my_func', expected_function),
         ('functions.c::single_line_function_comment', single_line_comment),
         ('functions.c::return_value_function', return_value_function),
         ('functions.c::multiple_parameters', multiple_parameters),
