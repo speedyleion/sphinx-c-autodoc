@@ -24,12 +24,13 @@ class MemberDocString(GoogleDocstring):
             'attributes': self._parse_attributes_section,
             'caution': partial(self._parse_admonition, 'caution'),
             'danger': partial(self._parse_admonition, 'danger'),
+            'enumerations': partial(self._parse_nested_section, 'macro'),
             'error': partial(self._parse_admonition, 'error'),
             'example': self._parse_examples_section,
             'examples': self._parse_examples_section,
             'hint': partial(self._parse_admonition, 'hint'),
             'important': partial(self._parse_admonition, 'important'),
-            'members': self._parse_members_section,
+            'members': partial(self._parse_nested_section, 'member'),
             'note': partial(self._parse_admonition, 'note'),
             'notes': self._parse_notes_section,
             'parameters': self._parse_parameters_section,
@@ -49,7 +50,7 @@ class MemberDocString(GoogleDocstring):
         super().__init__(docstring, config, app, what, name, obj, options)
 
     # pylint: disable=unused-argument
-    def _parse_members_section(self, section: str) -> List[str]:
+    def _parse_nested_section(self, nested_title: str, section: str) -> List[str]:
         """
         Parse a members section of a comment.
 
@@ -58,8 +59,8 @@ class MemberDocString(GoogleDocstring):
         syntax.
 
         Args:
-            section (str): The name of the parsed section, this is assumed to
-                always be `Members` and is thus unused.
+            section (str): The name of the parsed section.  Unused.
+            nested_title (str): The name to give to the nested items.
 
         Returns:
             List[str]: The list of lines from `section` converted to the
@@ -73,7 +74,7 @@ class MemberDocString(GoogleDocstring):
         # Type should be unused, it's not normal in c to do `var (type)` it's
         # usuallly `type var`
         for name, _, desc in self._consume_fields():
-            lines.extend([f'.. c:member:: {name}', ''])
+            lines.extend([f'.. c:{nested_title}:: {name}', ''])
             fields = self._format_field('', '', desc)
             lines.extend(self._indent(fields, 3))
             lines.append('')

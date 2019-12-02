@@ -7,6 +7,7 @@ import pytest
 
 from docutils.parsers.rst.states import RSTStateMachine, Struct, Inliner, state_classes
 from docutils.parsers.rst.languages import en
+from docutils.statemachine import StringList
 from docutils.utils import new_document
 from sphinx.testing.path import path
 from sphinx.util.docutils import sphinx_domains
@@ -24,7 +25,7 @@ def local_app(make_app):
 
     """
     # Provide sphinx with the path to the documentation directory.
-    conf_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'assets'))
+    conf_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'assets'))
 
     # Note the sphinx fixture expects a :class:`path` object, not a string
     yield make_app(srcdir=path(conf_dir))
@@ -58,6 +59,7 @@ def sphinx_state(local_app):
 
     # Create a state machine so that we can get a state to pass back.
     statemachine = RSTStateMachine(state_classes=state_classes, initial_state='Body')
+    statemachine.input_lines = StringList([''] * 40)
     state = statemachine.get_state()
     state.document = document
     state.memo = Struct(inliner=inliner, language=en, title_styles=[],

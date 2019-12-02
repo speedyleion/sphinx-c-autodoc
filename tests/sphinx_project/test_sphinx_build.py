@@ -12,7 +12,7 @@ def test_autodoc_of_c_file(tmp_path):
     """
     Tests the creation of the documented C file.
     """
-    source_dir = os.path.join(SCRIPT_DIR, 'assets')
+    source_dir = os.path.join(SCRIPT_DIR, '..', 'assets')
     main(['-a', '-E', source_dir, str(tmp_path)])
 
     file_name = tmp_path / 'example.html'
@@ -35,7 +35,7 @@ def test_incremental_build_updates_docs(tmp_path):
     Tests the output is updated if one of the input files to document is
     changed.
     """
-    original_source_dir = os.path.join(SCRIPT_DIR, 'assets')
+    original_source_dir = os.path.join(SCRIPT_DIR, '..', 'assets')
 
     # Copy over all the documentation source files as this is going to modify
     # one of them

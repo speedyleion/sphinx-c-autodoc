@@ -111,8 +111,14 @@ class DocumentedObject:
 
     def get_doc(self) -> str:
         """
-        Get the documentation paragraphs of the item
+        Get the documentation paragraph of the item
         """
+        if self.soup is not None:
+            root = self.soup.contents[0]
+            body = self.get_paragraph(root.find('abstract', recursive=False))
+            body += self.get_paragraph(root.find('discussion', recursive=False))
+            return body
+
         return self.doc
 
     @property
@@ -299,18 +305,6 @@ class DocumentedMember(DocumentedObject):
         type_ = self.node.type.spelling
         return f'{type_} {self.name}'
 
-    def get_doc(self) -> str:
-        """
-        Get the documentation paragraph of the item
-        """
-        if self.soup is not None:
-            root = self.soup.contents[0]
-            body = self.get_paragraph(root.find('abstract', recursive=False))
-            body += self.get_paragraph(root.find('discussion', recursive=False))
-            return body
-
-        return self.doc
-
 
 class DocumentedFunction(DocumentedObject):
     """
@@ -421,12 +415,12 @@ class DocumentedStructure(DocumentedObject):
     """
     _type = 'struct'
 
-    def get_soup_declaration(self) -> str:
+    @property
+    def soup(self):
         """
-        Since structures can be anonymous the declaration in the soup can end
-        up just being `struct`, so return None here and let
-        :meth:`get_parsed_declaration` to provide back the type and the
-        possible wrapped typedef's name.
+        Since structures like objects use the "Members:" and
+        "Enumerations:" sections do *not* use the clang xml comments as they
+        don't preseve newlines, so the sections get lost.
         """
         return None
 
@@ -460,12 +454,21 @@ class DocumentedUnion(DocumentedStructure):
     _type = 'union'
 
 
+class DocumentedEnum(DocumentedStructure):
+    """
+    Class for unions. Same as structures with a different :attr:`type`.
+    """
+    _type = 'enum'
+
+
 CURSORKIND_TO_OBJECT_CLASS = {cindex.CursorKind.TRANSLATION_UNIT: DocumentedFile,
                               cindex.CursorKind.FUNCTION_DECL: DocumentedFunction,
                               cindex.CursorKind.STRUCT_DECL: DocumentedStructure,
                               cindex.CursorKind.UNION_DECL: DocumentedUnion,
+                              cindex.CursorKind.ENUM_DECL: DocumentedEnum,
                               cindex.CursorKind.FIELD_DECL: DocumentedMember,
                               cindex.CursorKind.MACRO_DEFINITION: DocumentedMacro,
+                              cindex.CursorKind.ENUM_CONSTANT_DECL: DocumentedMacro,
                               cindex.CursorKind.TYPEDEF_DECL: DocumentedType}
 
 
@@ -498,7 +501,8 @@ def get_nested_node(cursor):
     if cursor.kind in (cindex.CursorKind.TYPEDEF_DECL, cindex.CursorKind.FIELD_DECL):
         try:
             underlying_node = next(cursor.get_children())
-            if underlying_node.kind in (cindex.CursorKind.STRUCT_DECL,):
+            if underlying_node.kind in (cindex.CursorKind.STRUCT_DECL,
+                                        cindex.CursorKind.ENUM_DECL):
                 return underlying_node
         except StopIteration:
             # No children for typedefs of native types, i.e. `typedef int some_int;`

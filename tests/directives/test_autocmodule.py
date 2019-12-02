@@ -1,11 +1,46 @@
 """
 Test autocmodule directive
 """
+import logging
+
 from textwrap import dedent
 
 import pytest
 
 from sphinx.ext.autodoc.directive import AutodocDirective
+
+@pytest.fixture()
+def local_capsys(capsys):
+    """
+    A modified version of capsys.
+
+    This original author is lacking sufficient knowledge at this time to
+    properly mix capsys and another fixture, so this less than ideal work
+    around exists.
+
+    It appears that capsys will open and close through each state of the test
+    run; setup, run, and teardown.
+
+    What happens is during setup, capsys sets up the sys.stderr to go to an
+    IO stream. The second fixture, `sphinx_state`, will set up its error
+    handling to use `sys.stderr` which is properly routed to capsys.
+    The setup finishes and capsys closes the IO stream and re-instates
+    sys.stderr.
+
+    The main test run starts and capsys again captures sys.stderr, however
+    the `sphinx_state` from before is pointing to the original mapping capsys
+    had done, which is closed and causes an error when sphinx attempts to
+    write to it.
+    """
+
+    # Setting the capture fixture to None, prevents the IO stream from being closed.
+    old_fixture = capsys.request._pyfuncitem._capture_fixture
+    capsys.request._pyfuncitem._capture_fixture = None
+
+    yield capsys
+
+    # manually close the old fixture
+    old_fixture.close()
 
 
 class TestAutoCModule:
@@ -71,3 +106,21 @@ class TestAutoCModule:
         body = '\n'.join(docs)
 
         assert dedent(expected_doc) == body
+
+    def test_fail_module_load(self, local_capsys, sphinx_state):
+        """
+        Test that a warning is raised when unable to find the module to
+        document
+        """
+        directive = AutodocDirective('autocmodule', ['non_existent.c'],
+                                     {'members': None}, None, 10, None,
+                                     None, sphinx_state, None)
+
+        output = directive.run()
+        assert output == []
+
+        captured = local_capsys.readouterr()
+
+        messages = ('Unable to find', 'non_existent.c')
+        for message in messages:
+            assert message in captured.err

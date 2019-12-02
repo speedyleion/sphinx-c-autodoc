@@ -21,8 +21,8 @@ sys.path.insert(0, SOURCE_DIR)
 # -- Project information -----------------------------------------------------
 
 project = u'Sphinx C Autodoc Extension'
-copyright = u'2019, Nick G.'
-author = u'Nick G.'
+copyright = u'2019, Nick'
+author = u'Nick'
 
 # The short X.Y version
 version = u''
@@ -200,7 +200,7 @@ todo_include_todos = True
 
 # -- Options for sphinx_c_autodoc, the extension being documented -----------
 
-c_root = '../tests/sphinx_project/assets/c_source'
+c_root = ['../tests/assets/c_source']
 
 # -- Force Scan of API ------------------------------------------------------
 

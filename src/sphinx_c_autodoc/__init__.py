@@ -132,8 +132,19 @@ class CObjectDocumenter(Documenter):
 
         This will load the C file's documented structure into :attr:`object`
         """
-        filename = os.path.join(self.env.config.c_root, self.get_real_modname())
-        rel_filename, filename = self.env.relfn2path(filename)
+        for source_dir in self.env.config.c_root:
+            filename = os.path.join(source_dir, self.get_real_modname())
+            rel_filename, filename = self.env.relfn2path(filename)
+            if os.path.isfile(filename):
+                break
+        else:
+            self.directive.state.document.reporter.warning(
+                'Unable to find file, %s, in any of the directories %s '
+                'all directories are relative to the sphinx configuration '
+                'file' % (self.get_real_modname(), self.env.config.c_root),
+                line=self.directive.lineno)
+            return False
+
         self.env.note_dependency(rel_filename)
 
         # TODO The :attr:`temp_data` is reset for each document ideally want to
@@ -281,7 +292,7 @@ class CTypeDocumenter(CObjectDocumenter):
             bool: True if this class can document the `member`.
         """
         return isinstance(parent, CObjectDocumenter) and \
-            member.type in ('struct', 'type', 'union')
+            member.type in ('enum', 'struct', 'type', 'union')
 
     def generate(self, more_content: Any = None, real_modname: str = None,
                  check_module: bool = False, all_members: bool = False) -> None:
@@ -391,8 +402,12 @@ class CTypeDocumenter(CObjectDocumenter):
         them into one directive. The subsequent contents of duplicate
         directives will be added as additional paragraphs.
         """
+        # member is the normal native fields of a struct or union
         members = self._find_member_directives('member')
+        # type is a struct or union declared in place in a struct or union
         members += self._find_member_directives('type')
+        # macro is the enumeration constants for an enum type
+        members += self._find_member_directives('macro')
         members.sort()
         data_blocks = []
 
@@ -481,4 +496,4 @@ def setup(app):
     app.add_autodocumenter(CMemberDocumenter)
     app.add_autodocumenter(CMacroDocumenter)
     app.add_directive_to_domain('c', 'module', CModule)
-    app.add_config_value('c_root', '', 'env')
+    app.add_config_value('c_root', [''], 'env')

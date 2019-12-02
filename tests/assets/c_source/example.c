@@ -13,6 +13,11 @@
 ******************************************************************************/
 
 /**
+ * A simple macro definition
+ */
+#define TOO_SIMPLE
+
+/**
  * A function like macro
  *
  * An attempt will be made to derive the arguments of the macro.  It will
@@ -61,15 +66,43 @@ typedef struct
  * the members.
  *
  * Members:
- *     int foo: The foo like member for foo like things.
- *     bar: The bar like member
+ *     one: The first member of parent struct
+ *     two: This is a structure declared in the parent struct its children are
+ *         documented below.
+ *         Members:
+ *             nested_one: The nested member documentation
+ *             nested_two: The second nested member documentation
+ *     three: The third member of parent struct
  *
  */
 struct members_documented_with_napoleon
 {
-    int foo;
-    char bar;
+    int one;
+    struct {
+        float nested_one;
+        int nested_two;
+    } two;
+    float three;
 };
+
+/**
+ * Enumerations are considered macros. If you want to documente them with
+ * napoleon then you use the section title `Enumerations:`.
+ *
+ * Enumerations:
+ *     THE_FIRST_ENUM: Used for the first item
+ *     THE_SECOND_ENUM: Second verse same as the first.
+ *     THE_THIRD_ENUM: Not once, note twice, but thrice.
+ *     THE_LAST_ENUM: Just to be sure.
+ */
+typedef enum{
+    THE_FIRST_ENUM, /**< Documentation in a comment for THE_FIRST_ITEM,
+                      * note this is trailing for some reason clang will
+                      * apply leading comments to *all* the enumerations */
+    THE_SECOND_ENUM = 30,
+    THE_THIRD_ENUM = THE_SECOND_ENUM,
+    THE_LAST_ENUM
+} some_enum;
 
 /**
 * This is a function comment. The parameters from this are much easier to
@@ -94,24 +127,17 @@ int my_func(float hello, char what)
 }
 
 /**
- * A structure containing an inline declared structure field.
+ * One can also use Goolge style docstrings with napoleon for documenting
+ * functions.
  *
- * Members:
- *     one: The first member of parent struct
- *     two: This is a structure declared in the parent struct its children are
- *         documented below.
- *         Members:
- *             nested_one: The nested member documentation
- *             nested_two: The second nested member documentation
- *     three: The third member of parent struct
+ * Parameters:
+ *     yes: A progressive rock band from the 70s.
+ *     another_one: Yet one more parameter for this function.
  *
+ * Returns:
+ *     The square root of 4, always.
  */
-struct nested_struct
+int napoleon_documented_function(int yes, int another_one)
 {
-    int one;
-    struct {
-        float nested_one;
-        int nested_two;
-    } two;
-    float three;
-};
+    return 2;
+}
