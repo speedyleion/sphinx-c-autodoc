@@ -49,14 +49,11 @@ from itertools import groupby
 from typing import Any, Callable, Dict, List, Tuple
 
 from docutils.parsers.rst import Directive
-from docutils.statemachine import ViewList, StringList
+from docutils.statemachine import ViewList
 from docutils import nodes
-from sphinx.domains import c
 from sphinx.ext.autodoc import Documenter, members_option
 from sphinx.util.docstrings import prepare_docstring
 from sphinx.ext.autodoc.directive import DocumenterBridge
-
-from clang import cindex
 
 from sphinx_c_autodoc import loader
 

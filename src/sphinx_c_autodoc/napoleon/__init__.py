@@ -4,7 +4,7 @@ similar to the `Attributes` section in python objects.
 """
 from functools import partial
 
-from typing import Any, Callable, Dict, List, Tuple, Union
+from typing import Any, List, Union
 
 from sphinx.ext.napoleon import GoogleDocstring
 
@@ -14,8 +14,8 @@ class MemberDocString(GoogleDocstring):
     """
     A docstring that can handle documenting c member sections
     """
-    def __init__(self, docstring: Union[str, List[str]], config: 'SphinxConfig' = None,
-                 app: 'Sphinx' = None, what: str = '', name: str = '',
+    def __init__(self, docstring: Union[str, List[str]], config: Any = None,
+                 app: Any = None, what: str = '', name: str = '',
                  obj: Any = None, options: Any = None) -> None:
         self._sections = {
             'args': self._parse_parameters_section,
@@ -80,7 +80,7 @@ class MemberDocString(GoogleDocstring):
         return lines
 
 
-def process_autodoc_docstring(app: 'Sphinx', what: str, name: str, obj: Any,
+def process_autodoc_docstring(app: Any, what: str, name: str, obj: Any,
                               options: Any, lines: List[str]) -> None:
     """
     Call back for autodoc's ``autodoc-process-docstring`` event.
