@@ -66,17 +66,17 @@ class CObjectDocumenter(Documenter):
     extension for sphinx.
     """
     # pylint: enable=line-too-long
-    domain = 'c'
+    domain = "c"
 
     # Filler type, this base class isn't used directly
-    directivetype = 'object'
+    directivetype = "object"
 
     # must be higher than the AttributeDocumenter, else it will steal the c
     # objects
     priority = 11
 
     option_spec = {
-        'members': members_option,
+        "members": members_option,
     }  # type: Dict[str, Callable]
 
     @classmethod
@@ -85,8 +85,9 @@ class CObjectDocumenter(Documenter):
         Returns:
             bool: True if this class can document the `member`.
         """
-        return isinstance(parent, CObjectDocumenter) and \
-            member.type == cls.directivetype
+        return (
+            isinstance(parent, CObjectDocumenter) and member.type == cls.directivetype
+        )
 
     def resolve_name(self, modname, parents, path, base):
         """
@@ -139,10 +140,11 @@ class CObjectDocumenter(Documenter):
                 break
         else:
             self.directive.state.document.reporter.warning(
-                'Unable to find file, %s, in any of the directories %s '
-                'all directories are relative to the sphinx configuration '
-                'file' % (self.get_real_modname(), self.env.config.c_root),
-                line=self.directive.lineno)
+                "Unable to find file, %s, in any of the directories %s "
+                "all directories are relative to the sphinx configuration "
+                "file" % (self.get_real_modname(), self.env.config.c_root),
+                line=self.directive.lineno,
+            )
             return False
 
         self.env.note_dependency(rel_filename)
@@ -150,13 +152,13 @@ class CObjectDocumenter(Documenter):
         # TODO The :attr:`temp_data` is reset for each document ideally want to
         # use or make an attribute on `self.env` that is reset per run or just
         # not pickled.
-        if 'c:loaded_modules' not in self.env.temp_data:
-            self.env.temp_data['c:loaded_modules'] = {}
+        if "c:loaded_modules" not in self.env.temp_data:
+            self.env.temp_data["c:loaded_modules"] = {}
 
-        if filename not in self.env.temp_data['c:loaded_modules']:
-            self.env.temp_data['c:loaded_modules'][filename] = loader.load(filename)
+        if filename not in self.env.temp_data["c:loaded_modules"]:
+            self.env.temp_data["c:loaded_modules"][filename] = loader.load(filename)
 
-        self.module = self.env.temp_data['c:loaded_modules'][filename]
+        self.module = self.env.temp_data["c:loaded_modules"][filename]
 
         self.object = self.module
         self.object_name = self.name
@@ -185,8 +187,9 @@ class CObjectDocumenter(Documenter):
         """
         return False, list(self.object.children.items())
 
-    def filter_members(self, members: List[Tuple[str, Any]], want_all: bool
-                       ) -> List[Tuple[str, Any, bool]]:
+    def filter_members(
+        self, members: List[Tuple[str, Any]], want_all: bool
+    ) -> List[Tuple[str, Any, bool]]:
         """Filter the given member list.
 
         Members are skipped if
@@ -241,8 +244,9 @@ class CModuleDocumenter(CObjectDocumenter):
     This auto documenter will be registered as a directive named `autocmodule`,
     there may be a way to override the python `automodule`, just not sure yet...
     """
-    objtype = 'cmodule'
-    directivetype = 'module'
+
+    objtype = "cmodule"
+    directivetype = "module"
 
     @classmethod
     def can_document_member(cls, member, membername, isattr, parent):
@@ -266,12 +270,14 @@ class CTypeDocumenter(CObjectDocumenter):
         - unions
 
     """
-    domain = 'c'
-    objtype = 'ctype'
-    directivetype = 'type'
 
-    def __init__(self, directive: DocumenterBridge, name: str,
-                 indent: str = '') -> None:
+    domain = "c"
+    objtype = "ctype"
+    directivetype = "type"
+
+    def __init__(
+        self, directive: DocumenterBridge, name: str, indent: str = ""
+    ) -> None:
         """
         Override the :attr:`directive` so that some post processing can be
         performed in :meth:`generate`
@@ -279,11 +285,13 @@ class CTypeDocumenter(CObjectDocumenter):
         super().__init__(directive, name, indent)
 
         self._original_directive = self.directive
-        self.directive = DocumenterBridge(self.directive.env,
-                                          self.directive.reporter,
-                                          self.directive.genopt,
-                                          self.directive.lineno,
-                                          self.directive.state)
+        self.directive = DocumenterBridge(
+            self.directive.env,
+            self.directive.reporter,
+            self.directive.genopt,
+            self.directive.lineno,
+            self.directive.state,
+        )
 
     @classmethod
     def can_document_member(cls, member, membername, isattr, parent):
@@ -291,17 +299,29 @@ class CTypeDocumenter(CObjectDocumenter):
         Returns:
             bool: True if this class can document the `member`.
         """
-        return isinstance(parent, CObjectDocumenter) and \
-            member.type in ('enum', 'struct', 'type', 'union')
+        return isinstance(parent, CObjectDocumenter) and member.type in (
+            "enum",
+            "struct",
+            "type",
+            "union",
+        )
 
-    def generate(self, more_content: Any = None, real_modname: str = None,
-                 check_module: bool = False, all_members: bool = False) -> None:
+    def generate(
+        self,
+        more_content: Any = None,
+        real_modname: str = None,
+        check_module: bool = False,
+        all_members: bool = False,
+    ) -> None:
         """
         generate stuff
         """
-        super().generate(more_content=more_content,
-                         real_modname=real_modname,
-                         check_module=check_module, all_members=all_members)
+        super().generate(
+            more_content=more_content,
+            real_modname=real_modname,
+            check_module=check_module,
+            all_members=all_members,
+        )
 
         self._original_directive.result.append(self.consolidate_members())
 
@@ -328,7 +348,7 @@ class CTypeDocumenter(CObjectDocumenter):
                 directive occured.
         """
         members = []
-        directive_string = f'.. c:{name}::'
+        directive_string = f".. c:{name}::"
         for line_no, line in enumerate(self.directive.result):
             if not line.startswith(self.indent):
                 continue
@@ -358,9 +378,9 @@ class CTypeDocumenter(CObjectDocumenter):
         # directive to not end up grabbing the next directive.
         directive_line = self.directive.result[line]
         block_indent = (len(directive_line) - len(directive_line.lstrip())) + 1
-        directive, _, _ = self.directive.result.get_indented(line, first_indent=0,
-                                                             block_indent=block_indent,
-                                                             strip_indent=False)
+        directive, _, _ = self.directive.result.get_indented(
+            line, first_indent=0, block_indent=block_indent, strip_indent=False
+        )
         directive.disconnect()
 
         # Setting slices need viewlists/stringlists so just iterate through and
@@ -403,11 +423,11 @@ class CTypeDocumenter(CObjectDocumenter):
         directives will be added as additional paragraphs.
         """
         # member is the normal native fields of a struct or union
-        members = self._find_member_directives('member')
+        members = self._find_member_directives("member")
         # type is a struct or union declared in place in a struct or union
-        members += self._find_member_directives('type')
+        members += self._find_member_directives("type")
         # macro is the enumeration constants for an enum type
-        members += self._find_member_directives('macro')
+        members += self._find_member_directives("macro")
         members.sort()
         data_blocks = []
 
@@ -427,7 +447,8 @@ class CTypeDocumenter(CObjectDocumenter):
         delta_length = 0
         for line, original_length, directive in data_blocks:
             start = line + delta_length
-            self.directive.result[start: start + original_length] = directive
+            end = start + original_length
+            self.directive.result[start:end] = directive
             delta_length += len(directive) - original_length
 
         return self.directive.result
@@ -439,33 +460,37 @@ class CMemberDocumenter(CObjectDocumenter):
 
     This handles structure and union fields.
     """
-    domain = 'c'
-    objtype = 'cmember'
-    directivetype = 'member'
+
+    domain = "c"
+    objtype = "cmember"
+    directivetype = "member"
 
 
 class CFunctionDocumenter(CObjectDocumenter):
     """
     The documenter for the autocfunction directive.
     """
-    domain = 'c'
-    objtype = 'cfunction'
-    directivetype = 'function'
+
+    domain = "c"
+    objtype = "cfunction"
+    directivetype = "function"
 
 
 class CMacroDocumenter(CObjectDocumenter):
     """
     The documenter for the autocmacro directive.
     """
-    domain = 'c'
-    objtype = 'cmacro'
-    directivetype = 'macro'
+
+    domain = "c"
+    objtype = "cmacro"
+    directivetype = "macro"
 
 
 class CModule(Directive):
     """
     Module directive for C files
     """
+
     has_content = True
     required_arguments = 1
 
@@ -476,7 +501,7 @@ class CModule(Directive):
         state = self.state
         node = nodes.section()
 
-        rst = ViewList(self.content, 'testing')
+        rst = ViewList(self.content, "testing")
 
         # Parse the restructured text into nodes.
         state.nested_parse(rst, 0, node, match_titles=1)
@@ -488,12 +513,12 @@ def setup(app):
     """
     Setup function for registering this with sphinx
     """
-    app.require_sphinx('1.8')
-    app.setup_extension('sphinx.ext.autodoc')
+    app.require_sphinx("1.8")
+    app.setup_extension("sphinx.ext.autodoc")
     app.add_autodocumenter(CModuleDocumenter)
     app.add_autodocumenter(CFunctionDocumenter)
     app.add_autodocumenter(CTypeDocumenter)
     app.add_autodocumenter(CMemberDocumenter)
     app.add_autodocumenter(CMacroDocumenter)
-    app.add_directive_to_domain('c', 'module', CModule)
-    app.add_config_value('c_root', [''], 'env')
+    app.add_directive_to_domain("c", "module", CModule)
+    app.add_config_value("c_root", [""], "env")

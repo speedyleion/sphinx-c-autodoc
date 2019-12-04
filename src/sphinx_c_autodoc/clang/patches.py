@@ -82,11 +82,15 @@ def Cursor_tu(self):
 # provided by the python bindings of clang.
 # pylint: disable=protected-access
 FUNCTION_LIST = [
-    ('clang_Location_isFromMainFile', [cindex.SourceLocation], bool),
-    ('clang_Cursor_isMacroFunctionLike', [cindex.Cursor], bool),
-    ('clang_Cursor_getParsedComment', [cindex.Cursor], Comment),
-    ('clang_FullComment_getAsXML', [Comment], cindex._CXString,
-     cindex._CXString.from_result),
+    ("clang_Location_isFromMainFile", [cindex.SourceLocation], bool),
+    ("clang_Cursor_isMacroFunctionLike", [cindex.Cursor], bool),
+    ("clang_Cursor_getParsedComment", [cindex.Cursor], Comment),
+    (
+        "clang_FullComment_getAsXML",
+        [Comment],
+        cindex._CXString,
+        cindex._CXString.from_result,
+    ),
 ]
 
 
@@ -109,8 +113,9 @@ def override_methods():
     pythonic and or more efficient.
     """
     cindex.Cursor._raw_comment = None
-    cindex.Cursor.raw_comment = \
-        property(Cursor_cached_raw_comment).setter(Cursor_set_raw_comment)
+    cindex.Cursor.raw_comment = property(Cursor_cached_raw_comment).setter(
+        Cursor_set_raw_comment
+    )
 
 
 def add_new_methods():

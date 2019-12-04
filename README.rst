@@ -1,7 +1,7 @@
 sphinx-c-autodoc
 ================
 
-|build-status| |coverage|
+|build-status| |coverage| |black|
 
 .. inclusion_begin
 
@@ -66,7 +66,7 @@ Similar Tools
   sphinx tool.
 
 .. |build-status| image:: https://github.com/speedyleion/sphinx-c-autodoc/workflows/Python%20package/badge.svg
-    :alt: build status
+    :alt: Build Status
     :scale: 100%
     :target: https://github.com/speedyleion/sphinx-c-autodoc/actions?query=workflow%3A%22Python+package%22
 
@@ -74,5 +74,10 @@ Similar Tools
     :alt: Coverage
     :scale: 100%
     :target: https://codecov.io/gh/speedyleion/sphinx-c-autodoc
+
+ .. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :alt: Code Style
+    :scale: 100%
+    :target: https://github.com/psf/black
 
 .. inclusion_end

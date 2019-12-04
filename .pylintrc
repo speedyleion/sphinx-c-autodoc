@@ -39,7 +39,11 @@ load-plugins=pylint.extensions.check_docs
 #     intuitive to see the '+' as _new_ content or the result of the tested
 #     functionality and the '-' as the _old_ content or the previously expected and
 #     approved output.
-disable=I0011,misplaced-comparison-constant
+# bad-continuation
+#     Since this project is using black the bad-continuation complains about
+#     some of blacks wrapping.  However black does it consistently and it's
+#     valid so just let black have at it.
+disable=I0011,misplaced-comparison-constant,bad-continuation
 
 
 [REPORTS]

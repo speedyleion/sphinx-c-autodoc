@@ -11,8 +11,8 @@ class Comment(ctypes.Structure):
     """
     A CXComment from clang
     """
-    _fields_ = [("node", ctypes.c_void_p),
-                ("tu", ctypes.POINTER(ctypes.c_void_p))]
+
+    _fields_ = [("node", ctypes.c_void_p), ("tu", ctypes.POINTER(ctypes.c_void_p))]
 
     def as_xml(self):
         """
