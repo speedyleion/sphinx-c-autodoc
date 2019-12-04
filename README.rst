@@ -75,7 +75,7 @@ Similar Tools
     :scale: 100%
     :target: https://codecov.io/gh/speedyleion/sphinx-c-autodoc
 
- .. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+.. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :alt: Code Style
     :scale: 100%
     :target: https://github.com/psf/black
