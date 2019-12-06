@@ -271,7 +271,6 @@ class CTypeDocumenter(CObjectDocumenter):
 
     """
 
-    domain = "c"
     objtype = "ctype"
     directivetype = "type"
 
@@ -461,7 +460,6 @@ class CMemberDocumenter(CObjectDocumenter):
     This handles structure and union fields.
     """
 
-    domain = "c"
     objtype = "cmember"
     directivetype = "member"
 
@@ -471,7 +469,6 @@ class CFunctionDocumenter(CObjectDocumenter):
     The documenter for the autocfunction directive.
     """
 
-    domain = "c"
     objtype = "cfunction"
     directivetype = "function"
 
@@ -481,9 +478,25 @@ class CMacroDocumenter(CObjectDocumenter):
     The documenter for the autocmacro directive.
     """
 
-    domain = "c"
     objtype = "cmacro"
     directivetype = "macro"
+
+
+class CDataDocumenter(CObjectDocumenter):
+    """
+    The documenter for the autocdata directive.
+    """
+
+    objtype = "cdata"
+    directivetype = "var"
+
+    @classmethod
+    def can_document_member(cls, member, membername, isattr, parent):
+        """
+        Returns:
+            bool: True if this class can document the `member`.
+        """
+        return isinstance(parent, CObjectDocumenter) and member.type == "variable"
 
 
 class CModule(Directive):
@@ -520,5 +533,6 @@ def setup(app):
     app.add_autodocumenter(CTypeDocumenter)
     app.add_autodocumenter(CMemberDocumenter)
     app.add_autodocumenter(CMacroDocumenter)
+    app.add_autodocumenter(CDataDocumenter)
     app.add_directive_to_domain("c", "module", CModule)
     app.add_config_value("c_root", [""], "env")

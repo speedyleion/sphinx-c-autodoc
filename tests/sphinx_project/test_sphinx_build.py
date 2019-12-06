@@ -1,5 +1,8 @@
 """
 Performs end to end testing of the c extension
+
+For all of these tests warnigns are treated as errors so that any warnings
+from bad logic can more easily be seen in the test output
 """
 import os
 import shutil
@@ -13,7 +16,7 @@ def test_autodoc_of_c_file(tmp_path):
     Tests the creation of the documented C file.
     """
     source_dir = os.path.join(SCRIPT_DIR, '..', 'assets')
-    main(['-a', '-E', source_dir, str(tmp_path)])
+    main(['-a', '-E', '-W', source_dir, str(tmp_path)])
 
     file_name = tmp_path / 'example.html'
     with file_name.open() as f:
@@ -46,7 +49,7 @@ def test_incremental_build_updates_docs(tmp_path):
     output_path = tmp_path / '_build'
 
     # Use `-a`, `-E` initially to ensure an initial full clean build
-    main(['-a', '-E', new_source_dir, str(output_path)])
+    main(['-a', '-E', '-W', new_source_dir, str(output_path)])
 
     file_name = output_path / 'example.html'
     with file_name.open() as f:
@@ -63,7 +66,7 @@ def test_incremental_build_updates_docs(tmp_path):
     with source_name.open('w') as f:
         f.write(f'/** {new_expected_contents} */')
 
-    main([new_source_dir, str(output_path)])
+    main(['-W', new_source_dir, str(output_path)])
 
     with file_name.open() as f:
         contents = f.read()

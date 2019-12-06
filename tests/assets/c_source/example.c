@@ -13,6 +13,11 @@
 ******************************************************************************/
 
 /**
+ * Unused include but wanted to make sure the tool didn't blow up
+ */
+#include <stdio.h>
+
+/**
  * A simple macro definition
  */
 #define TOO_SIMPLE
@@ -104,6 +109,20 @@ typedef enum{
     THE_LAST_ENUM
 } some_enum;
 
+
+/**
+ * File level variables can also be documented
+ */
+int some_flag_variable;
+
+/**
+ * Even structures defined in variables can be handled.
+ */
+struct {
+    int a;
+    float b;
+} inline_struct_variable = {1, 3.0f};
+
 /**
 * This is a function comment. The parameters from this are much easier to
 * derive than those from a function like macro so they should always be
@@ -129,6 +148,9 @@ int my_func(float hello, char what)
 /**
  * One can also use Goolge style docstrings with napoleon for documenting
  * functions.
+ *
+ * .. note:: Functions do not support mixing doxygen style and napoleon
+ *     style documentation.
  *
  * Parameters:
  *     yes: A progressive rock band from the 70s.

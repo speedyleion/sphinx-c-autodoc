@@ -21,7 +21,7 @@ typedef struct
 *
 ***************************/
 
-int * my_func(int * first_one, char * second)
+int * a_neat_func(int * first_one, char * second)
 {
     printf('hello');
 }

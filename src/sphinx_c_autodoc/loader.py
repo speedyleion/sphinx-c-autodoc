@@ -474,6 +474,31 @@ class DocumentedEnum(DocumentedStructure):
     _type = "enum"
 
 
+class DocumentedVariable(DocumentedObject):
+    """
+    Class for file level variables
+    """
+
+    _type = "variable"
+
+    def format_name(self) -> str:
+        """Format the name of *self.object*.
+
+        This normally should be something that can be parsed by the generated
+        directive, but doesn't need to be (Sphinx will display it unparsed
+        then).
+
+        For things like functions and others this will include the return type.
+        """
+        decl = self.declaration
+
+        # variables which are declared and assigned at the same location will
+        # include the assignment in the clange declaration, so strip it out for
+        # documentation.
+        name, _, _ = decl.partition("=")
+        return name
+
+
 CURSORKIND_TO_OBJECT_CLASS = {
     cindex.CursorKind.TRANSLATION_UNIT: DocumentedFile,
     cindex.CursorKind.FUNCTION_DECL: DocumentedFunction,
@@ -483,6 +508,7 @@ CURSORKIND_TO_OBJECT_CLASS = {
     cindex.CursorKind.FIELD_DECL: DocumentedMember,
     cindex.CursorKind.MACRO_DEFINITION: DocumentedMacro,
     cindex.CursorKind.ENUM_CONSTANT_DECL: DocumentedMacro,
+    cindex.CursorKind.VAR_DECL: DocumentedVariable,
     cindex.CursorKind.TYPEDEF_DECL: DocumentedType,
 }
 
@@ -513,7 +539,11 @@ def get_nested_node(cursor):
     """
     Retrieve the nested node that `cursor` may be shadowing
     """
-    if cursor.kind in (cindex.CursorKind.TYPEDEF_DECL, cindex.CursorKind.FIELD_DECL):
+    if cursor.kind in (
+        cindex.CursorKind.TYPEDEF_DECL,
+        cindex.CursorKind.FIELD_DECL,
+        cindex.CursorKind.VAR_DECL,
+    ):
         try:
             underlying_node = next(cursor.get_children())
             if underlying_node.kind in (
@@ -578,7 +608,11 @@ def load(filename):
         c
         for c in cursor.get_children()
         if c.location.isFromMainFile()
-        and c.kind != cindex.CursorKind.MACRO_INSTANTIATION
+        and c.kind
+        not in (
+            cindex.CursorKind.MACRO_INSTANTIATION,
+            cindex.CursorKind.INCLUSION_DIRECTIVE,
+        )
     ]
 
     # Macro definitions always come first in the child list, but that may not
