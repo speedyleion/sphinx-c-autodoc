@@ -9,9 +9,12 @@ import textwrap
 
 from collections import OrderedDict, namedtuple
 from itertools import takewhile
+from typing import Any, List, Optional, Union, Dict
 
 from bs4 import BeautifulSoup
+from bs4.element import Tag
 from clang import cindex
+from clang.cindex import Cursor, Token
 
 from sphinx_c_autodoc.clang.patches import patch_clang
 
@@ -30,7 +33,7 @@ class DocumentedObject:
     A representation of a c object for documentation purposes.
 
     Attributes:
-        type (str): The type of this item one of:
+        type_ (str): The type of this item one of:
 
             - object: unknown/unsupported object.
             - file: Should be the root object of a documentation tree.
@@ -43,32 +46,32 @@ class DocumentedObject:
             the comment with leading '*' removed.
         name (str): The name of the object. For example functions this would
             be *only* the name of the function.
-        node (:class:`~clang.cindex.cursor`): The node representing this object.
-        children (dict(DocumentedObject)): The children of the object. For
+        node (:class:`~clang.cindex.Cursor`): The node representing this object.
+        _children: The children of the object. For
             example for structs this would be the members or fields.
-        soup (:class:`~bs4.BeautifulSoup`): The soupified version of
+        _soup (:class:`~bs4.BeautifulSoup`): The soupified version of
             :attr:`node`'s clang xml comment.
-        declaration (str): The declaration string. For most things this is
+        _declaration: The declaration string. For most things this is
             the type as well as the name.
 
     """
 
-    _type = "object"
+    type_ = "object"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.doc = ""
         self.name = ""
-        self.node = None
-        self._children = None
-        self._soup = None
-        self._declaration = None
+        self.node: Cursor = None
+        self._children: Optional[OrderedDict] = None
+        self._soup: Optional[BeautifulSoup] = None
+        self._declaration: Optional[str] = None
 
     @property
     def type(self) -> str:
         """
         The type of object
         """
-        return self._type
+        return self.type_
 
     @property
     def children(self) -> dict:
@@ -81,7 +84,7 @@ class DocumentedObject:
         return self._children
 
     # pylint: disable=no-self-use, unused-argument
-    def format_args(self, **kwargs) -> str:
+    def format_args(self, **kwargs: Any) -> str:
         """
         Creates the parenthesis version of the function signature.  i.e. this
         will be the `(int hello, int what)` portion of a function.
@@ -96,18 +99,17 @@ class DocumentedObject:
         """
         return self.declaration
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Will turn this instance into a JSON like representation.
         """
-        obj_dict = {}
+        obj_dict: Dict[str, Any] = {}
         obj_dict["doc"] = self.doc
         obj_dict["type"] = self.type
         obj_dict["name"] = self.name
         if self.children:
             obj_dict["children"] = []
 
-            # TODO update this JSON representation to reflect the ordered dict
             for child in self.children.values():
                 obj_dict["children"].append(json.loads(str(child)))
 
@@ -152,7 +154,7 @@ class DocumentedObject:
         # off chance an object fails to implement this.
         return self.name
 
-    def get_soup_declaration(self) -> str:
+    def get_soup_declaration(self) -> Optional[str]:
         """
         Get the declaration element from :attr:`soup`. If there is no soup or
         no declaration this will return None.
@@ -165,7 +167,7 @@ class DocumentedObject:
         return root.declaration.text
 
     @property
-    def soup(self):
+    def soup(self) -> Optional[BeautifulSoup]:
         """
         Get the beautifulsoup representation of this object's comment.
 
@@ -180,7 +182,7 @@ class DocumentedObject:
         return self._soup
 
     @staticmethod
-    def get_paragraph(tag) -> str:
+    def get_paragraph(tag: Optional[Tag]) -> str:
         """
         Get the paragraph contents from `tag`.
 
@@ -207,7 +209,7 @@ class DocumentedFile(DocumentedObject):
     A documented file
     """
 
-    _type = "file"
+    type_ = "file"
 
 
 class DocumentedMacro(DocumentedObject):
@@ -233,7 +235,7 @@ class DocumentedMacro(DocumentedObject):
 
         return self._type
 
-    def format_args(self, **kwargs) -> str:
+    def format_args(self, **kwargs: Any) -> str:
         """
         If the macro is function like, gets the parenthesis version of the
         function signature. i.e. this will be the `(_x, _y)` portion of the
@@ -295,7 +297,7 @@ class DocumentedMember(DocumentedObject):
     A documented member of a struct or union.
     """
 
-    _type = "member"
+    type_ = "member"
 
     def get_parsed_declaration(self) -> str:
         """
@@ -319,13 +321,21 @@ class DocumentedFunction(DocumentedObject):
     A function specific documented object.
     """
 
-    _type = "function"
+    type_ = "function"
 
-    def get_soup_doc(self) -> str:
+    def get_soup_doc(self) -> Optional[str]:
         """
         Gets the documentation from the :attr:`_soup`.
         """
+        if self.soup is None:
+            return None
         root = self.soup.contents[0]
+
+        if not root.find("parameters", recursive=False) and not root.find(
+            "resultdiscussion"
+        ):
+            return None
+
         body = self.get_paragraph(root.find("abstract", recursive=False))
         body += self.get_paragraph(root.find("discussion", recursive=False))
 
@@ -344,16 +354,13 @@ class DocumentedFunction(DocumentedObject):
         """
         Get the documentation paragraph of the item
         """
-        if self.soup is not None:
-            root = self.soup.contents[0]
-            if root.find("parameters", recursive=False) or root.find(
-                "resultdiscussion"
-            ):
-                return self.get_soup_doc()
+        soup_doc = self.get_soup_doc()
+        if soup_doc is not None:
+            return soup_doc
 
         return self.doc
 
-    def format_args(self, **kwargs) -> str:
+    def format_args(self, **kwargs: Any) -> str:
         """
         Creates the parenthesis version of the function signature.  i.e. this
         will be the `(int hello, int what)` portion of the function header.
@@ -407,7 +414,7 @@ class DocumentedType(DocumentedObject):
     A documented type(def)
     """
 
-    _type = "type"
+    type_ = "type"
 
     def get_parsed_declaration(self) -> str:
         """Format the name of *self.object*.
@@ -427,10 +434,10 @@ class DocumentedStructure(DocumentedObject):
     A documented structure
     """
 
-    _type = "struct"
+    type_ = "struct"
 
     @property
-    def soup(self):
+    def soup(self) -> None:
         """
         Since structures like objects use the "Members:" and
         "Enumerations:" sections do *not* use the clang xml comments as they
@@ -466,7 +473,7 @@ class DocumentedUnion(DocumentedStructure):
     Class for unions. Same as structures with a different :attr:`type`.
     """
 
-    _type = "union"
+    type_ = "union"
 
 
 class DocumentedEnum(DocumentedStructure):
@@ -474,7 +481,7 @@ class DocumentedEnum(DocumentedStructure):
     Class for unions. Same as structures with a different :attr:`type`.
     """
 
-    _type = "enum"
+    type_ = "enum"
 
 
 class DocumentedVariable(DocumentedObject):
@@ -482,7 +489,7 @@ class DocumentedVariable(DocumentedObject):
     Class for file level variables
     """
 
-    _type = "variable"
+    type_ = "variable"
 
     def format_name(self) -> str:
         """Format the name of *self.object*.
@@ -516,7 +523,7 @@ CURSORKIND_TO_OBJECT_CLASS = {
 }
 
 
-def object_from_cursor(cursor):
+def object_from_cursor(cursor: Cursor) -> Optional[DocumentedObject]:
     """
     Create an instance from a :class:`cindex.Cursor`
     """
@@ -541,7 +548,7 @@ def object_from_cursor(cursor):
     return doc
 
 
-def get_nested_node(cursor):
+def get_nested_node(cursor: Cursor) -> Cursor:
     """
     Retrieve the nested node that `cursor` may be shadowing
     """
@@ -564,7 +571,7 @@ def get_nested_node(cursor):
     return cursor
 
 
-def get_file_comment(cursor, child):
+def get_file_comment(cursor: Cursor, child: Optional[Cursor]) -> str:
     """
     Attempts to get the comment at the top of the file.
 
@@ -596,7 +603,7 @@ def get_file_comment(cursor, child):
     return ""
 
 
-def load(filename, contents):
+def load(filename: str, contents: str) -> DocumentedObject:
     """
     Load a C file into a tree of :class:`DocumentedObject`\'s
 
@@ -653,7 +660,7 @@ def load(filename, contents):
     return root_document
 
 
-def comment_nodes(cursor, children):
+def comment_nodes(cursor: Cursor, children: List[Cursor]) -> None:
     """
     Comment all nodes in `cursor` and `children` that fall into the
     :data:`UNDOCUMENTED_NODES` type of nodes.
@@ -701,7 +708,7 @@ def comment_nodes(cursor, children):
     cursor.raw_comment = get_file_comment(cursor, first_child)
 
 
-def parse_comment(comment):
+def parse_comment(comment: Union[Token, PsuedoToken]) -> str:
     """
     Clean up a C comment such that it no longer has leading `/**`, leading lines
     of `*` or trailing `*/`

@@ -50,7 +50,12 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx_rtd_theme',
     'sphinx_c_autodoc',
-    'sphinx_c_autodoc.napoleon'
+    'sphinx_c_autodoc.napoleon',
+    # Unfortunatly the typehints fail for the autodoc Documenter class, would
+    # really like to work around this, but also want to keep the warning output
+    # clean since this is a sphinx extension and would like to know when/if it
+    # is producing warnings of its own
+    # 'sphinx_autodoc_typehints',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -201,6 +206,8 @@ todo_include_todos = True
 # -- Options for sphinx_c_autodoc, the extension being documented -----------
 
 c_root = ['../tests/assets/c_source']
+
+set_type_checking_flag = True
 
 # -- Force Scan of API ------------------------------------------------------
 

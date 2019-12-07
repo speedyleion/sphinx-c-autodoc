@@ -46,10 +46,11 @@ import os
 
 from itertools import groupby
 
-from typing import Any, Callable, Dict, List, Tuple
+from typing import cast, Any, List, Optional, Tuple, Dict, Callable
 
-from docutils.statemachine import ViewList
+from docutils.statemachine import ViewList, StringList
 from docutils import nodes
+from sphinx.application import Sphinx
 from sphinx.directives import SphinxDirective
 from sphinx.ext.autodoc import Documenter, members_option
 from sphinx.util.docstrings import prepare_docstring
@@ -75,13 +76,33 @@ class CObjectDocumenter(Documenter):
     # objects
     priority = 11
 
-    option_spec = {
+    option_spec: Dict[str, Callable] = {
         "members": members_option,
-    }  # type: Dict[str, Callable]
+    }
+
+    objpath: List[str]
+    directive: DocumenterBridge
 
     @classmethod
-    def can_document_member(cls, member, membername, isattr, parent):
+    def can_document_member(
+        cls, member: Any, membername: str, isattr: bool, parent: Any
+    ) -> bool:
         """
+        Parameters:
+            member (object): The member item to document.  This type is specific
+                to the item being processed by autodoc.  These classes will
+                only attempt to process
+                :class:`sphinx_c_autodoc.loader.CObjectDocumenter` members.
+
+            membername (str): The name of the item to document.  For example if
+                this is a function then this will be the name of the function,
+                no return types, no arguments.
+
+            isattr (bool): Is the member an attribute.  This is unused for c
+                documenation.
+
+            parent (object): The parent item of this `member`.
+
         Returns:
             bool: True if this class can document the `member`.
         """
@@ -89,7 +110,9 @@ class CObjectDocumenter(Documenter):
             isinstance(parent, CObjectDocumenter) and member.type == cls.directivetype
         )
 
-    def resolve_name(self, modname, parents, path, base):
+    def resolve_name(
+        self, modname: Optional[str], parents: List[str], path: Optional[str], base: str
+    ) -> Tuple[str, List[str]]:
         """
         Resolve the module and object name of the object to document.
         This can be derived in two ways:
@@ -105,7 +128,7 @@ class CObjectDocumenter(Documenter):
 
                 - The filename without the extension when naked argument is used.
                 - Any parents when double colon argument is used. For example
-                  structs or unions of `my_struct.member_name` would have a
+                  structs or unions of `my_struct.field_name` would have a
                   parents entry of ['my_struct']
 
             path (str): Two possible states:
@@ -126,9 +149,9 @@ class CObjectDocumenter(Documenter):
         if modname:
             return modname, parents + [base]
 
-        return path + base, []
+        return cast(str, path) + base, []
 
-    def import_object(self):
+    def import_object(self) -> bool:
         """Load the C file and build up the document structure.
 
         This will load the C file's documented structure into :attr:`object`
@@ -179,13 +202,15 @@ class CObjectDocumenter(Documenter):
 
         return True
 
-    def get_doc(self, encoding=None, ignore=1):
+    def get_doc(
+        self, encoding: Optional[str] = None, ignore: int = 1
+    ) -> List[List[str]]:
         """Decode and return lines of the docstring(s) for the object."""
         docstring = self.object.get_doc()
         tab_width = self.directive.state.document.settings.tab_width
         return [prepare_docstring(docstring, ignore, tab_width)]
 
-    def get_object_members(self, want_all: bool):
+    def get_object_members(self, want_all: bool) -> Tuple[bool, List[Tuple[str, Any]]]:
         """Return `(members_check_module, members)` where `members` is a
         list of `(membername, member)` pairs of the members of *self.object*.
 
@@ -228,7 +253,7 @@ class CObjectDocumenter(Documenter):
         """
         return self.object.format_name()
 
-    def format_args(self, **kwargs) -> str:
+    def format_args(self, **kwargs: Any) -> str:
         """
         Creates the parenthesis version of the function signature.  i.e. this
         will be the `(int hello, int what)` portion of the header.
@@ -256,10 +281,27 @@ class CModuleDocumenter(CObjectDocumenter):
     directivetype = "module"
 
     @classmethod
-    def can_document_member(cls, member, membername, isattr, parent):
+    def can_document_member(
+        cls, member: Any, membername: str, isattr: bool, parent: Any
+    ) -> bool:
         """
         Modules are top levels so should never be included as a child of another
         c object.
+
+        Parameters:
+            member (object): The member item to document.  This type is specific
+                to the item being processed by autodoc.  These instances will
+                only attempt to process
+                :class:`sphinx_c_autodoc.loader.CObjectDocumenter`.
+
+            membername (str): The name of the item to document.  For example if
+                this is a function then this will be the name of the function,
+                no return types, no arguments.
+
+            isattr (bool): Is the member an attribute.  This is unused for c
+                documenation.
+
+            parent (object): The parent item of this `member`.
 
         Returns:
             bool: True if this class can document the `member`.
@@ -300,8 +342,28 @@ class CTypeDocumenter(CObjectDocumenter):
         )
 
     @classmethod
-    def can_document_member(cls, member, membername, isattr, parent):
+    def can_document_member(
+        cls, member: Any, membername: str, isattr: bool, parent: Any
+    ) -> bool:
         """
+        The general type documenter can handle; structs, typedefs, unions and
+        enums (Not the enumerations).
+
+        Parameters:
+            member (object): The member item to document.  This type is specific
+                to the item being processed by autodoc.  These classes will
+                only attempt to process
+                :class:`sphinx_c_autodoc.loader.CObjectDocumenter` members.
+
+            membername (str): The name of the item to document.  For example if
+                this is a function then this will be the name of the function,
+                no return types, no arguments.
+
+            isattr (bool): Is the member an attribute.  This is unused for c
+                documenation.
+
+            parent (object): The parent item of this `member`.
+
         Returns:
             bool: True if this class can document the `member`.
         """
@@ -314,8 +376,8 @@ class CTypeDocumenter(CObjectDocumenter):
 
     def generate(
         self,
-        more_content: Any = None,
-        real_modname: str = None,
+        more_content: Optional[StringList] = None,
+        real_modname: Optional[str] = None,
         check_module: bool = False,
         all_members: bool = False,
     ) -> None:
@@ -331,7 +393,7 @@ class CTypeDocumenter(CObjectDocumenter):
 
         self._original_directive.result.append(self.consolidate_members())
 
-    def _find_member_directives(self, name):
+    def _find_member_directives(self, name: str) -> List[Tuple[str, str, int]]:
         """
         Find all directive lines which start with `` ..c:<name>::``.
 
@@ -366,7 +428,7 @@ class CTypeDocumenter(CObjectDocumenter):
 
         return members
 
-    def _remove_directive(self, line):
+    def _remove_directive(self, line: int) -> StringList:
         """
         Remove the directive which starts at `line_no` from
         :attr:`directive.results`. The locations in :attr:`directive.results`
@@ -397,7 +459,7 @@ class CTypeDocumenter(CObjectDocumenter):
 
         return directive
 
-    def _merge_directives(self, directives):
+    def _merge_directives(self, directives: List[StringList]) -> StringList:
         """
         Args:
             directives (list(StringList)): The list of directives to merge.
@@ -405,28 +467,28 @@ class CTypeDocumenter(CObjectDocumenter):
         Returns:
             StringList: One directive
         """
-        merged_heading = None
-        merged_directive = None
+        merged_heading = StringList()
+        merged_directive = StringList()
         for directive in directives:
             directive_heading = directive[0]
             directive[0] = self.indent
 
-            if merged_directive is None:
-                merged_directive = directive
+            merged_directive.extend(directive)
+            if len(directive_heading) > len(merged_heading):
                 merged_heading = directive_heading
-            else:
-                merged_directive.extend(directive)
-                if len(directive_heading) > len(merged_heading):
-                    merged_heading = directive_heading
 
         merged_directive[0] = merged_heading
         return merged_directive
 
-    def consolidate_members(self):
+    def consolidate_members(self) -> StringList:
         """
-        Take any duplicate ``.. c:member:: blah`` directives and consolidate
-        them into one directive. The subsequent contents of duplicate
-        directives will be added as additional paragraphs.
+        Take any duplicate autodoc member directives and consolidate them into
+        one directive. The subsequent contents of duplicate directives will be
+        added as additional paragraphs on the first occurrence of the directive.
+
+        Returns:
+            StringList: The entire rst contents for this directive instance.
+
         """
         # member is the normal native fields of a struct or union
         members = self._find_member_directives("member")
@@ -498,11 +560,31 @@ class CDataDocumenter(CObjectDocumenter):
     directivetype = "var"
 
     @classmethod
-    def can_document_member(cls, member, membername, isattr, parent):
+    def can_document_member(
+        cls, member: Any, membername: str, isattr: bool, parent: Any
+    ) -> bool:
         """
+        Parameters:
+            member (object): The member item to document.  This type is specific
+                to the item being processed by autodoc.  These classes will
+                only attempt to process
+                :class:`sphinx_c_autodoc.loader.CObjectDocumenter` members.
+
+            membername (str): The name of the item to document.  For example if
+                this is a function then this will be the name of the function,
+                no return types, no arguments.
+
+            isattr (bool): Is the member an attribute.  This is unused for c
+                documenation.
+
+            parent (object): The parent item of this `member`.
+
         Returns:
             bool: True if this class can document the `member`.
         """
+        # Handle the mapping of c land `variable` to sphinx land `data`.  The c
+        # domain in sphinx seems inconsistent the directive is called
+        # ``.. c:var::``, yet the role is ``:c:data:``.
         return isinstance(parent, CObjectDocumenter) and member.type == "variable"
 
 
@@ -514,7 +596,7 @@ class CModule(SphinxDirective):
     has_content = True
     required_arguments = 1
 
-    def run(self):
+    def run(self) -> nodes.Node:
         """
         Not sure yet
         """
@@ -529,11 +611,11 @@ class CModule(SphinxDirective):
         return node.children
 
 
-def setup(app):
+def setup(app: Sphinx) -> None:
     """
     Setup function for registering this with sphinx
     """
-    app.require_sphinx("1.8")
+    app.require_sphinx("2.0")
     app.setup_extension("sphinx.ext.autodoc")
     app.add_autodocumenter(CModuleDocumenter)
     app.add_autodocumenter(CFunctionDocumenter)

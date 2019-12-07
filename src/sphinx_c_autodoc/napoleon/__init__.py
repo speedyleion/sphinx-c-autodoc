@@ -4,8 +4,11 @@ similar to the `Attributes` section in python objects.
 """
 from functools import partial
 
-from typing import Any, List, Union
+from typing import Optional, Any, List, Union
 
+from sphinx.config import Config
+from sphinx.ext.autodoc import Options
+from sphinx.application import Sphinx
 from sphinx.ext.napoleon import GoogleDocstring
 
 
@@ -18,12 +21,12 @@ class MemberDocString(GoogleDocstring):
     def __init__(
         self,
         docstring: Union[str, List[str]],
-        config: Any = None,
-        app: Any = None,
+        config: Optional[Config] = None,
+        app: Optional[Sphinx] = None,
         what: str = "",
         name: str = "",
-        obj: Any = None,
-        options: Any = None,
+        obj: Optional[Any] = None,
+        options: Optional[Options] = None,
     ) -> None:
         self._sections = {
             "args": self._parse_parameters_section,
@@ -90,7 +93,12 @@ class MemberDocString(GoogleDocstring):
 
 
 def process_autodoc_docstring(
-    app: Any, what: str, name: str, obj: Any, options: Any, lines: List[str]
+    app: Sphinx,
+    what: str,
+    name: str,
+    obj: Any,
+    options: Optional[Options],
+    lines: List[str],
 ) -> None:
     """
     Call back for autodoc's ``autodoc-process-docstring`` event.
@@ -111,7 +119,7 @@ def process_autodoc_docstring(
     lines[:] = result_lines[:]
 
 
-def setup(app):
+def setup(app: Sphinx) -> None:
     """
     Extend sphinx to assist sphinx_c_autodocs to allow Google style
     docstrings for C constructs.

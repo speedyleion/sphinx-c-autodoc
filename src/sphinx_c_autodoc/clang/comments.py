@@ -3,6 +3,9 @@ Expose some CXComment functionality to python for libclang
 
 """
 import ctypes
+
+from typing import Optional
+
 from clang import cindex
 
 
@@ -14,7 +17,7 @@ class Comment(ctypes.Structure):
 
     _fields_ = [("node", ctypes.c_void_p), ("tu", ctypes.POINTER(ctypes.c_void_p))]
 
-    def as_xml(self):
+    def as_xml(self) -> Optional[str]:
         """
         Return this comment as an xml string
         """

@@ -12,12 +12,15 @@ functionality.
 #   protected access.
 # pylint: disable=invalid-name,protected-access
 
+from typing import Optional, Tuple, List
+
 from clang import cindex
+from clang.cindex import Cursor, SourceLocation, SourceRange, TranslationUnit
 
 from sphinx_c_autodoc.clang.comments import Comment
 
 
-def SourceLocation_isFromMainFile(self):
+def SourceLocation_isFromMainFile(self: SourceLocation) -> bool:
     """
     Tests if a :class:`cindex.SourceLocation` is in the main translation unit
     being parsed.
@@ -29,7 +32,7 @@ def SourceLocation_isFromMainFile(self):
     return cindex.conf.lib.clang_Location_isFromMainFile(self)
 
 
-def Cursor_is_macro_function_like(self):
+def Cursor_is_macro_function_like(self: Cursor) -> bool:
     """
     Determine if the macro is a function like macro
 
@@ -39,7 +42,7 @@ def Cursor_is_macro_function_like(self):
     return cindex.conf.lib.clang_Cursor_isMacroFunctionLike(self)
 
 
-def Cursor_getParsedComment(self):
+def Cursor_getParsedComment(self: Cursor) -> Comment:
     """
     Get the parsed comment for the cursor
 
@@ -49,7 +52,7 @@ def Cursor_getParsedComment(self):
     return cindex.conf.lib.clang_Cursor_getParsedComment(self)
 
 
-def Cursor_comment_extent(self):
+def Cursor_comment_extent(self: Cursor) -> SourceRange:
     """
     Gets the extent of the associated comment.
 
@@ -66,7 +69,7 @@ def Cursor_comment_extent(self):
     return self._comment_extent
 
 
-def Cursor_set_comment_extent(self, value):
+def Cursor_set_comment_extent(self: Cursor, value: SourceRange) -> None:
     """
     Provides a mechanism to a set a Cursor's comment extent. For things like
     macros clang doesn't provide a mechanism to associate comments. So it may
@@ -75,7 +78,7 @@ def Cursor_set_comment_extent(self, value):
     self._comment_extent = value
 
 
-def Cursor_cached_raw_comment(self):
+def Cursor_cached_raw_comment(self: Cursor) -> Optional[str]:
     """
     Provides a caching mechanism to a Cursor's raw comment instead of looking
     it up each time it's called.
@@ -86,7 +89,7 @@ def Cursor_cached_raw_comment(self):
     return self._raw_comment
 
 
-def Cursor_set_raw_comment(self, value):
+def Cursor_set_raw_comment(self: Cursor, value: str) -> None:
     """
     Provides a mechanism to a set a Cursor's raw comment. For things like
     macros clang doesn't provide a mechanism to associate comments. So it may
@@ -95,7 +98,7 @@ def Cursor_set_raw_comment(self, value):
     self._raw_comment = value
 
 
-def Cursor_tu(self):
+def Cursor_tu(self: Cursor) -> TranslationUnit:
     """
     Provide the cursor's translation unit in a "public"
     The Cursors have translation units as protected, underscore, but one
@@ -107,7 +110,7 @@ def Cursor_tu(self):
 # List of functions which are in the native libclang but aren't normally
 # provided by the python bindings of clang.
 # pylint: disable=protected-access
-FUNCTION_LIST = [
+FUNCTION_LIST: List[Tuple] = [
     ("clang_Location_isFromMainFile", [cindex.SourceLocation], bool),
     ("clang_Cursor_isMacroFunctionLike", [cindex.Cursor], bool),
     ("clang_Cursor_getCommentRange", [cindex.Cursor], cindex.SourceRange),
@@ -121,7 +124,7 @@ FUNCTION_LIST = [
 ]
 
 
-def patch_clang():
+def patch_clang() -> None:
     """
     This will patch the variables and classes in cindex to provide more
     functionality than usual as well as make some things a little more
@@ -134,7 +137,7 @@ def patch_clang():
     override_methods()
 
 
-def override_methods():
+def override_methods() -> None:
     """
     Override some methods and properties in the bindings to make them more
     pythonic and or more efficient.
@@ -145,7 +148,7 @@ def override_methods():
     )
 
 
-def add_new_methods():
+def add_new_methods() -> None:
     """
     Add new methods to the classes in clang.
     """
@@ -159,7 +162,7 @@ def add_new_methods():
     cindex.Cursor.tu = property(Cursor_tu)
 
 
-def add_dll_entry_points():
+def add_dll_entry_points() -> None:
     """
     Add functions available in the clang dll but not listed in the python
     clang bindings.
