@@ -110,6 +110,21 @@ typedef enum{
     THE_LAST_ENUM
 } some_enum;
 
+/**
+ * Anonymous enums are supported, so that the enumerations can be documented.
+ *
+ * .. note:: That one will not be able to autodoc the enum directly it will
+ *     only be included by autodocing a module. Since it's name will be built up
+ *     dynamically
+ *
+ * Enumerations:
+ *     AN_ANONYMOUSE_1: The first enumeration from an anonymous enum.
+ *     AN_ANONYMOUSE_2: The second enumeration from an anonymous enum.
+ */
+enum{
+    AN_ANONYMOUSE_1 = 30,
+    AN_ANONYMOUSE_2 = 513
+};
 
 /**
  * File level variables can also be documented

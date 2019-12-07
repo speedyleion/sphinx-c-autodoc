@@ -24,6 +24,9 @@ def test_autodoc_of_c_file(tmp_path):
 
     assert 'This is a file comment' in contents
 
+    # Check for anonymouse enumerations
+    assert 'anon_example_' in contents
+
     file_name = tmp_path / 'file_2.html'
     with file_name.open() as f:
         contents = f.read()

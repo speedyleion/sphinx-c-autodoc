@@ -20,6 +20,7 @@ from sphinx_c_autodoc.clang.patches import patch_clang
 
 UNDOCUMENTED_NODES = (cindex.CursorKind.MACRO_DEFINITION,)
 DOCUMENTATION_COMMENT_START = ("/**", "/*!", "///")
+ALLOWED_ANONYMOUS = (cindex.CursorKind.ENUM_DECL,)
 
 # Must do this prior to calling into clang
 patch_clang()
@@ -530,9 +531,18 @@ def object_from_cursor(cursor: Cursor) -> Optional[DocumentedObject]:
     # Spelling is always good on the "primary" node.
     name = cursor.spelling
 
-    # Don't document anonymous items
     if not name:
-        return None
+        if cursor.kind in ALLOWED_ANONYMOUS:
+            filename = os.path.basename(cursor.location.file.name)
+            # remove the extension from the filename since the '.' is not a
+            # valid c identifier. splitext will remove the trailing most
+            # extension so if this file is multi dotted it will fail, just use
+            # partition and grab the first part.
+            filename, _, _ = filename.partition(".")
+            name = f"anon_{filename}_{cursor.hash}"
+        else:
+            # Don't document anonymous items
+            return None
 
     nested_cursor = get_nested_node(cursor)
     class_ = CURSORKIND_TO_OBJECT_CLASS.get(nested_cursor.kind, DocumentedObject)
