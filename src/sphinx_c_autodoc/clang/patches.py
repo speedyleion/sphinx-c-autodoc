@@ -49,6 +49,32 @@ def Cursor_getParsedComment(self):
     return cindex.conf.lib.clang_Cursor_getParsedComment(self)
 
 
+def Cursor_comment_extent(self):
+    """
+    Gets the extent of the associated comment.
+
+    For some reason libclang calls this "range" while other parts of the
+    interface use the term "extent", for consistency with the python API
+    naming extent was used here.
+
+    Returns:
+        cindex.SourceRange: The extent for the cursor's raw_comment.
+    """
+    if self._comment_extent is None:
+        self._comment_extent = cindex.conf.lib.clang_Cursor_getCommentRange(self)
+
+    return self._comment_extent
+
+
+def Cursor_set_comment_extent(self, value):
+    """
+    Provides a mechanism to a set a Cursor's comment extent. For things like
+    macros clang doesn't provide a mechanism to associate comments. So it may
+    be done later, but the cursors can still be passed around like normal.
+    """
+    self._comment_extent = value
+
+
 def Cursor_cached_raw_comment(self):
     """
     Provides a caching mechanism to a Cursor's raw comment instead of looking
@@ -84,6 +110,7 @@ def Cursor_tu(self):
 FUNCTION_LIST = [
     ("clang_Location_isFromMainFile", [cindex.SourceLocation], bool),
     ("clang_Cursor_isMacroFunctionLike", [cindex.Cursor], bool),
+    ("clang_Cursor_getCommentRange", [cindex.Cursor], cindex.SourceRange),
     ("clang_Cursor_getParsedComment", [cindex.Cursor], Comment),
     (
         "clang_FullComment_getAsXML",
@@ -123,6 +150,10 @@ def add_new_methods():
     Add new methods to the classes in clang.
     """
     cindex.SourceLocation.isFromMainFile = SourceLocation_isFromMainFile
+    cindex.Cursor._comment_extent = None
+    cindex.Cursor.comment_extent = property(Cursor_comment_extent).setter(
+        Cursor_set_comment_extent
+    )
     cindex.Cursor.getParsedComment = Cursor_getParsedComment
     cindex.Cursor.is_macro_function_like = Cursor_is_macro_function_like
     cindex.Cursor.tu = property(Cursor_tu)

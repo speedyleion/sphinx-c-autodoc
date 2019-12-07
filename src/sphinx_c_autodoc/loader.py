@@ -7,7 +7,7 @@ import os
 import re
 import textwrap
 
-from collections import OrderedDict
+from collections import OrderedDict, namedtuple
 from itertools import takewhile
 
 from bs4 import BeautifulSoup
@@ -20,6 +20,9 @@ DOCUMENTATION_COMMENT_START = ("/**", "/*!", "///")
 
 # Must do this prior to calling into clang
 patch_clang()
+
+#: A light container to mimic a :class:`cindex.Token` for comments.
+PsuedoToken = namedtuple("PsuedoToken", ["spelling", "extent"])
 
 
 class DocumentedObject:
@@ -529,7 +532,10 @@ def object_from_cursor(cursor):
     doc = class_()
 
     doc.name = name
-    doc.doc = parse_comment(nested_cursor.raw_comment)
+    psuedo_comment = PsuedoToken(
+        nested_cursor.raw_comment, nested_cursor.comment_extent
+    )
+    doc.doc = parse_comment(psuedo_comment)
     doc.node = nested_cursor
 
     return doc
@@ -558,9 +564,17 @@ def get_nested_node(cursor):
     return cursor
 
 
-def get_root_comment(cursor, child):
+def get_file_comment(cursor, child):
     """
     Attempts to get the comment at the top of the file.
+
+    Args:
+        cursor (:class:`cindex.Cursor`): The root cursor of the file.
+        child (:class:`cindex.Cursor`): The first child node in the file.
+            This can be None.
+
+    Returns:
+        str: The file level comment.
     """
     try:
         token = next(cursor.get_tokens())
@@ -574,20 +588,21 @@ def get_root_comment(cursor, child):
         else:
             child_comment = ""
 
-        # When the first comment is for the first node then the file lacks a
-        # dedicated comment.
+        # if the first comment is not the documentation comment for the first
+        # child then assume it is the file comment.
         if child_comment != token.spelling:
-            return parse_comment(token.spelling)
+            return parse_comment(token)
 
     return ""
 
 
-def load(filename):
+def load(filename, contents):
     """
     Load a C file into a tree of :class:`DocumentedObject`\'s
 
     Args:
         filename (str): The c file to load into a documented item
+        contents (str): The contents of `filename`
 
     Returns:
         :class:`DocumentedObject`: The documented version of `filename`.
@@ -595,7 +610,9 @@ def load(filename):
     """
 
     tu = cindex.TranslationUnit.from_source(
-        filename, options=cindex.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD
+        filename,
+        unsaved_files=((filename, contents),),
+        options=cindex.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD,
     )
     cursor = tu.cursor
 
@@ -638,8 +655,18 @@ def load(filename):
 
 def comment_nodes(cursor, children):
     """
-    Comment all nodes that could or might need to be commented. This will
-    modify any nodes in place.
+    Comment all nodes in `cursor` and `children` that fall into the
+    :data:`UNDOCUMENTED_NODES` type of nodes.
+
+    The nodes will be modified in place.
+
+    Args:
+        cursor (cindex.Cursor): The parent cursor of the child nodes
+            which may need to be commented. This is assumed to be the root
+            file cursor.
+
+        children (Sequence(cindex.Cursor)): The child nodes which may need to
+            be commented.
     """
     tu = cursor.tu
     start = cursor.extent.start
@@ -668,9 +695,10 @@ def comment_nodes(cursor, children):
         if token.kind == cindex.TokenKind.COMMENT:
             if token.spelling.startswith(DOCUMENTATION_COMMENT_START):
                 child.raw_comment = token.spelling
+                child.comment_extent = token.extent
 
     first_child = children[0] if children else None
-    cursor.raw_comment = get_root_comment(cursor, first_child)
+    cursor.raw_comment = get_file_comment(cursor, first_child)
 
 
 def parse_comment(comment):
@@ -679,15 +707,29 @@ def parse_comment(comment):
     of `*` or trailing `*/`
 
     Args:
-        comment (str): A c comment.
+        comment (:class:`cindex.Token`): A c comment token from clang.
 
     Returns:
         str: The comment with the c comment syntax removed.
     """
     # Happens when there is no documentation comment in the source file for the
     # item.
-    if comment is None:
+    spelling = comment.spelling
+    if spelling is None:
         return ""
+
+    # Comments from clang start at the '/*' portion, but if the comment itself
+    # is indented subsequent lines will have too much indent.
+    # Transform::
+    #
+    #      "/**\n     * hello some comment\n     * on multiple lines\n     */"
+    #
+    # into::
+    #
+    #      "/**\n * hello some comment\n * on multiple lines\n */"
+    indent = " " * (comment.extent.start.column - 1)
+    indented_comment = indent + spelling
+    dedented_comment = textwrap.dedent(indented_comment)
 
     # Notes on the regex here.
     #   Option 1 '\s?\*/?'
@@ -703,15 +745,13 @@ def parse_comment(comment):
     contents = re.sub(
         r"^\s?\*/?|^/\*+<?|\*+/",
         lambda x: len(x.group(0)) * " ",
-        comment,
+        dedented_comment,
         flags=re.MULTILINE,
     )
 
-    # Dedent doesn't work with carriage returns, \r
-    contents = contents.replace("\r\n", "\n")
     contents = textwrap.dedent(contents)
 
-    # there may still be left over newlines so only strip those but leave any
+    # there may still be left over newlines so only strip those, but leave any
     # whitespaces.
     contents = contents.strip("\n")
 

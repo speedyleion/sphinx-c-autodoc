@@ -42,5 +42,8 @@ def test_basic_file_loading(filename, expected):
     Test that a simple C file is turned into 2 sections one for the module level
     comment and one for the function level comment
     """
-    doc_item = loader.load(os.path.join(SCRIPT_DIR, 'assets', filename))
+    fullname = os.path.join(SCRIPT_DIR, 'assets', filename)
+    with open(fullname) as f:
+        contents = f.read()
+    doc_item = loader.load(fullname, contents)
     assert json.loads(str(doc_item)) == expected

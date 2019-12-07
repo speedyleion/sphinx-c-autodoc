@@ -18,7 +18,7 @@ class TestAutoCMacro:
 
         THE_FIRST_ENUM
         Used for the first item
-        Documentation in a comment for THE_FIRST_ITEM, note this is trailing for some reason clang will apply leading comments to all the enumerations
+        Documentation in a comment for THE_FIRST_ITEM. Note this is trailing, for some reason clang will apply leading comments to all the enumerations
 
         THE_SECOND_ENUM
         Second verse same as the first.

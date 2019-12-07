@@ -24,15 +24,15 @@ int multiple_parameters(int a, int b)
     return a + b;
 }
 
-/**
- * Function with sphinx documented parameters
- *
- * :param param1: The first parameter which is on multiple lines
- *      with this being the second line.
- * :param param2: An alternative second parameter
- *
- * :returns: Some return value.
- */
+    /**
+     * Function with sphinx documented parameters
+     *
+     * :param param1: The first parameter which is on multiple lines
+     *      with this being the second line.
+     * :param param2: An alternative second parameter
+     *
+     * :returns: Some return value.
+     */
 char * sphinx_documented_parameters(int param1, int param2)
 {
     return param1 - param2;

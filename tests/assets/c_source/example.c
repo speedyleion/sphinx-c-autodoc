@@ -2,13 +2,14 @@
 *
 * This is a file comment. The *first* comment in the file will be grabbed.
 * Often times people put the copyright in these. If that is the case then you
-* may want to utilize the pre parse hook (TODO MAKE PRE-PARSE HOOK).
+* may want to utilize the pre processing hook, `c-autodoc-pre-process`.
 *
 * One may notice that this comment block has a string of `***` along the top
 * and the bottom. For the file comment these will get stripped out, however for
 * comments on other c constructs like macros, functions, etc. clang is often
-* utilized and it does not understand this pattern, so again the pre-parse hook
-* may be something to use to sanitize these kind of comments.
+* utilized and it does not understand this pattern, so the
+* `c-autodoc-pre-process` hook may be something to use to sanitize these kind
+* of comments.
 *
 ******************************************************************************/
 
@@ -29,9 +30,9 @@
  * probably work in most instances...
  *
  * As per the `function <http://www.sphinx-doc.org/en/1.0/domains.html#directive-c:function>`_
- * directive for the c domain function like macros are documented as functions.
- * This means that one can document them with the ``:param:`` and ``:returns:``
- * fields. One could even utilize the
+ * directive for the c domain, function like macros are documented as
+ * functions. This means that one can document them with the ``:param:`` and
+ * ``:returns:`` fields. One could even utilize the
  * `napoleon <https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html>`_
  * extension to format something like:
  *
@@ -101,8 +102,8 @@ struct members_documented_with_napoleon
  *     THE_LAST_ENUM: Just to be sure.
  */
 typedef enum{
-    THE_FIRST_ENUM, /**< Documentation in a comment for THE_FIRST_ITEM,
-                      * note this is trailing for some reason clang will
+    THE_FIRST_ENUM, /**< Documentation in a comment for THE_FIRST_ITEM.
+                      * Note this is trailing, for some reason clang will
                       * apply leading comments to *all* the enumerations */
     THE_SECOND_ENUM = 30,
     THE_THIRD_ENUM = THE_SECOND_ENUM,

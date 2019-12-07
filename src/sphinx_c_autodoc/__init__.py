@@ -48,9 +48,9 @@ from itertools import groupby
 
 from typing import Any, Callable, Dict, List, Tuple
 
-from docutils.parsers.rst import Directive
 from docutils.statemachine import ViewList
 from docutils import nodes
+from sphinx.directives import SphinxDirective
 from sphinx.ext.autodoc import Documenter, members_option
 from sphinx.util.docstrings import prepare_docstring
 from sphinx.ext.autodoc.directive import DocumenterBridge
@@ -156,7 +156,14 @@ class CObjectDocumenter(Documenter):
             self.env.temp_data["c:loaded_modules"] = {}
 
         if filename not in self.env.temp_data["c:loaded_modules"]:
-            self.env.temp_data["c:loaded_modules"][filename] = loader.load(filename)
+            with open(filename) as f:
+                contents = [f.read()]
+
+            # let extensions preprocess files
+            self.env.app.emit("c-autodoc-pre-process", filename, contents)
+            self.env.temp_data["c:loaded_modules"][filename] = loader.load(
+                filename, contents[0]
+            )
 
         self.module = self.env.temp_data["c:loaded_modules"][filename]
 
@@ -499,7 +506,7 @@ class CDataDocumenter(CObjectDocumenter):
         return isinstance(parent, CObjectDocumenter) and member.type == "variable"
 
 
-class CModule(Directive):
+class CModule(SphinxDirective):
     """
     Module directive for C files
     """
@@ -536,3 +543,4 @@ def setup(app):
     app.add_autodocumenter(CDataDocumenter)
     app.add_directive_to_domain("c", "module", CModule)
     app.add_config_value("c_root", [""], "env")
+    app.add_event("c-autodoc-pre-process")
