@@ -69,3 +69,13 @@ void doxy_documented_parameters_no_returns(int water, int air)
 {
     printf("%d", water - air);
 }
+
+/**
+ * A function using a custom napoleon section that doesn't exist in this
+ * package.
+ *
+ * The Nonexistent Section:
+ *     first_param: A parameter to document
+ *     second_param: Why not
+ */
+void * custom_napoleon_section(char first_param, int second_param);

@@ -13,9 +13,11 @@ from sphinx.ext.napoleon import GoogleDocstring
 
 
 # pylint: disable=too-few-public-methods
-class MemberDocString(GoogleDocstring):
+class CAutoDocString(GoogleDocstring):
     """
-    A docstring that can handle documenting c member sections
+    A docstring that can handle documenting some extra c sections, in
+    particular, `members` sections of structs and unions and `enumerations`
+    sections of enums.
     """
 
     def __init__(
@@ -28,35 +30,36 @@ class MemberDocString(GoogleDocstring):
         obj: Optional[Any] = None,
         options: Optional[Options] = None,
     ) -> None:
-        self._sections = {
-            "args": self._parse_parameters_section,
-            "arguments": self._parse_parameters_section,
-            "attention": partial(self._parse_admonition, "attention"),
-            "attributes": self._parse_attributes_section,
-            "caution": partial(self._parse_admonition, "caution"),
-            "danger": partial(self._parse_admonition, "danger"),
-            "enumerations": partial(self._parse_nested_section, "macro"),
-            "error": partial(self._parse_admonition, "error"),
-            "example": self._parse_examples_section,
-            "examples": self._parse_examples_section,
-            "hint": partial(self._parse_admonition, "hint"),
-            "important": partial(self._parse_admonition, "important"),
-            "members": partial(self._parse_nested_section, "member"),
-            "note": partial(self._parse_admonition, "note"),
-            "notes": self._parse_notes_section,
-            "parameters": self._parse_parameters_section,
-            "return": self._parse_returns_section,
-            "returns": self._parse_returns_section,
-            "references": self._parse_references_section,
-            "see also": self._parse_see_also_section,
-            "tip": partial(self._parse_admonition, "tip"),
-            "todo": partial(self._parse_admonition, "todo"),
-            "warning": partial(self._parse_admonition, "warning"),
-            "warnings": partial(self._parse_admonition, "warning"),
-            "warns": self._parse_warns_section,
-            "yield": self._parse_yields_section,
-            "yields": self._parse_yields_section,
-        }
+        if not hasattr(self, "_sections"):
+            self._sections = {
+                "args": self._parse_parameters_section,
+                "arguments": self._parse_parameters_section,
+                "attention": partial(self._parse_admonition, "attention"),
+                "attributes": self._parse_attributes_section,
+                "caution": partial(self._parse_admonition, "caution"),
+                "danger": partial(self._parse_admonition, "danger"),
+                "enumerations": partial(self._parse_nested_section, "macro"),
+                "error": partial(self._parse_admonition, "error"),
+                "example": self._parse_examples_section,
+                "examples": self._parse_examples_section,
+                "hint": partial(self._parse_admonition, "hint"),
+                "important": partial(self._parse_admonition, "important"),
+                "members": partial(self._parse_nested_section, "member"),
+                "note": partial(self._parse_admonition, "note"),
+                "notes": self._parse_notes_section,
+                "parameters": self._parse_parameters_section,
+                "return": self._parse_returns_section,
+                "returns": self._parse_returns_section,
+                "references": self._parse_references_section,
+                "see also": self._parse_see_also_section,
+                "tip": partial(self._parse_admonition, "tip"),
+                "todo": partial(self._parse_admonition, "todo"),
+                "warning": partial(self._parse_admonition, "warning"),
+                "warnings": partial(self._parse_admonition, "warning"),
+                "warns": self._parse_warns_section,
+                "yield": self._parse_yields_section,
+                "yields": self._parse_yields_section,
+            }
 
         super().__init__(docstring, config, app, what, name, obj, options)
 
@@ -114,7 +117,7 @@ def process_autodoc_docstring(
         options (dict): The options given to the directive.
         lines (List[str]): The lines of the comment.  This is modified in place.
     """
-    docstring = MemberDocString(lines, app.config, app, what, name, obj, options)
+    docstring = CAutoDocString(lines, app.config, app, what, name, obj, options)
     result_lines = docstring.lines()
     lines[:] = result_lines[:]
 
