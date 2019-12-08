@@ -1,3 +1,4 @@
 # Ignore tox dir
 .tox/
 __pycache__/
+.mypy_cache/

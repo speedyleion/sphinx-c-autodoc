@@ -15,8 +15,18 @@ class TestAutoCMacro:
         MY_D_FINE
         A define of something."""
 
+    documented_after = """\
+        DOCUMENTED_AFTER
+        A trailing item documentation"""
+
+    undocumented_macro = """\
+        UNDOCUMENTED_MACRO
+        """
+
     doc_data = [
         ('macros.c::MY_D_FINE', my_d_fine),
+        ('macros.c::DOCUMENTED_AFTER', documented_after),
+        ('macros.c::UNDOCUMENTED_MACRO', undocumented_macro),
     ]
 
     @pytest.mark.parametrize('macro, expected_doc', doc_data)

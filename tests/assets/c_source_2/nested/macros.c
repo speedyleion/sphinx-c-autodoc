@@ -9,13 +9,13 @@ typedef int bar;
  */
 #define MY_D_FINE 30
 
+#define DOCUMENTED_AFTER 134 /**< A trailing item documentation */
 #define UNDOCUMENTED_MACRO 20
 
 /*
  * A non document comment which won't get picked up a macro comment
  */
 #define NON_DOC_COMMENT "see comment description"
-
 
 /**
  * A function like macro with 2 parameters

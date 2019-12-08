@@ -18,8 +18,18 @@ from clang.cindex import Cursor, Token
 
 from sphinx_c_autodoc.clang.patches import patch_clang
 
+#: Nodes which clang doesn't autopopulate with the associated comment
 UNDOCUMENTED_NODES = (cindex.CursorKind.MACRO_DEFINITION,)
+
+#: The first few characters of a comment which indicates a documentation comment.
 DOCUMENTATION_COMMENT_START = ("/**", "/*!", "///")
+
+#: The start of a comment that is meant to document the previous item
+TRAILING_COMMENT_START = ("/**<", "/*!<", "///<")
+
+#: Nodes which can be anonymous and still need to be documented. i.e.
+#: anonymous structures are usually part of another node. Anonymous enums are
+#: often used to use the enumerations but not force the type usage.
 ALLOWED_ANONYMOUS = (cindex.CursorKind.ENUM_DECL,)
 
 # Must do this prior to calling into clang
@@ -685,37 +695,79 @@ def comment_nodes(cursor: Cursor, children: List[Cursor]) -> None:
         children (Sequence(cindex.Cursor)): The child nodes which may need to
             be commented.
     """
+    # The idea here is to look for comment tokens between nodes.
     tu = cursor.tu
-    start = cursor.extent.start
+    prev_child = None
     for child in children:
+        # :func:`comment_node` will look to see if the node is in
+        # UNDOCUMENTED_NODES, but do it here anyway to save the effort of
+        # getting tokens, no performance metrics were checked, but the general
+        # hunch is there will be a lot fewer UNDOCUMENTED_NODES than not.
         if child.kind not in UNDOCUMENTED_NODES:
-            start = child.extent.end
+            prev_child = child
             continue
 
-        # This may not be 100% accurate but move the start back to the previous
+        # This may not be 100% accurate but move the end to the previous
         # line. This solves problems like macro defintions not including the
         # preprocessor `#define` tokens.
+        #
+        #                             <-- prveious line
+        #     #define SOME_MACRO 23
+        #             ^            ^ (Note `end` is exclusive)
+        #             |            |
+        #             +-- extent --+
+        #
         location = child.extent.start
         end = cindex.SourceLocation.from_position(
             tu, location.file, location.line - 1, 1
         )
 
+        start = prev_child.extent.end if prev_child else cursor.extent.start
         extent = cindex.SourceRange.from_locations(start, end)
         tokens = list(cindex.TokenGroup.get_tokens(tu, extent=extent))
 
-        start = child.extent.end
+        if tokens:
+            comment_node(child, tokens[-1])
+            comment_node(prev_child, tokens[0], trailing=True)
 
-        if not tokens:
-            continue
-
-        token = tokens[-1]
-        if token.kind == cindex.TokenKind.COMMENT:
-            if token.spelling.startswith(DOCUMENTATION_COMMENT_START):
-                child.raw_comment = token.spelling
-                child.comment_extent = token.extent
+        prev_child = child
 
     first_child = children[0] if children else None
     cursor.raw_comment = get_file_comment(cursor, first_child)
+
+
+def comment_node(node: Optional[Cursor], token: Token, trailing: bool = False) -> None:
+    """
+    Add the comment, `token`, to the `node`.
+
+    node will be unmodified if:
+
+        - `node` is not one of the :data:`UNDOCUMENTED_NODE`
+        - `token` is not a documentation comment.
+
+    Args:
+        node (Cursor): The node to attempt to comment.
+        token (Token): The token to use for the commenting.
+        trailing (bool): Only comment `node` if `token` is a trailing
+            comment, :data:`TRAILING_COMMENT_START`. If False then only
+            comment `node` if `token` is a non trailing documentation
+            comment.
+    """
+    if node is None or node.kind not in UNDOCUMENTED_NODES:
+        return
+
+    # DOCUMENTATION_COMMENT_START are all sub-strings of TRAILING_COMMENT_START
+    # so either one would quickly be rejected here.
+    if token.kind != cindex.TokenKind.COMMENT or not token.spelling.startswith(
+        DOCUMENTATION_COMMENT_START
+    ):
+        return
+
+    if trailing != token.spelling.startswith(TRAILING_COMMENT_START):
+        return
+
+    node.raw_comment = token.spelling
+    node.comment_extent = token.extent
 
 
 def parse_comment(comment: Union[Token, PsuedoToken]) -> str:
