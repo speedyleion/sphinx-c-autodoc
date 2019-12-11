@@ -14,8 +14,8 @@ from docutils.utils import new_document
 from sphinx.testing.path import path
 from sphinx.util.docutils import sphinx_domains
 
-SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
-sys.path.append(os.path.join(SCRIPT_DIR, '..', 'src'))
+# SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
+# sys.path.append(os.path.join(SCRIPT_DIR, '..', 'src'))
 
 pytest_plugins = 'sphinx.testing.fixtures'
 
