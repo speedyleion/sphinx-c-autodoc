@@ -9,39 +9,6 @@ import pytest
 
 from sphinx.ext.autodoc.directive import AutodocDirective
 
-@pytest.fixture()
-def local_capsys(capsys):
-    """
-    A modified version of capsys.
-
-    This original author is lacking sufficient knowledge at this time to
-    properly mix capsys and another fixture, so this less than ideal work
-    around exists.
-
-    It appears that capsys will open and close through each state of the test
-    run; setup, run, and teardown.
-
-    What happens is during setup, capsys sets up the sys.stderr to go to an
-    IO stream. The second fixture, `sphinx_state`, will set up its error
-    handling to use `sys.stderr` which is properly routed to capsys.
-    The setup finishes and capsys closes the IO stream and re-instates
-    sys.stderr.
-
-    The main test run starts and capsys again captures sys.stderr, however
-    the `sphinx_state` from before is pointing to the original mapping capsys
-    had done, which is closed and causes an error when sphinx attempts to
-    write to it.
-    """
-
-    # Setting the capture fixture to None, prevents the IO stream from being closed.
-    old_fixture = capsys.request._pyfuncitem._capture_fixture
-    capsys.request._pyfuncitem._capture_fixture = None
-
-    yield capsys
-
-    # manually close the old fixture
-    old_fixture.close()
-
 
 class TestAutoCModule:
     """
@@ -93,21 +60,9 @@ class TestAutoCModule:
         directive = AutodocDirective('autocmodule', [file_],
                                      {'members': None}, None, None, None,
                                      None, sphinx_state, None)
-        output = directive.run()
+        assert dedent(expected_doc) == self.get_directive_output(directive)
 
-        #  1. Module paragraph
-        #  2. Index entry for function
-        #  3. Function paragraph
-        #  4. Index entry for next function
-        #  5. Function paragraph
-        #  ...
-        docs = (o.astext() for o in output[::1])
-
-        body = '\n'.join(docs)
-
-        assert dedent(expected_doc) == body
-
-    def test_fail_module_load(self, local_capsys, sphinx_state):
+    def test_fail_module_load(self, sphinx_state):
         """
         Test that a warning is raised when unable to find the module to
         document
@@ -119,8 +74,112 @@ class TestAutoCModule:
         output = directive.run()
         assert output == []
 
-        captured = local_capsys.readouterr()
+        warnings = sphinx_state.env.app._warning.getvalue()
 
         messages = ('Unable to find', 'non_existent.c')
         for message in messages:
-            assert message in captured.err
+            assert message in warnings
+
+    def test_no_members_option(self, sphinx_state):
+        """
+        Test that when no members is provided that the members don't get
+        documented.
+        """
+        just_file_doc = """\
+            This is a file comment"""
+
+        directive = AutodocDirective('autocmodule', ['module.c'],
+                                     {}, None, None, None,
+                                     None, sphinx_state, None)
+
+        assert dedent(just_file_doc) == self.get_directive_output(directive)
+
+    def test_members_called_out(self, sphinx_state):
+        """
+        Test that when specific members are called out, only those members
+        show in documentation.
+        """
+        example_c = """\
+            This is a file comment. The first comment in the file will be grabbed.
+            Often times people put the copyright in these. If that is the case then you
+            may want to utilize the pre processing hook, c-autodoc-pre-process.
+            One may notice that this comment block has a string of *** along the top
+            and the bottom. For the file comment these will get stripped out, however for
+            comments on other c constructs like macros, functions, etc. clang is often
+            utilized and it does not understand this pattern, so the
+            c-autodoc-pre-process hook may be something to use to sanitize these kind
+            of comments.
+
+            TOO_SIMPLE
+
+            A simple macro definition
+
+            int some_flag_variable
+
+            File level variables can also be documented"""
+
+        directive = AutodocDirective('autocmodule', ['example.c'],
+                                     {'members': 'TOO_SIMPLE, some_flag_variable'},
+                                     None, None, None, None, sphinx_state, None)
+
+        assert dedent(example_c) == self.get_directive_output(directive)
+
+    def test_non_existent_member_causes_warning(self, sphinx_state):
+        """
+        Test that when specific a specific member is called out and it doesn't
+        exist a warning is emitted.
+        """
+        example_c = """\
+            This is a file comment. The first comment in the file will be grabbed.
+            Often times people put the copyright in these. If that is the case then you
+            may want to utilize the pre processing hook, c-autodoc-pre-process.
+            One may notice that this comment block has a string of *** along the top
+            and the bottom. For the file comment these will get stripped out, however for
+            comments on other c constructs like macros, functions, etc. clang is often
+            utilized and it does not understand this pattern, so the
+            c-autodoc-pre-process hook may be something to use to sanitize these kind
+            of comments.
+
+            TOO_SIMPLE
+
+            A simple macro definition
+
+            int some_flag_variable
+
+            File level variables can also be documented"""
+
+        directive = AutodocDirective('autocmodule', ['example.c'],
+                                     {'members': 'TOO_SIMPLE, not_here, some_flag_variable'},
+                                     None, None, None, None, sphinx_state, None)
+
+        assert dedent(example_c) == self.get_directive_output(directive)
+
+        warnings = sphinx_state.env.app._warning.getvalue()
+
+        messages = ("Missing member \"not_here\"",)
+        for message in messages:
+            assert message in warnings
+
+
+    @staticmethod
+    def get_directive_output(directive):
+        """
+        Get the textual output from running the `directive`.
+
+        directive (AutoCDirective): The directive to get the simple text for.
+
+        Returns:
+            str: The simple text from running `directive`.
+        """
+        output = directive.run()
+
+        #  1. Module paragraph
+        #  2. Index entry for function
+        #  3. Function paragraph
+        #  4. Index entry for next function
+        #  5. Function paragraph
+        #  ...
+        docs = (o.astext() for o in output[::1])
+
+        body = '\n'.join(docs)
+        return body

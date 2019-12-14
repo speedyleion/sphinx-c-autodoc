@@ -52,11 +52,15 @@ from docutils.statemachine import ViewList, StringList
 from docutils import nodes
 from sphinx.application import Sphinx
 from sphinx.directives import SphinxDirective
-from sphinx.ext.autodoc import Documenter, members_option
+from sphinx.util import logging
 from sphinx.util.docstrings import prepare_docstring
+from sphinx.ext.autodoc import Documenter, members_option
 from sphinx.ext.autodoc.directive import DocumenterBridge
 
 from sphinx_c_autodoc import loader
+
+
+logger = logging.getLogger(__name__)
 
 
 class CObjectDocumenter(Documenter):
@@ -162,11 +166,11 @@ class CObjectDocumenter(Documenter):
             if os.path.isfile(filename):
                 break
         else:
-            self.directive.state.document.reporter.warning(
+            logger.warning(
                 "Unable to find file, %s, in any of the directories %s "
                 "all directories are relative to the sphinx configuration "
                 "file" % (self.get_real_modname(), self.env.config.c_root),
-                line=self.directive.lineno,
+                location=(self.env.docname, self.directive.lineno),
             )
             return False
 
@@ -217,7 +221,24 @@ class CObjectDocumenter(Documenter):
         If *want_all* is True, return all members.  Else, only return those
         members given by *self.options.members* (which may also be none).
         """
-        return False, list(self.object.children.items())
+        if want_all:
+            return False, list(self.object.children.items())
+
+        # The caller sets `want_all` if :attr:`options.members` is ALL, so it
+        # should be safe to assume this is a list or None at this point.
+        desired_members = self.options.members or []
+
+        object_members: List[Tuple[str, Any]] = []
+        for member in desired_members:
+            if member in self.object.children:
+                object_members.append((member, self.object.children[member]))
+            else:
+                logger.warning(
+                    'Missing member "%s" in object "%s"' % (member, self.fullname),
+                    type="c_autodoc",
+                )
+
+        return False, object_members
 
     def filter_members(
         self, members: List[Tuple[str, Any]], want_all: bool

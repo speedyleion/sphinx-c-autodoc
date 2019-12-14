@@ -8,3 +8,4 @@ Example C File
    original_c_file
 
 .. autocmodule:: example.c
+   :members:
