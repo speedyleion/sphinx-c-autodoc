@@ -7,7 +7,7 @@ It is composed of multiple directives and settings:
 
     A directive which will automatically load `filename` and create the
     documentation for it.  The `filename` is relative to the config value
-    `c_root`.  This can be used for both c source files as
+    `c_autodoc_roots`.  This can be used for both c source files as
     well as c header files.
 
     This will basically in place expand into:
@@ -46,7 +46,7 @@ import os
 
 from itertools import groupby
 
-from typing import cast, Any, List, Optional, Tuple, Dict, Callable
+from typing import cast, Any, List, Optional, Tuple
 
 from docutils.statemachine import ViewList, StringList
 from docutils import nodes
@@ -80,12 +80,9 @@ class CObjectDocumenter(Documenter):
     # objects
     priority = 11
 
-    option_spec: Dict[str, Callable] = {
+    option_spec = {
         "members": members_option,
     }
-
-    objpath: List[str]
-    directive: DocumenterBridge
 
     @classmethod
     def can_document_member(
@@ -160,7 +157,7 @@ class CObjectDocumenter(Documenter):
 
         This will load the C file's documented structure into :attr:`object`
         """
-        for source_dir in self.env.config.c_root:
+        for source_dir in self.env.config.c_autodoc_roots:
             filename = os.path.join(source_dir, self.get_real_modname())
             rel_filename, filename = self.env.relfn2path(filename)
             if os.path.isfile(filename):
@@ -169,7 +166,7 @@ class CObjectDocumenter(Documenter):
             logger.warning(
                 "Unable to find file, %s, in any of the directories %s "
                 "all directories are relative to the sphinx configuration "
-                "file" % (self.get_real_modname(), self.env.config.c_root),
+                "file" % (self.get_real_modname(), self.env.config.c_autodoc_roots),
                 location=(self.env.docname, self.directive.lineno),
             )
             return False
@@ -202,7 +199,7 @@ class CObjectDocumenter(Documenter):
         if self.objpath:
             for obj in self.objpath:
                 self.object_name = obj
-                self.object = self.object.children[self.object_name]
+                self.object = self.object.children[self.object_name]  # type: ignore
 
         return True
 
@@ -645,5 +642,5 @@ def setup(app: Sphinx) -> None:
     app.add_autodocumenter(CMacroDocumenter)
     app.add_autodocumenter(CDataDocumenter)
     app.add_directive_to_domain("c", "module", CModule)
-    app.add_config_value("c_root", [""], "env")
+    app.add_config_value("c_autodoc_roots", [""], "env")
     app.add_event("c-autodoc-pre-process")

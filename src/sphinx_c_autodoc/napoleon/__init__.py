@@ -46,10 +46,10 @@ class CAutoDocString(GoogleDocstring):
                     sections["my_custom_section"] = self._some_method
 
         Returns:
-            Dict[str, Callable]: The dictionary that should be used
-            :attr:`_sections`.
+            Dict[str, Callable]: The dictionary of sections to methods that
+            should be used :attr:`_sections`.
         """
-        default_sections = {
+        default_sections: Dict[str, Callable] = {
             "args": self._parse_parameters_section,
             "arguments": self._parse_parameters_section,
             "attention": partial(self._parse_admonition, "attention"),
@@ -114,7 +114,7 @@ class CAutoDocString(GoogleDocstring):
 
 
 def process_autodoc_docstring(
-    app: Sphinx,
+    app: Any,
     what: str,
     name: str,
     obj: Any,

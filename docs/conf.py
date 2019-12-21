@@ -205,7 +205,7 @@ todo_include_todos = True
 
 # -- Options for sphinx_c_autodoc, the extension being documented -----------
 
-c_root = ['../tests/assets/c_source']
+c_autodoc_roots = ['../tests/assets/c_source']
 
 set_type_checking_flag = True
 
