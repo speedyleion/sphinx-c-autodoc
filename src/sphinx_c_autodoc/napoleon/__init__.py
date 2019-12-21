@@ -4,7 +4,7 @@ similar to the `Attributes` section in python objects.
 """
 from functools import partial
 
-from typing import Optional, Any, List, Union
+from typing import Optional, Any, List, Union, Dict, Callable
 
 from sphinx.config import Config
 from sphinx.ext.autodoc import Options
@@ -31,37 +31,55 @@ class CAutoDocString(GoogleDocstring):
         options: Optional[Options] = None,
     ) -> None:
         if not hasattr(self, "_sections"):
-            self._sections = {
-                "args": self._parse_parameters_section,
-                "arguments": self._parse_parameters_section,
-                "attention": partial(self._parse_admonition, "attention"),
-                "attributes": self._parse_attributes_section,
-                "caution": partial(self._parse_admonition, "caution"),
-                "danger": partial(self._parse_admonition, "danger"),
-                "enumerations": partial(self._parse_nested_section, "macro"),
-                "error": partial(self._parse_admonition, "error"),
-                "example": self._parse_examples_section,
-                "examples": self._parse_examples_section,
-                "hint": partial(self._parse_admonition, "hint"),
-                "important": partial(self._parse_admonition, "important"),
-                "members": partial(self._parse_nested_section, "member"),
-                "note": partial(self._parse_admonition, "note"),
-                "notes": self._parse_notes_section,
-                "parameters": self._parse_parameters_section,
-                "return": self._parse_returns_section,
-                "returns": self._parse_returns_section,
-                "references": self._parse_references_section,
-                "see also": self._parse_see_also_section,
-                "tip": partial(self._parse_admonition, "tip"),
-                "todo": partial(self._parse_admonition, "todo"),
-                "warning": partial(self._parse_admonition, "warning"),
-                "warnings": partial(self._parse_admonition, "warning"),
-                "warns": self._parse_warns_section,
-                "yield": self._parse_yields_section,
-                "yields": self._parse_yields_section,
-            }
+            self._sections = self.get_default_sections()
 
         super().__init__(docstring, config, app, what, name, obj, options)
+
+    def get_default_sections(self) -> Dict[str, Callable]:
+        """
+        Creates the dictionary that should be used in :attr:`_sections` for
+        this instance. If one wants to extend this class simply do::
+
+            class MyDocString(CAutoDocString):
+                def get_default_sections(self) -> Dict[str, Callable]:
+                    sections = super().get_default_sections()
+                    sections["my_custom_section"] = self._some_method
+
+        Returns:
+            Dict[str, Callable]: The dictionary that should be used
+            :attr:`_sections`.
+        """
+        default_sections = {
+            "args": self._parse_parameters_section,
+            "arguments": self._parse_parameters_section,
+            "attention": partial(self._parse_admonition, "attention"),
+            "attributes": self._parse_attributes_section,
+            "caution": partial(self._parse_admonition, "caution"),
+            "danger": partial(self._parse_admonition, "danger"),
+            "enumerations": partial(self._parse_nested_section, "macro"),
+            "error": partial(self._parse_admonition, "error"),
+            "example": self._parse_examples_section,
+            "examples": self._parse_examples_section,
+            "hint": partial(self._parse_admonition, "hint"),
+            "important": partial(self._parse_admonition, "important"),
+            "members": partial(self._parse_nested_section, "member"),
+            "note": partial(self._parse_admonition, "note"),
+            "notes": self._parse_notes_section,
+            "parameters": self._parse_parameters_section,
+            "return": self._parse_returns_section,
+            "returns": self._parse_returns_section,
+            "references": self._parse_references_section,
+            "see also": self._parse_see_also_section,
+            "tip": partial(self._parse_admonition, "tip"),
+            "todo": partial(self._parse_admonition, "todo"),
+            "warning": partial(self._parse_admonition, "warning"),
+            "warnings": partial(self._parse_admonition, "warning"),
+            "warns": self._parse_warns_section,
+            "yield": self._parse_yields_section,
+            "yields": self._parse_yields_section,
+        }
+
+        return default_sections
 
     # pylint: disable=unused-argument
     def _parse_nested_section(self, nested_title: str, section: str) -> List[str]:

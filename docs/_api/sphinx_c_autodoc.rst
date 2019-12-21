@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
 
    sphinx_c_autodoc.clang
+   sphinx_c_autodoc.napoleon
 
 Submodules
 ----------
