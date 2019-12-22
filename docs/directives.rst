@@ -1,0 +1,112 @@
+Directives
+==========
+
+Most C constructs are available as an `autodoc`_ style directive.
+
+Do to the fact that `autodoc`_ directives are set up into a global namespace and
+not in `domain`_ specific namespace. The directives used for auto documenting C
+constructs will have a ``c`` moniker in their names.
+
+Keeping consistent with `autodoc`_, the term **member** is used generically to
+refer to any sub construct of another C construct.  For example in this
+documentation any usage a C function may be referred to as a member of a C
+module.
+
+Common Options
+--------------
+
+.. rst:directive:option:: noindex
+
+By default the documentation instances are added to the index. To prevent an
+instance from being added to the index provide this option.
+
+.. rst:directive:: .. autocmodule:: filename
+
+    Create documentation for `filename`. The `filename` is relative to
+    :ref:`configuration:c_autodoc_roots`. This directive can be used for both
+    C source files as well as C header files.
+
+    The contents of the first documentation comment will be utilized as the
+    documentation for `filename`.
+
+    .. rst:directive:option:: members
+
+        Specify which members to recursively document.
+
+        This option has 4 states:
+
+        - Omitted will result in the ``members`` entry of
+          `autodoc_default_options <https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_default_options>`_
+          being used.  If ``members`` is omitted from
+          `autodoc_default_options <https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_default_options>`_ then no members will be automatically documented.
+        - Specified as ``:no-members:``, no members will be automatically
+          documented.
+        - Specified with no arguments, ``:members:``, then all supported C
+          constructs at the file level will be recursively documented.
+        - Specified with a comma separated list of names,
+          ``:members: function_a, struct_b``, only the file members specified will
+          be recursively documented.
+
+.. rst:directive:: .. autocfunction:: filename::function
+
+    Document the function ``function`` from file ``filename``.
+
+    The documentation will first attempt to utilize the output provided by
+    clang.  Clang can parse `Doxygen`_ style markup. So if the function
+    parameter documentation or the function return value documentation is seen
+    in the clang parsing, then the parsed clang documentation will be used.
+    Otherwise the raw function comment block will be utilized.
+
+.. rst:directive:: .. autocmacro:: filename::some_define
+
+    Document a C macro, or enumeration constant.
+
+    .. warning:: This should not be used for function like macros instead
+        utilize the ``.. autocfunction::`` directive.
+
+.. rst:directive:: .. autoctype:: filename::typedef
+
+    Document a typedef, struct, union, or enum.
+
+    .. warning:: This should not be used for enumeration constants instead
+        utilize the ``.. autocmacro::`` directive.
+
+    .. rst:directive:option:: members
+
+        Specify which members to recursively document.
+
+        This option has 4 states:
+
+        - Omitted will result in the ``members`` entry of
+          `autodoc_default_options <https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_default_options>`_
+          being used.  If ``members`` is omitted from
+          `autodoc_default_options <https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_default_options>`_
+          then no members will be automatically documented.
+        - Specified as ``:no-members:``, no members will be automatically
+          documented.
+        - Specified with no arguments, ``:members:``, then all fields (if struct
+          or union) or all enumeration constants (if an enum) will be recursively
+          documented.
+        - Specified with a comma separated list of names,
+          ``:members: field_a, field_b``, only the items specified will be
+          recursively documented.
+
+.. rst:directive:: .. autocdata:: filename::variable
+
+    Document a file level variable.
+
+.. rst:directive:: .. autocmember:: filename::struct.field
+
+    Document the specified field (if a struct or union) or specified enumeration
+    constant (if an enum).
+
+    .. note:: This is one of the overloaded uses of the term **member**. This
+        name was used to keep consistent with the
+        `member <https://www.sphinx-doc.org/en/master/usage/restructuredtext/domains.html#directive-c:member>`_
+        wording of the `C domain`_.
+
+.. _autodoc: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html
+.. _domain: https://www.sphinx-doc.org/en/master/usage/restructuredtext/domains.html
+.. _C domain: https://www.sphinx-doc.org/en/master/usage/restructuredtext/domains.html#the-c-domain
+.. _Sphinx: https://www.sphinx-doc.org/en/master/index.html
+.. _Doxygen: http://www.doxygen.nl/

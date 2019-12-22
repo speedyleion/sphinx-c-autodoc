@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to C Sphinx Extension's documentation!
-==============================================
+C Autodoc Extension For Sphinx.
+===============================
 
 .. include:: ../README.rst
    :start-after: inclusion_begin
@@ -14,7 +14,11 @@ Welcome to C Sphinx Extension's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   directives
    examples
+   configuration
+   napoleon
+   contributing
 
 
 Indices and tables

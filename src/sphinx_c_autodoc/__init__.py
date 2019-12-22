@@ -3,37 +3,6 @@ sphinx_c_autodoc is a package which provide c source file parsing for sphinx.
 
 It is composed of multiple directives and settings:
 
-.. rst:directive:: .. autocmodule:: filename
-
-    A directive which will automatically load `filename` and create the
-    documentation for it.  The `filename` is relative to the config value
-    `c_autodoc_roots`.  This can be used for both c source files as
-    well as c header files.
-
-    This will basically in place expand into:
-
-        .. c:module:: filename
-
-            Any text from the *first* comment in the file, provided that the
-            comment is not for some other construct.
-
-            .. c:type:: some_struct
-
-                .. c:member:: member_1
-
-                    any comments about this.
-
-            .. c:function:: some_funtion(int param_1, char param_2)
-
-                Comment from the function header.  The function header comment
-                is the closest preceding comment.
-
-            ...
-
-
-    Any and all :rst:dir:`c:function`, :rst:dir:`c:type`, etc at the
-    root of `filename` will be expanded into the documentation.
-
 .. rst:directive:: .. c:module:: filename
 
     A directive to document a c file.  This is similar to :rst:dir:`py:module`
@@ -54,7 +23,7 @@ from sphinx.application import Sphinx
 from sphinx.directives import SphinxDirective
 from sphinx.util import logging
 from sphinx.util.docstrings import prepare_docstring
-from sphinx.ext.autodoc import Documenter, members_option
+from sphinx.ext.autodoc import Documenter, members_option, bool_option
 from sphinx.ext.autodoc.directive import DocumenterBridge
 
 from sphinx_c_autodoc import loader
@@ -80,9 +49,7 @@ class CObjectDocumenter(Documenter):
     # objects
     priority = 11
 
-    option_spec = {
-        "members": members_option,
-    }
+    option_spec = {"members": members_option, "noindex": bool_option}
 
     @classmethod
     def can_document_member(

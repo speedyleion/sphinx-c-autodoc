@@ -21,20 +21,20 @@ sys.path.insert(0, SOURCE_DIR)
 # -- Project information -----------------------------------------------------
 
 project = u'Sphinx C Autodoc Extension'
-copyright = u'2019, Nick'
+copyright = u'2019-2020, Nick'
 author = u'Nick'
 
 # The short X.Y version
 version = u''
 # The full version, including alpha/beta/rc tags
-release = u'0.0.1'
+release = u'0.1.0'
 
 
 # -- General configuration ---------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
-# needs_sphinx = '1.0'
+needs_sphinx = '2.0'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -43,6 +43,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
+    'sphinx.ext.autosectionlabel',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.imgmath',
@@ -202,6 +203,9 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
 
+# -- Options for autosectionlabel
+
+autosectionlabel_prefix_document = True
 
 # -- Options for sphinx_c_autodoc, the extension being documented -----------
 
