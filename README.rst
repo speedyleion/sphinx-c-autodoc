@@ -83,4 +83,4 @@ Similar Tools
 Full Documentation
 ------------------
 
-The complete documentation can be found at https://sphinx-c-autodoc.readthedocs.io/en
+The complete documentation can be found at https://sphinx-c-autodoc.readthedocs.io/en/latest
