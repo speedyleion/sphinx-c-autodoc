@@ -1,7 +1,7 @@
 sphinx-c-autodoc
 ================
 
-|build-status| |coverage| |black|
+|build-status| |coverage| |black| |docs|
 
 .. inclusion_begin
 
@@ -47,8 +47,8 @@ With the resulting documentation output of:
 Requires
 --------
 
-* `autodoc`_
 * `clang <https://pypi.org/project/clang/>`_
+* `beautifulsoup4 <https://www.crummy.com/software/BeautifulSoup/bs4/doc/>`_
 
 Similar Tools
 -------------
@@ -74,4 +74,13 @@ Similar Tools
     :scale: 100%
     :target: https://github.com/psf/black
 
+.. |docs| image:: https://readthedocs.org/projects/sphinx-c-autodoc/badge/?version=latest
+    :alt: Documentation Status
+    :target: https://sphinx-c-autodoc.readthedocs.io/en/latest/?badge=latest
+
 .. inclusion_end
+ 
+Full Documentation
+------------------
+
+The complete documentation can be found at https://sphinx-c-autodoc.readthedocs.io/en

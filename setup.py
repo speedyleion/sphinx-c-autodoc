@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="sphinx-c-autodoc",
-    version="0.0.1",
+    version="0.1.0",
     description="A sphinx autodoc extension for c modules",
     url="https://github.com/speedyleion/sphinx-c-autodoc",
     package_dir={"":"src"},

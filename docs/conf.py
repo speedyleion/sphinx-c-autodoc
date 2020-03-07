@@ -25,7 +25,7 @@ copyright = u'2019-2020, Nick'
 author = u'Nick'
 
 # The short X.Y version
-version = u''
+version = u'0.1'
 # The full version, including alpha/beta/rc tags
 release = u'0.1.0'
 
@@ -34,7 +34,7 @@ release = u'0.1.0'
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
-needs_sphinx = '2.0'
+# needs_sphinx = '1.0'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -238,3 +238,11 @@ set_type_checking_flag = True
 #             mod_file.writelines(contents)
 #     except:
 #         pass
+
+# force libclang access for read the docs.
+# Read the docs installs doxygen which will install libclang, unfortunatly it
+# doesn't appear the so is in the path so need to grab a _backend_ version of
+# the file.
+if 'READTHEDOCS' in os.environ:
+    from clang import cindex
+    cindex.Config.set_library_file("/usr/lib/x86_64-linux-gnu/libclang-6.0.so.1")
