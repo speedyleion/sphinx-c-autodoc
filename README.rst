@@ -40,7 +40,6 @@ With the resulting documentation output of:
     :param b: The value to add to `a`
     :returns: The sum of `a` and `b`
 
-
 .. _autodoc: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html
 .. _Sphinx: https://www.sphinx-doc.org/en/master/index.html
 
@@ -79,7 +78,7 @@ Similar Tools
     :target: https://sphinx-c-autodoc.readthedocs.io/en/latest/?badge=latest
 
 .. inclusion_end
- 
+
 Full Documentation
 ------------------
 
