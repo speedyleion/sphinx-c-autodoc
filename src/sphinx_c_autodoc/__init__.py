@@ -126,14 +126,17 @@ class CObjectDocumenter(Documenter):
         """
         for source_dir in self.env.config.c_autodoc_roots:
             filename = os.path.join(source_dir, self.get_real_modname())
-            rel_filename, filename = self.env.relfn2path(filename)
+
+            # Prefixing with "/" will force "absolute" path which is relative
+            # to the source directory.
+            rel_filename, filename = self.env.relfn2path(f"/{filename}")
             if os.path.isfile(filename):
                 break
         else:
             logger.warning(
                 "Unable to find file, %s, in any of the directories %s "
-                "all directories are relative to the sphinx configuration "
-                "file" % (self.get_real_modname(), self.env.config.c_autodoc_roots),
+                "all directories are relative to the top documentation source directory"
+                % (self.get_real_modname(), self.env.config.c_autodoc_roots),
                 location=(self.env.docname, self.directive.lineno),
             )
             return False

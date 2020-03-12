@@ -27,7 +27,7 @@ def test_autodoc_of_c_file(tmp_path):
     # Check for anonymouse enumerations
     assert 'anon_example_' in contents
 
-    file_name = tmp_path / 'file_2.html'
+    file_name = tmp_path / "sub_dir" / 'file_2.html'
     with file_name.open() as f:
         contents = f.read()
 

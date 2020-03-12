@@ -8,8 +8,8 @@ c_autodoc_roots
 ^^^^^^^^^^^^^^^
 
 A list of directories which will be used to search for the files provided in the
-:ref:`directives:Directives`.  The directories are relative to the sphinx configuration
-file.
+:ref:`directives:Directives`. The directories are relative to documentation
+source directory, often where ``conf.py`` is.
 
 The list of directories will be searched in order so if duplicate named files
 exist the first one encountered in the directory list will be used.
@@ -27,7 +27,7 @@ Then a directive of the form::
 
 would be searched first as ``my/source/dir/some_file.c`` then, if not found, it
 would be searched as ``other/source/dir/some_file.c``.  Again this relative to
-the sphinx configuration file.
+the top documentation source directory.
 
 Events
 ------
