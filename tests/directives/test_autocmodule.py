@@ -50,6 +50,7 @@ class TestAutoCModule:
         ('file_with_only_comment.c', file_with_only_comment),
         ('empty_file.c', empty_file),
         ('no_leading_comment.c', no_leading_comment),
+        ('nested/module.c', module_c),
     ]
 
     @pytest.mark.parametrize('file_, expected_doc', doc_data)

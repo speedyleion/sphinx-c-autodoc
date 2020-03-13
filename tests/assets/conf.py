@@ -179,4 +179,4 @@ epub_exclude_files = ['search.html']
 # -- Extension configuration -------------------------------------------------
 
 primary_domain = 'c'
-c_autodoc_roots = ['c_source', 'c_source_2/nested']
+c_autodoc_roots = ['c_source', 'c_source_2', 'c_source_2/nested']

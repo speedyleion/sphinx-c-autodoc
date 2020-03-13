@@ -12,10 +12,11 @@ It is composed of multiple directives and settings:
 
 """
 import os
+import re
 
 from itertools import groupby
 
-from typing import cast, Any, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 from docutils.statemachine import ViewList, StringList
 from docutils import nodes
@@ -78,8 +79,44 @@ class CObjectDocumenter(Documenter):
             isinstance(parent, CObjectDocumenter) and member.type == cls.directivetype
         )
 
+    def parse_name(self) -> bool:
+        """Determine what module to import and what attribute to document.
+
+        .. note:: Sphinx autodoc supports args and return anotation, since
+            this is targeting C and it isn't currently needed, these won't be
+            supported by this implementation.
+
+        Returns:
+            bool: True if successfully parsed and sets :attr:`modname`,
+                :attr:`objpath`, :attr:`fullname`.
+
+                False if the signature couldn't be parsed.
+        """
+        c_autodoc_re = re.compile(r"^([\w\/\\.]+)(::([\w.]+\.)?(\w+))?\s*$")
+
+        try:
+            match = c_autodoc_re.match(self.name)
+            fullname, _, path, base = match.groups()  # type: ignore
+        except AttributeError:
+            logger.warning(
+                "invalid signature for auto%s (%r)" % (self.objtype, self.name),
+                type="c_autodoc",
+            )
+            return False
+
+        parents: List[str]
+        if path is None:
+            parents = []
+        else:
+            parents = path.rstrip(".").split(".")
+
+        self.modname, self.objpath = self.resolve_name(fullname, parents, path, base)
+
+        self.fullname = self.modname
+        return True
+
     def resolve_name(
-        self, modname: Optional[str], parents: List[str], path: Optional[str], base: str
+        self, modname: str, parents: List[str], path: Optional[str], base: str
     ) -> Tuple[str, List[str]]:
         """
         Resolve the module and object name of the object to document.
@@ -90,8 +127,7 @@ class CObjectDocumenter(Documenter):
           `my_file.c::some_func`.
 
         Args:
-            modname (str): Only set when called with double colons.  This will
-                be the left side of the double colons.
+            modname (str): The filename of the c file (module)
             parents (list): The list split('.') version of path.
 
                 - The filename without the extension when naked argument is used.
@@ -104,20 +140,16 @@ class CObjectDocumenter(Documenter):
                 - None if `parents` is the empty list.
                 - The ``'.'.join()`` version of `parents`, with a trailing ``.``.
 
-            base (str): The name of the object:
-
-                - This will be the file extension when naked argument is used.
-                - This will be the object, function, type, etc when double colon
-                  argument is used.
+            base (str): The name of the object to document. This will be None
+                when the object to document is the c module
 
         Returns:
             tuple: (str, [str]) The module name, and the object names (if any).
-                The object names will be joined with a `.`.
         """
-        if modname:
+        if base:
             return modname, parents + [base]
 
-        return cast(str, path) + base, []
+        return modname, []
 
     def import_object(self) -> bool:
         """Load the C file and build up the document structure.

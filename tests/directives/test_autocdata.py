@@ -7,6 +7,7 @@ import pytest
 
 from sphinx.ext.autodoc.directive import AutodocDirective
 
+
 class TestAutoCData:
     """
     Testing class for the autocdata directive
@@ -46,3 +47,22 @@ class TestAutoCData:
         # For whatever reason the as text comes back with double spacing, so we
         # knock it down to single spacing to make the expected string smaller.
         assert dedent(expected_doc) == body.astext().replace('\n\n', '\n')
+
+    def test_incorrectly_specified_variable_causes_warning(self, sphinx_state):
+        """
+        Test that when a directive string is for an unparsable variable name
+        a warning is thrown.
+        """
+        directive = AutodocDirective('autocdata', ['example.c::unparseable-kabab'],
+                                     {'members': None},
+                                     None, None, None, None, sphinx_state, None)
+
+        output = directive.run()
+
+        warnings = sphinx_state.env.app._warning.getvalue()
+
+        messages = ("invalid signature for autocdata",)
+        for message in messages:
+            assert message in warnings
+
+        assert [] == output
