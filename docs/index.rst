@@ -19,6 +19,7 @@ C Autodoc Extension For Sphinx.
    configuration
    napoleon
    contributing
+   changelog
 
 
 Indices and tables
