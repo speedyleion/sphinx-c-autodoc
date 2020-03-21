@@ -7,14 +7,21 @@ Subpackages
 .. toctree::
 
    sphinx_c_autodoc.clang
+   sphinx_c_autodoc.domains
    sphinx_c_autodoc.napoleon
+   sphinx_c_autodoc.viewcode
 
 Submodules
 ----------
 
-.. toctree::
+sphinx\_c\_autodoc.loader module
+--------------------------------
 
-   sphinx_c_autodoc.loader
+.. automodule:: sphinx_c_autodoc.loader
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------

@@ -23,5 +23,5 @@ typedef struct
 
 int * a_neat_func(int * first_one, char * second)
 {
-    printf('hello');
+    printf("hello");
 }

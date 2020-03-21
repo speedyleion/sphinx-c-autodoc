@@ -39,4 +39,3 @@ describing why that coverage wasn't able to be covered in automated tests.
 .. |coverage| image:: https://codecov.io/gh/speedyleion/sphinx-c-autodoc/branch/master/graph/badge.svg
     :alt: Coverage
     :target: https://codecov.io/gh/speedyleion/sphinx-c-autodoc
-

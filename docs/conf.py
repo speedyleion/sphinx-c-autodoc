@@ -52,6 +52,7 @@ extensions = [
     'sphinx_rtd_theme',
     'sphinx_c_autodoc',
     'sphinx_c_autodoc.napoleon',
+    'sphinx_c_autodoc.viewcode',
     # Unfortunatly the typehints fail for the autodoc Documenter class, would
     # really like to work around this, but also want to keep the warning output
     # clean since this is a sphinx extension and would like to know when/if it
@@ -81,7 +82,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = [u'_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = [u'_build', 'Thumbs.db', '.DS_Store', 'CHANGELOG.rst']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None

@@ -15,6 +15,7 @@ class TestAutoCFunction:
     .. note:: Parens are missing in the signature for astext(), but they show up in
         html output.
     """
+
     single_line_comment = """\
         void single_line_function_comment
         A Single line function comment"""
@@ -38,7 +39,6 @@ class TestAutoCFunction:
         param2 -- An alternative second parameter
         Returns
         Some return value."""
-
 
     # The clang/doxygen parsing removes newlines but keeps the indentation
     # spaces. This should be collapsed in html output.
@@ -72,24 +72,35 @@ class TestAutoCFunction:
         A function like macro with 2 parameters"""
 
     doc_data = [
-        ('functions.c::single_line_function_comment', single_line_comment),
-        ('functions.c::return_value_function', return_value_function),
-        ('functions.c::multiple_parameters', multiple_parameters),
-        ('functions.c::sphinx_documented_parameters', sphinx_documented_parameters),
-        ('functions.c::doxy_documented_parameters', doxy_documented_parameters),
-        ('functions.c::doxy_documented_parameters_no_returns', doxy_documented_parameters_no_returns),
-        ('functions.c::undocumented_function', undocumented_function),
-        ('macros.c::FUNCTION_LIKE_MACRO', function_like_macro),
+        ("functions.c::single_line_function_comment", single_line_comment),
+        ("functions.c::return_value_function", return_value_function),
+        ("functions.c::multiple_parameters", multiple_parameters),
+        ("functions.c::sphinx_documented_parameters", sphinx_documented_parameters),
+        ("functions.c::doxy_documented_parameters", doxy_documented_parameters),
+        (
+            "functions.c::doxy_documented_parameters_no_returns",
+            doxy_documented_parameters_no_returns,
+        ),
+        ("functions.c::undocumented_function", undocumented_function),
+        ("macros.c::FUNCTION_LIKE_MACRO", function_like_macro),
     ]
 
-    @pytest.mark.parametrize('function, expected_doc', doc_data)
+    @pytest.mark.parametrize("function, expected_doc", doc_data)
     def test_doc(self, function, expected_doc, sphinx_state):
         """
         Tests the restructured text output returned by the directive.
         """
-        directive = AutodocDirective('autocfunction', [function],
-                                     {'members': None}, None, None, None,
-                                     None, sphinx_state, None)
+        directive = AutodocDirective(
+            "autocfunction",
+            [function],
+            {"members": None},
+            None,
+            None,
+            None,
+            None,
+            sphinx_state,
+            None,
+        )
         output = directive.run()
 
         # First item is the index entry
@@ -98,4 +109,4 @@ class TestAutoCFunction:
 
         # For whatever reason the as text comes back with double spacing, so we
         # knock it down to single spacing to make the expected string smaller.
-        assert dedent(expected_doc) == body.astext().replace('\n\n', '\n')
+        assert dedent(expected_doc) == body.astext().replace("\n\n", "\n")

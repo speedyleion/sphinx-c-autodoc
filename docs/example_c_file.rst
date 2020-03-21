@@ -1,11 +1,11 @@
-
 Example C File
 ==============
 
-.. toctree::
-   :maxdepth: 2
+Below is an example of a auto documenting an entire C file. Click on any of
+the ``[source]`` links to jump to the location in the raw source file.
 
-   original_c_file
+Begin Autodocumented C File
+---------------------------
 
 .. autocmodule:: example.c
    :members:

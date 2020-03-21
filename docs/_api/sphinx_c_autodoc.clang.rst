@@ -4,10 +4,22 @@ sphinx\_c\_autodoc.clang package
 Submodules
 ----------
 
-.. toctree::
+sphinx\_c\_autodoc.clang.comments module
+----------------------------------------
 
-   sphinx_c_autodoc.clang.comments
-   sphinx_c_autodoc.clang.patches
+.. automodule:: sphinx_c_autodoc.clang.comments
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+sphinx\_c\_autodoc.clang.patches module
+---------------------------------------
+
+.. automodule:: sphinx_c_autodoc.clang.patches
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------

@@ -15,9 +15,11 @@ C Autodoc Extension For Sphinx.
    :caption: Contents:
 
    directives
-   examples
+   example_c_file
    configuration
    napoleon
+   viewcode
+   developer_notes
    contributing
    changelog
 

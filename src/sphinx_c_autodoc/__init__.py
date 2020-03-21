@@ -11,23 +11,51 @@ It is composed of multiple directives and settings:
 
 
 """
+import json
 import os
 import re
 
+from dataclasses import dataclass, field
 from itertools import groupby
 
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional, Tuple, Dict
 
 from docutils.statemachine import ViewList, StringList
 from docutils import nodes
+from sphinx.domains.c import CObject
 from sphinx.application import Sphinx
-from sphinx.directives import SphinxDirective
 from sphinx.util import logging
 from sphinx.util.docstrings import prepare_docstring
 from sphinx.ext.autodoc import Documenter, members_option, bool_option
 from sphinx.ext.autodoc.directive import DocumenterBridge
 
 from sphinx_c_autodoc import loader
+from sphinx_c_autodoc.domains.c import patch_c_domain
+
+
+# TODO not real fond of this being here in the main c autodoc file, need to
+# find a way to make it easier to cache the documented files.
+@dataclass
+class ViewCodeListing:
+    """
+    A data structure used for constructing a viewcode source listing.
+
+    Attributes:
+        raw_listing:
+            The plain text representation of the code. This should be
+            basically the output of file.read().
+
+        ast (Dict):
+            A dictionary like representation of the code constructs.
+            See :ref:`developer_notes:Common Terms`.
+
+        doc_links (Dict): To be used by the consumers, i.e. viewcode.
+
+    """
+
+    raw_listing: str
+    ast: Dict
+    doc_links: Dict = field(default_factory=dict)
 
 
 logger = logging.getLogger(__name__)
@@ -175,23 +203,27 @@ class CObjectDocumenter(Documenter):
 
         self.env.note_dependency(rel_filename)
 
+        source_dict = getattr(self.env, "_viewcode_c_modules", {})
+        self.env._viewcode_c_modules = source_dict  # type: ignore
+
         # TODO The :attr:`temp_data` is reset for each document ideally want to
         # use or make an attribute on `self.env` that is reset per run or just
         # not pickled.
-        if "c:loaded_modules" not in self.env.temp_data:
-            self.env.temp_data["c:loaded_modules"] = {}
+        modules_dict = self.env.temp_data.setdefault("c:loaded_modules", {})
 
-        if filename not in self.env.temp_data["c:loaded_modules"]:
+        if filename not in modules_dict:
             with open(filename) as f:
                 contents = [f.read()]
 
             # let extensions preprocess files
             self.env.app.emit("c-autodoc-pre-process", filename, contents)
-            self.env.temp_data["c:loaded_modules"][filename] = loader.load(
-                filename, contents[0]
+            modules_dict[filename] = loader.load(filename, contents[0])
+            ast = json.loads(str(modules_dict[filename]))
+            source_dict.setdefault(
+                self.get_real_modname(), ViewCodeListing(contents[0], ast)
             )
 
-        self.module = self.env.temp_data["c:loaded_modules"][filename]
+        self.module = modules_dict[filename]
 
         self.object = self.module
         self.object_name = self.name
@@ -279,16 +311,6 @@ class CObjectDocumenter(Documenter):
         will be the `(int hello, int what)` portion of the header.
         """
         return self.object.format_args(**kwargs)
-
-    def add_directive_header(self, sig: str) -> None:
-        """Add the directive header and options to the generated content."""
-
-        # save off the :attr:`objpath`, this will prevent the :module: option
-        # from being populated in some directives
-        objpath = self.objpath
-        self.objpath = []
-        super().add_directive_header(sig)
-        self.objpath = objpath
 
 
 class CModuleDocumenter(CObjectDocumenter):
@@ -479,7 +501,8 @@ class CTypeDocumenter(CObjectDocumenter):
 
         return directive
 
-    def _merge_directives(self, directives: List[StringList]) -> StringList:
+    @staticmethod
+    def _merge_directives(directives: List[StringList]) -> StringList:
         """
         Args:
             directives (list(StringList)): The list of directives to merge.
@@ -489,15 +512,24 @@ class CTypeDocumenter(CObjectDocumenter):
         """
         merged_heading = StringList()
         merged_directive = StringList()
+        merged_options = StringList()
         for directive in directives:
+            options, _, _ = directive.get_indented(
+                1, until_blank=True, strip_indent=False
+            )
+            if options:
+                merged_options.extend(options)
+                del directive[1 : 1 + len(options)]
+
             directive_heading = directive[0]
-            directive[0] = self.indent
+            del directive[0]
 
             merged_directive.extend(directive)
             if len(directive_heading) > len(merged_heading):
                 merged_heading = directive_heading
 
-        merged_directive[0] = merged_heading
+        merged_directive.insert(0, merged_options)
+        merged_directive.insert(0, merged_heading, source=merged_directive.source(0))
         return merged_directive
 
     def consolidate_members(self) -> StringList:
@@ -608,7 +640,7 @@ class CDataDocumenter(CObjectDocumenter):
         return isinstance(parent, CObjectDocumenter) and member.type == "variable"
 
 
-class CModule(SphinxDirective):
+class CModule(CObject):
     """
     Module directive for C files
     """
@@ -646,3 +678,5 @@ def setup(app: Sphinx) -> None:
     app.add_directive_to_domain("c", "module", CModule)
     app.add_config_value("c_autodoc_roots", [""], "env")
     app.add_event("c-autodoc-pre-process")
+
+    patch_c_domain()

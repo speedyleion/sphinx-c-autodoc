@@ -12,6 +12,7 @@ class TestAutoCType:
     """
     Testing class for the autoctype directive
     """
+
     my_int = """\
         typedef int my_int
         This is basic typedef from a native type to another name."""
@@ -105,26 +106,34 @@ class TestAutoCType:
         float three
         The third member of parent struct"""
 
-
     doc_data = [
-        ('types.c::my_int', my_int),
-        ('types.c::my_struct_type', my_struct_type),
-        ('types.c::some_struct', some_struct),
-        ('types.c::typedefed_struct', typedefed_struct),
-        ('types.c::undocumented', undocumented),
-        ('types.c::documented_members', documented_members),
-        ('types.c::a_union_type', a_union_type),
-        ('types.c::a_multiply_documented_union_type', a_multiply_documented_union_type),
-        ('types.c::nested_struct', nested_struct),
+        ("types.c::my_int", my_int),
+        ("types.c::my_struct_type", my_struct_type),
+        ("types.c::some_struct", some_struct),
+        ("types.c::typedefed_struct", typedefed_struct),
+        ("types.c::undocumented", undocumented),
+        ("types.c::documented_members", documented_members),
+        ("types.c::a_union_type", a_union_type),
+        ("types.c::a_multiply_documented_union_type", a_multiply_documented_union_type),
+        ("types.c::nested_struct", nested_struct),
     ]
 
-    @pytest.mark.parametrize('type_, expected_doc', doc_data)
+    @pytest.mark.parametrize("type_, expected_doc", doc_data)
     def test_doc(self, type_, expected_doc, sphinx_state):
         """
         Tests the restructured text output returned by the directive.
         """
-        directive = AutodocDirective('autoctype', [type_], {'members': None},
-                                     None, None, None, None, sphinx_state, None)
+        directive = AutodocDirective(
+            "autoctype",
+            [type_],
+            {"members": None},
+            None,
+            None,
+            None,
+            None,
+            sphinx_state,
+            None,
+        )
         output = directive.run()
 
         # First item is the index entry
@@ -133,4 +142,4 @@ class TestAutoCType:
 
         # For whatever reason the as text comes back with double spacing, so we
         # knock it down to single spacing to make the expected string smaller.
-        assert dedent(expected_doc) == body.astext().replace('\n\n', '\n')
+        assert dedent(expected_doc) == body.astext().replace("\n\n", "\n")

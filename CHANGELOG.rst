@@ -9,6 +9,12 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `v0.2.0-dev`_ (unreleased)
 ==========================
 
+Added
+-----
+
+* Viewcode functionality which allows for listing the source C files and
+  providing links between the documentation and the C source listings.
+
 Fixes
 -----
 

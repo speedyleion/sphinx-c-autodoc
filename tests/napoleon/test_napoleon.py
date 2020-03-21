@@ -9,16 +9,17 @@ from sphinx.ext.autodoc.directive import AutodocDirective
 
 from sphinx_c_autodoc.napoleon import CAutoDocString
 
+
 class CustomNapoleonDocString(CAutoDocString):
     def __init__(
         self,
         docstring,
-        config = None,
-        app = None,
-        what = "",
-        name = "",
-        obj = None,
-        options = None,
+        config=None,
+        app=None,
+        what="",
+        name="",
+        obj=None,
+        options=None,
     ):
         self._sections = {
             "the nonexistent section": self._parse_parameters_section,
@@ -27,24 +28,23 @@ class CustomNapoleonDocString(CAutoDocString):
 
 
 def process_autodoc_docstring(
-    app,
-    what,
-    name,
-    obj,
-    options,
-    lines,
+    app, what, name, obj, options, lines,
 ):
     """
     Call back for autodoc's ``autodoc-process-docstring`` event.
     """
-    docstring = CustomNapoleonDocString(lines, app.config, app, what, name, obj, options)
+    docstring = CustomNapoleonDocString(
+        lines, app.config, app, what, name, obj, options
+    )
     result_lines = docstring.lines()
     lines[:] = result_lines[:]
+
 
 class TestNapoleonSections:
     """
     Test the new custom napoleon sections
     """
+
     napoleon_documented_function = """\
         int napoleon_documented_functionint\xa0yes, int\xa0another_one
         One can also use Goolge style docstrings with napoleon for documenting
@@ -97,19 +97,35 @@ class TestNapoleonSections:
         Just to be sure."""
 
     doc_data = [
-        ('example.c::napoleon_documented_function', 'function', napoleon_documented_function),
-        ('example.c::members_documented_with_napoleon', 'type', members_documented_with_napoleon),
-        ('example.c::some_enum', 'type', some_enum),
+        (
+            "example.c::napoleon_documented_function",
+            "function",
+            napoleon_documented_function,
+        ),
+        (
+            "example.c::members_documented_with_napoleon",
+            "type",
+            members_documented_with_napoleon,
+        ),
+        ("example.c::some_enum", "type", some_enum),
     ]
 
-    @pytest.mark.parametrize('item, type_, expected_doc', doc_data)
+    @pytest.mark.parametrize("item, type_, expected_doc", doc_data)
     def test_doc(self, item, type_, expected_doc, sphinx_state):
         """
         Tests the restructured text output returned by the directive.
         """
-        directive = AutodocDirective(f'autoc{type_}', [item],
-                                     {'members': None}, None, None, None,
-                                     None, sphinx_state, None)
+        directive = AutodocDirective(
+            f"autoc{type_}",
+            [item],
+            {"members": None},
+            None,
+            None,
+            None,
+            None,
+            sphinx_state,
+            None,
+        )
         output = directive.run()
 
         # First item is the index entry
@@ -118,7 +134,7 @@ class TestNapoleonSections:
 
         # For whatever reason the as text comes back with double spacing, so we
         # knock it down to single spacing to make the expected string smaller.
-        assert body.astext().replace('\n\n', '\n') == dedent(expected_doc)
+        assert body.astext().replace("\n\n", "\n") == dedent(expected_doc)
 
     def test_custom_napoleon_section(self, sphinx_state):
         """
@@ -132,10 +148,20 @@ class TestNapoleonSections:
             first_param -- A parameter to document
             second_param -- Why not"""
 
-        sphinx_state.env.app.connect("autodoc-process-docstring", process_autodoc_docstring)
-        directive = AutodocDirective('autocfunction', ['functions.c::custom_napoleon_section'],
-                                     {'members': None}, None, None, None,
-                                     None, sphinx_state, None)
+        sphinx_state.env.app.connect(
+            "autodoc-process-docstring", process_autodoc_docstring
+        )
+        directive = AutodocDirective(
+            "autocfunction",
+            ["functions.c::custom_napoleon_section"],
+            {"members": None},
+            None,
+            None,
+            None,
+            None,
+            sphinx_state,
+            None,
+        )
         output = directive.run()
 
         # First item is the index entry
@@ -144,4 +170,4 @@ class TestNapoleonSections:
 
         # For whatever reason the as text comes back with double spacing, so we
         # knock it down to single spacing to make the expected string smaller.
-        assert body.astext().replace('\n\n', '\n') == dedent(custom_napoleon_section)
+        assert body.astext().replace("\n\n", "\n") == dedent(custom_napoleon_section)

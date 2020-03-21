@@ -9,7 +9,7 @@ import textwrap
 
 from collections import OrderedDict, namedtuple
 from itertools import takewhile
-from typing import Any, List, Optional, Union, Dict
+from typing import Any, List, Optional, Union, Dict, Tuple
 
 from bs4 import BeautifulSoup
 from bs4.element import Tag
@@ -62,9 +62,11 @@ class DocumentedObject:
             example for structs this would be the members or fields.
         _soup (:class:`~bs4.BeautifulSoup`): The soupified version of
             :attr:`node`'s clang xml comment.
-        _declaration: The declaration string. For most things this is
+        _declaration (str): The declaration string. For most things this is
             the type as well as the name.
-
+        _line_range (Tuple[int, int]): The line range of the C construct,
+            this will include any leading or trailing comments that may be
+            part of the constructs documentation.
     """
 
     type_ = "object"
@@ -76,6 +78,27 @@ class DocumentedObject:
         self._children: Optional[OrderedDict] = None
         self._soup: Optional[BeautifulSoup] = None
         self._declaration: Optional[str] = None
+        self._line_range: Optional[Tuple[int, int]] = None
+
+    def line_range(self) -> Tuple[int, int]:
+        """
+        The lines in the source file that this object covers.
+
+        This will include any leading or trailing comments that may be part
+        of the constructs documentation.
+        """
+        if self._line_range is None:
+            node_extent = self.node.extent
+            comment_extent = self.node.comment_extent
+            if comment_extent.start.file is None:
+                comment_extent = node_extent
+
+            self._line_range = (
+                min(node_extent.start.line, comment_extent.start.line),
+                max(node_extent.end.line, comment_extent.end.line),
+            )
+
+        return self._line_range
 
     @property
     def type(self) -> str:
@@ -118,6 +141,11 @@ class DocumentedObject:
         obj_dict["doc"] = self.doc
         obj_dict["type"] = self.type
         obj_dict["name"] = self.name
+
+        line_range = self.line_range()
+        obj_dict["start_line"] = line_range[0]
+        obj_dict["end_line"] = line_range[1]
+
         if self.children:
             obj_dict["children"] = []
 
@@ -712,10 +740,10 @@ def comment_nodes(cursor: Cursor, children: List[Cursor]) -> None:
             continue
 
         # This may not be 100% accurate but move the end to the previous
-        # line. This solves problems like macro defintions not including the
+        # line. This solves problems like macro definitions not including the
         # preprocessor `#define` tokens.
         #
-        #                             <-- prveious line
+        #                             <-- previous line
         #     #define SOME_MACRO 23
         #             ^            ^ (Note `end` is exclusive)
         #             |            |

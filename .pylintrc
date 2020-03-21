@@ -197,7 +197,7 @@ valid-classmethod-first-arg=mcs,cls
 
 # these are common "protected" variable names that are usually acceptable
 # to access. For example, the ._fields attribute on a namedtuple()
-exclude-protected=_asdict,_fields,_replace,_source,_make
+exclude-protected=_asdict,_fields,_replace,_source,_make,_viewcode_c_modules
 
 
 [DESIGN]

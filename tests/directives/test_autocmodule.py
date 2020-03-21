@@ -14,6 +14,7 @@ class TestAutoCModule:
     """
     Testing class for the autocmodule directive
     """
+
     module_c = """\
         This is a file comment
 
@@ -45,22 +46,30 @@ class TestAutoCModule:
         Description of type"""
 
     doc_data = [
-        ('module.c', module_c),
-        ('no_file_comment.c', no_file_comment),
-        ('file_with_only_comment.c', file_with_only_comment),
-        ('empty_file.c', empty_file),
-        ('no_leading_comment.c', no_leading_comment),
-        ('nested/module.c', module_c),
+        ("module.c", module_c),
+        ("no_file_comment.c", no_file_comment),
+        ("file_with_only_comment.c", file_with_only_comment),
+        ("empty_file.c", empty_file),
+        ("no_leading_comment.c", no_leading_comment),
+        ("nested/module.c", module_c),
     ]
 
-    @pytest.mark.parametrize('file_, expected_doc', doc_data)
+    @pytest.mark.parametrize("file_, expected_doc", doc_data)
     def test_doc(self, file_, expected_doc, sphinx_state):
         """
         Tests the restructured text output returned by the directive.
         """
-        directive = AutodocDirective('autocmodule', [file_],
-                                     {'members': None}, None, None, None,
-                                     None, sphinx_state, None)
+        directive = AutodocDirective(
+            "autocmodule",
+            [file_],
+            {"members": None},
+            None,
+            None,
+            None,
+            None,
+            sphinx_state,
+            None,
+        )
         assert dedent(expected_doc) == self.get_directive_output(directive)
 
     def test_fail_module_load(self, sphinx_state):
@@ -68,16 +77,24 @@ class TestAutoCModule:
         Test that a warning is raised when unable to find the module to
         document
         """
-        directive = AutodocDirective('autocmodule', ['non_existent.c'],
-                                     {'members': None}, None, 10, None,
-                                     None, sphinx_state, None)
+        directive = AutodocDirective(
+            "autocmodule",
+            ["non_existent.c"],
+            {"members": None},
+            None,
+            10,
+            None,
+            None,
+            sphinx_state,
+            None,
+        )
 
         output = directive.run()
         assert output == []
 
         warnings = sphinx_state.env.app._warning.getvalue()
 
-        messages = ('Unable to find', 'non_existent.c')
+        messages = ("Unable to find", "non_existent.c")
         for message in messages:
             assert message in warnings
 
@@ -89,9 +106,9 @@ class TestAutoCModule:
         just_file_doc = """\
             This is a file comment"""
 
-        directive = AutodocDirective('autocmodule', ['module.c'],
-                                     {}, None, None, None,
-                                     None, sphinx_state, None)
+        directive = AutodocDirective(
+            "autocmodule", ["module.c"], {}, None, None, None, None, sphinx_state, None
+        )
 
         assert dedent(just_file_doc) == self.get_directive_output(directive)
 
@@ -119,9 +136,17 @@ class TestAutoCModule:
 
             File level variables can also be documented"""
 
-        directive = AutodocDirective('autocmodule', ['example.c'],
-                                     {'members': 'TOO_SIMPLE, some_flag_variable'},
-                                     None, None, None, None, sphinx_state, None)
+        directive = AutodocDirective(
+            "autocmodule",
+            ["example.c"],
+            {"members": "TOO_SIMPLE, some_flag_variable"},
+            None,
+            None,
+            None,
+            None,
+            sphinx_state,
+            None,
+        )
 
         assert dedent(example_c) == self.get_directive_output(directive)
 
@@ -149,18 +174,25 @@ class TestAutoCModule:
 
             File level variables can also be documented"""
 
-        directive = AutodocDirective('autocmodule', ['example.c'],
-                                     {'members': 'TOO_SIMPLE, not_here, some_flag_variable'},
-                                     None, None, None, None, sphinx_state, None)
+        directive = AutodocDirective(
+            "autocmodule",
+            ["example.c"],
+            {"members": "TOO_SIMPLE, not_here, some_flag_variable"},
+            None,
+            None,
+            None,
+            None,
+            sphinx_state,
+            None,
+        )
 
         assert dedent(example_c) == self.get_directive_output(directive)
 
         warnings = sphinx_state.env.app._warning.getvalue()
 
-        messages = ("Missing member \"not_here\"",)
+        messages = ('Missing member "not_here"',)
         for message in messages:
             assert message in warnings
-
 
     @staticmethod
     def get_directive_output(directive):
@@ -182,5 +214,5 @@ class TestAutoCModule:
         #  ...
         docs = (o.astext() for o in output[::1])
 
-        body = '\n'.join(docs)
+        body = "\n".join(docs)
         return body
