@@ -542,7 +542,11 @@ def object_from_cursor(cursor: Cursor) -> Optional[DocumentedObject]:
     name = cursor.spelling
 
     if not name:
-        if cursor.kind in ALLOWED_ANONYMOUS:
+        # An anonymous construct which isn't contained in a typedef will have a
+        # type spelling of:
+        # "<construct> (anonymous at # <path_to_c_file>:<lineno>)"
+        # Typedef's should be handled by the get_nested_node() function
+        if cursor.kind in ALLOWED_ANONYMOUS and "anonymous at" in cursor.type.spelling:
             filename = os.path.basename(cursor.location.file.name)
             # remove the extension from the filename since the '.' is not a
             # valid c identifier. splitext will remove the trailing most

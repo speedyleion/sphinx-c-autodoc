@@ -4,6 +4,7 @@ Performs end to end testing of the c extension
 For all of these tests warnigns are treated as errors so that any warnings
 from bad logic can more easily be seen in the test output
 """
+import re
 import os
 import shutil
 from sphinx.cmd.build import main
@@ -26,6 +27,12 @@ def test_autodoc_of_c_file(tmp_path):
 
     # Check for anonymouse enumerations
     assert 'anon_example_' in contents
+
+    # Check for a bug where typedefed enums showed up as anonymouse and the
+    # typedef.
+    occurences = len(re.findall("THE_LAST_ENUM", contents))
+    occurences //= 2  # The text and the anchor.
+    assert occurences == 1
 
     file_name = tmp_path / "sub_dir" / 'file_2.html'
     with file_name.open() as f:

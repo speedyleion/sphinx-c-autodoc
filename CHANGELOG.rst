@@ -9,6 +9,13 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `v0.2.0-dev`_ (unreleased)
 ==========================
 
+Fixes
+-----
+
+*  Anonymous enumerations which were contained in a typedef were being documented twice.
+   Once as the typedef and once as anonymous. Now they are only documnted as
+   part of the typedef.
+
 `v0.1.1`_ (2012-03-15)
 ======================
 
