@@ -6,7 +6,10 @@ This document records all notable changes to `sphinx-c-autodoc <https://sphinx-c
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
 
-`v0.2.0-dev`_ (unreleased)
+`v0.3.0-dev`_ (unreleased)
+==========================
+
+`v0.2.0`_ (2020-04-1)
 ==========================
 
 Added
@@ -22,7 +25,7 @@ Fixes
    Once as the typedef and once as anonymous. Now they are only documnted as
    part of the typedef.
 
-`v0.1.1`_ (2012-03-15)
+`v0.1.1`_ (2020-03-15)
 ======================
 
 Fixes
@@ -39,6 +42,7 @@ Fixes
 * Initial public release
 
 
-.. _v0.2.0-dev: https://github.com/speedyleion/sphinx-c-autodoc/compare/v0.1.1...master
+.. _v0.3.0-dev: https://github.com/speedyleion/sphinx-c-autodoc/compare/v0.1.1...master
+.. _v0.2.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v0.1.1...v0.2.0
 .. _v0.1.1: https://github.com/speedyleion/sphinx-c-autodoc/compare/v0.1.0...v0.1.1
 .. _v0.1.0: https://github.com/speedyleion/sphinx-c-autodoc/commits/v0.1.0
