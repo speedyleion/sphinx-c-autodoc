@@ -192,6 +192,9 @@ epub_exclude_files = ["search.html"]
 
 
 # -- Extension configuration -------------------------------------------------
+autodoc_default_options = {
+    "private-members": True,
+}
 
 primary_domain = "c"
 c_autodoc_roots = ["c_source", "c_source_2", "c_source_2/nested"]

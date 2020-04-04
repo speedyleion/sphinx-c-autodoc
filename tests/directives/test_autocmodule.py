@@ -45,6 +45,56 @@ class TestAutoCModule:
 
         Description of type"""
 
+    file_with_private_members = """\
+
+        PRIVATE_MACRO
+
+        Defines in C files are inherently private.
+
+        PRIVATE_FUNCTION_MACRO_a, _b
+
+        Function macros in C files should also be private
+
+        typedef int foo
+
+        Types, in c files are inherently private.
+
+        static int my_var
+
+        static variables are inherently private
+
+        float a_public_var
+
+        Non static variables are not private
+
+        enum private_enum
+
+        Enumerations in c files are inherently private
+
+
+
+        ENUM_1
+
+
+
+        struct private_struct
+
+        structures in c files are inherently private
+
+
+
+        int a
+
+
+
+        void function1int\xa0a
+
+        Non static functions are not private
+
+        static void function2int\xa0a
+
+        static functions, in c files are inherently private."""
+
     doc_data = [
         ("module.c", module_c),
         ("no_file_comment.c", no_file_comment),
@@ -52,6 +102,7 @@ class TestAutoCModule:
         ("empty_file.c", empty_file),
         ("no_leading_comment.c", no_leading_comment),
         ("nested/module.c", module_c),
+        ("file_with_private_members.c", file_with_private_members),
     ]
 
     @pytest.mark.parametrize("file_, expected_doc", doc_data)
@@ -62,7 +113,7 @@ class TestAutoCModule:
         directive = AutodocDirective(
             "autocmodule",
             [file_],
-            {"members": None},
+            {"members": None, "private-members": True},
             None,
             None,
             None,
@@ -193,6 +244,54 @@ class TestAutoCModule:
         messages = ('Missing member "not_here"',)
         for message in messages:
             assert message in warnings
+
+    def test_no_private_members_option(self, sphinx_state):
+        file_with_no_private_members = """\
+
+            float a_public_var
+
+            Non static variables are not private
+
+            void function1int\xa0a
+
+            Non static functions are not private"""
+
+        directive = AutodocDirective(
+            "autocmodule",
+            ["file_with_private_members.c"],
+            {"members": None, "no-private-members": None},
+            None,
+            None,
+            None,
+            None,
+            sphinx_state,
+            None,
+        )
+
+        output = self.get_directive_output(directive)
+        assert dedent(file_with_no_private_members) == output
+
+    def test_no_private_members_on_header_file(self, sphinx_state):
+        header_with_no_private_members = """\
+
+            typedef float header_type
+
+            This should always be visible, even if no-private-members is in use."""
+
+        directive = AutodocDirective(
+            "autocmodule",
+            ["header_with_types.h"],
+            {"members": None, "no-private-members": None},
+            None,
+            None,
+            None,
+            None,
+            sphinx_state,
+            None,
+        )
+
+        output = self.get_directive_output(directive)
+        assert dedent(header_with_no_private_members) == output
 
     @staticmethod
     def get_directive_output(directive):

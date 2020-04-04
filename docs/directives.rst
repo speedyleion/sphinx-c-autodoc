@@ -36,9 +36,9 @@ instance from being added to the index provide this option.
         This option has 4 states:
 
         - Omitted will result in the ``members`` entry of
-          `autodoc_default_options <https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_default_options>`_
-          being used.  If ``members`` is omitted from
-          `autodoc_default_options <https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_default_options>`_ then no members will be automatically documented.
+          `autodoc_default_options`_ being used. If ``members`` is omitted
+          from `autodoc_default_options`_ then no members will be
+          automatically documented.
         - Specified as ``:no-members:``, no members will be automatically
           documented.
         - Specified with no arguments, ``:members:``, then all supported C
@@ -46,6 +46,25 @@ instance from being added to the index provide this option.
         - Specified with a comma separated list of names,
           ``:members: function_a, struct_b``, only the file members specified will
           be recursively documented.
+
+    .. rst:directive:option:: private-members
+
+        Specify if private members are to be documented. Since C doesn't
+        actually have a true idea of public and private, the following rules
+        are used to determine these characteristics.
+
+        Members are public if:
+
+            - They are in a header file, ends in `.h`. By nature header files are meant to
+              be included in other files, thus anything declared there is
+              deamed public.
+            - They can be visible outside of the compilation unit. These are
+              things the linker can get access to. Mainly this means functions
+              and variables that are not static.
+
+        Just as for the standard `autodoc`_ options, one can use the negated
+        form of ``:no-private-members:`` to selectivly turn off this option
+        on a per module basis.
 
 .. rst:directive:: .. autocfunction:: filename::function
 
@@ -78,10 +97,9 @@ instance from being added to the index provide this option.
         This option has 4 states:
 
         - Omitted will result in the ``members`` entry of
-          `autodoc_default_options <https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_default_options>`_
-          being used.  If ``members`` is omitted from
-          `autodoc_default_options <https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_default_options>`_
-          then no members will be automatically documented.
+          `autodoc_default_options`_ being used. If ``members`` is omitted
+          from `autodoc_default_options`_ then no members will be
+          automatically documented.
         - Specified as ``:no-members:``, no members will be automatically
           documented.
         - Specified with no arguments, ``:members:``, then all fields (if struct
@@ -101,12 +119,13 @@ instance from being added to the index provide this option.
     constant (if an enum).
 
     .. note:: This is one of the overloaded uses of the term **member**. This
-        name was used to keep consistent with the
-        `member <https://www.sphinx-doc.org/en/master/usage/restructuredtext/domains.html#directive-c:member>`_
-        wording of the `C domain`_.
+        name was used to keep consistent with the `member`_ wording of the
+        `C domain`_.
 
 .. _autodoc: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html
+.. _member: https://www.sphinx-doc.org/en/master/usage/restructuredtext/domains.html#directive-c:member
 .. _domain: https://www.sphinx-doc.org/en/master/usage/restructuredtext/domains.html
 .. _C domain: https://www.sphinx-doc.org/en/master/usage/restructuredtext/domains.html#the-c-domain
 .. _Sphinx: https://www.sphinx-doc.org/en/master/index.html
 .. _Doxygen: http://www.doxygen.nl/
+.. _autodoc_default_options: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_default_options

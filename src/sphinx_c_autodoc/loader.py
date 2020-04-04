@@ -14,7 +14,7 @@ from typing import Any, List, Optional, Union, Dict, Tuple
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 from clang import cindex
-from clang.cindex import Cursor, Token
+from clang.cindex import Cursor, Token, StorageClass
 
 from sphinx_c_autodoc.clang.patches import patch_clang
 
@@ -242,6 +242,29 @@ class DocumentedObject:
         paragraph += "\n"
         return paragraph
 
+    def is_public(self) -> bool:
+        """
+        Determines if this item is public.
+
+        C doesn't actually have public/private namespace so we're going to
+        make up some rules.
+
+        Constructs are public if:
+
+            - They are in a header file. By nature header files are meant to
+              be included in other files, thus they are deamed public.
+
+            - They can be visible outside of the compilation unit. These are
+              things the linker can get access to. Mainly this means functions
+              and variables that are not static.
+        """
+        # Here we'll do the most common logic, and let specific constructs that
+        # can be public do special logic.
+        if self.node.location.file.name.endswith(".h"):
+            return True
+
+        return False
+
 
 class DocumentedFile(DocumentedObject):
     """
@@ -354,6 +377,13 @@ class DocumentedMember(DocumentedObject):
         type_ = self.node.type.spelling
         return f"{type_} {self.name}"
 
+    def is_public(self) -> bool:
+        """
+        Members are always public, because it's their parents that determine
+        public versus private.
+        """
+        return True
+
 
 class DocumentedFunction(DocumentedObject):
     """
@@ -447,6 +477,15 @@ class DocumentedFunction(DocumentedObject):
 
         return "{} {}({})".format(return_type, func.spelling, ", ".join(args))
 
+    def is_public(self) -> bool:
+        """
+        Functions are public as long as they are not static.
+        """
+        if self.node.storage_class == StorageClass.STATIC:
+            return False
+
+        return True
+
 
 class DocumentedType(DocumentedObject):
     """
@@ -517,7 +556,7 @@ class DocumentedUnion(DocumentedStructure):
 
 class DocumentedEnum(DocumentedStructure):
     """
-    Class for unions. Same as structures with a different :attr:`type`.
+    Class for Enumerations. Same as structures with a different :attr:`type`.
     """
 
     type_ = "enum"
@@ -546,6 +585,15 @@ class DocumentedVariable(DocumentedObject):
         # documentation.
         name, _, _ = decl.partition("=")
         return name
+
+    def is_public(self) -> bool:
+        """
+        Variables are public as long as they are not static.
+        """
+        if self.node.storage_class == StorageClass.STATIC:
+            return False
+
+        return True
 
 
 CURSORKIND_TO_OBJECT_CLASS = {

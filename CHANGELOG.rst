@@ -9,7 +9,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `v0.3.0-dev`_ (unreleased)
 ==========================
 
-`v0.2.0`_ (2020-04-1)
+`v0.2.0`_ (2020-04-04)
 ==========================
 
 Added
@@ -17,6 +17,13 @@ Added
 
 * Viewcode functionality which allows for listing the source C files and
   providing links between the documentation and the C source listings.
+* :private-members: and :no-private-members: option for the autocmodule
+  directive. This option set allows for controlling the documentation of
+  constructs based on what is visible outside of the module. For header
+  files this means everything will still be documented. For standard source
+  files only non static functions and non static variables will be auto
+  documented if the :private-members: is not specified, or the
+  :no-private-members: is specified.
 
 Fixes
 -----

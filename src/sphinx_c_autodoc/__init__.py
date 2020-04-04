@@ -78,7 +78,11 @@ class CObjectDocumenter(Documenter):
     # objects
     priority = 11
 
-    option_spec = {"members": members_option, "noindex": bool_option}
+    option_spec = {
+        "members": members_option,
+        "noindex": bool_option,
+        "private-members": bool_option,
+    }
 
     @classmethod
     def can_document_member(
@@ -276,22 +280,30 @@ class CObjectDocumenter(Documenter):
     ) -> List[Tuple[str, Any, bool]]:
         """Filter the given member list.
 
+        :meth:`filter_members` is called *after* :meth:`get_object_members`,
+        this means if `want_all` is False then only private members which
+        were explicitly requested will be in this list. Only when `want_all`
+        is True do we need to actually condition on private member.
+
         Members are skipped if
 
         - they are private (except if given explicitly or the private-members
           option is set)
-        - they are special methods (except if given explicitly or the
-          special-members option is set)
         - they are undocumented (except if the undoc-members option is set)
+          TODO not implemented yet.
 
+        TODO not implemented yet.
         The user can override the skipping decision by connecting to the
         ``autodoc-skip-member`` event.
         """
         ret = []
         isattr = False
         for (membername, member) in members:
-            ret.append((membername, member, isattr))
-
+            if not want_all:
+                ret.append((membername, member, isattr))
+            else:
+                if member.is_public() or self.options.private_members:
+                    ret.append((membername, member, isattr))
         return ret
 
     def format_name(self) -> str:
