@@ -71,6 +71,13 @@ class TestAutoCFunction:
         FUNCTION_LIKE_MACRO_x, _y
         A function like macro with 2 parameters"""
 
+    function_with_comment_in_parameter = """\
+        void * function_with_comment_in_parameterconst unknown_type *\xa0my_char_ptr
+        A function with comment inside of parameter declaration.
+        Parameters
+        my_char_ptr -- Pointer to my character, probably actually an array
+        or string like representation."""
+
     doc_data = [
         ("functions.c::single_line_function_comment", single_line_comment),
         ("functions.c::return_value_function", return_value_function),
@@ -83,6 +90,10 @@ class TestAutoCFunction:
         ),
         ("functions.c::undocumented_function", undocumented_function),
         ("macros.c::FUNCTION_LIKE_MACRO", function_like_macro),
+        (
+            "functions.c::function_with_comment_in_parameter",
+            function_with_comment_in_parameter,
+        ),
     ]
 
     @pytest.mark.parametrize("function, expected_doc", doc_data)

@@ -459,7 +459,10 @@ class DocumentedFunction(DocumentedObject):
         func = self.node
         args = []
         for arg in func.get_arguments():
-            args.append(" ".join(t.spelling for t in arg.get_tokens()))
+            non_comment_tokens = (
+                t for t in arg.get_tokens() if t.kind != cindex.TokenKind.COMMENT
+            )
+            args.append(" ".join(t.spelling for t in non_comment_tokens))
 
         tu = func.tu
 

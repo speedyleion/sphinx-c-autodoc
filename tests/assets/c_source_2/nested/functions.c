@@ -79,3 +79,14 @@ void doxy_documented_parameters_no_returns(int water, int air)
  *     second_param: Why not
  */
 void * custom_napoleon_section(char first_param, int second_param);
+
+/**
+ * A function with comment inside of parameter declaration.
+ *
+ * Parameters:
+ *     my_char_ptr: Pointer to my character, probably actually an array
+ *         or string like representation.
+ */
+void * function_with_comment_in_parameter(
+    const unknown_type * /* A comment in the middle of parameter line */
+        my_char_ptr );
