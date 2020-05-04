@@ -203,7 +203,12 @@ class DocumentedObject:
 
         root = self.soup.contents[0]
 
-        return root.declaration.text
+        # It seems with different versions of clang the newlines will at times
+        # be kept around from some declarations. This causes problems with
+        # sphinx as the signature should remain all in one line.
+        lines = root.declaration.text.splitlines()
+        declaration = " ".join(l.strip() for l in lines)
+        return declaration
 
     @property
     def soup(self) -> Optional[BeautifulSoup]:
@@ -507,6 +512,27 @@ class DocumentedType(DocumentedObject):
         For things like functions and others this will include the return type.
         """
         parent_type = self.node.underlying_typedef_type.spelling
+
+        # Function prototypes need to be handled different. When clang can't
+        # successfully parse the file it falls back to naming the return type
+        # as the display name.
+        # Unfortunatly some versions of clang behave a little differently, some
+        # will return a POINTER while others will return FUNCITONNOPROTO. The
+        # POINTER's are easy to derive the real type from, but the test
+        # environment doesn't use that version of clang.
+        type_ = self.node.underlying_typedef_type
+        if type_.kind == cindex.TypeKind.POINTER:  # pragma: no cover
+            type_ = type_.get_pointee()
+
+        if type_.kind in (
+            cindex.TypeKind.FUNCTIONPROTO,
+            cindex.TypeKind.FUNCTIONNOPROTO,
+        ):
+            ret_value, paren, signature = parent_type.partition(")")
+            signature = "".join((ret_value, self.name, paren, signature))
+
+            return f"typedef {signature}"
+
         return f"typedef {parent_type} {self.name}"
 
 
@@ -522,7 +548,7 @@ class DocumentedStructure(DocumentedObject):
         """
         Since structures like objects use the "Members:" and
         "Enumerations:" sections do *not* use the clang xml comments as they
-        don't preseve newlines, so the sections get lost.
+        don't preserve newlines, so the sections get lost.
         """
         return None
 
@@ -664,6 +690,7 @@ def get_nested_node(cursor: Cursor) -> Cursor:
             underlying_node = next(cursor.get_children())
             if underlying_node.kind in (
                 cindex.CursorKind.STRUCT_DECL,
+                cindex.CursorKind.UNION_DECL,
                 cindex.CursorKind.ENUM_DECL,
             ):
                 return underlying_node

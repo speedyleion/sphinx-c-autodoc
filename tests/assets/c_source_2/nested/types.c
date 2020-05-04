@@ -98,3 +98,33 @@ struct nested_struct
     } two;
     float three;
 };
+
+/**
+ * A typedefed union
+ */
+typedef union
+{
+unknown_type one;
+another_unknown two;
+} a_union_typedef;
+
+/**
+ * A function type with unknown return type. This will for the generic parsing
+ * to happen instead of the clang soup
+ */
+
+typedef unknown_return_type (function_type)(const unknown_type * foo, const unknonw_two * yes);
+
+/**
+ * A function pointer type with unknown return type
+ */
+typedef what (*function_pointer_type)(const int * hello, const foo_type baz);
+
+/**
+ * A function pointer wrapped on multiple lines.
+ */
+typedef int (*wrapped_function_pointer)
+    (
+    const int * hello,
+    const float baz
+    );

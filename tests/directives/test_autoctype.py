@@ -106,6 +106,35 @@ class TestAutoCType:
         float three
         The third member of parent struct"""
 
+    # Not fond of the int, but clang reduces it to this, need to find a way to
+    # read those back when clang fails.
+    a_union_typedef = """\
+        union a_union_typedef
+        A typedefed union
+
+        int one
+
+
+        int two
+        """
+
+    # Similar to the unknown members of the union clang just falls back to
+    # int's
+    function_type = """\
+        typedef intunknown_return_type
+        A function type with unknown return type. This will for the generic parsing
+        to happen instead of the clang soup"""
+
+    # Similar to the unknown members of the union clang just falls back to
+    # int's
+    function_pointer_type = """\
+        typedef intint\xa0*what
+        A function pointer type with unknown return type"""
+
+    wrapped_function_pointer = """\
+        typedef int (*wrapped_function_pointer)const int *, const float
+        A function pointer wrapped on multiple lines."""
+
     doc_data = [
         ("types.c::my_int", my_int),
         ("types.c::my_struct_type", my_struct_type),
@@ -116,6 +145,10 @@ class TestAutoCType:
         ("types.c::a_union_type", a_union_type),
         ("types.c::a_multiply_documented_union_type", a_multiply_documented_union_type),
         ("types.c::nested_struct", nested_struct),
+        ("types.c::a_union_typedef", a_union_typedef),
+        ("types.c::unknown_return_type", function_type),
+        ("types.c::what", function_pointer_type),
+        ("types.c::wrapped_function_pointer", wrapped_function_pointer),
     ]
 
     @pytest.mark.parametrize("type_, expected_doc", doc_data)
