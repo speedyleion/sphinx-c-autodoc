@@ -296,7 +296,7 @@ def _insert_construct_anchor(
         f'<div class="viewcode-block" id="{C_DOMAIN_LINK_PREFIX}{prefix}">'
         + highlighted_source[start]
     )
-    highlighted_source[end] += f"</div>"
+    highlighted_source[end] += "</div>"
     for child in construct.get("children", []):
         _insert_construct_anchor(app, highlighted_source, child, prefix)
 
