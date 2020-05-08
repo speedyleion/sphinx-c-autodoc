@@ -12,6 +12,11 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 Fixes
 -----
 
+* typedef function and function pointers with unknown return types were not
+  being properly handled.  These now get handled, but the unknown types are
+  whatever clang provides, which is usually ``int``.
+* typedef unions with unknown member types caused in index error.  This has been
+  fixed and these unknown member types are evaluated by clang to be ``int``.
 * Fix comments in function declarations showing up in documentation. When
   comments were placed inbetween parameter types and the parameter names, and
   the type was unknown to clang, the fallback parsing would take the
