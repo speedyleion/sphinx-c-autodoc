@@ -26,7 +26,12 @@ from sphinx.domains.c import CObject
 from sphinx.application import Sphinx
 from sphinx.util import logging
 from sphinx.util.docstrings import prepare_docstring
-from sphinx.ext.autodoc import Documenter, members_option, bool_option
+from sphinx.ext.autodoc import (
+    Documenter,
+    members_option,
+    bool_option,
+    member_order_option,
+)
 from sphinx.ext.autodoc.directive import DocumenterBridge
 
 from sphinx_c_autodoc import loader
@@ -82,6 +87,7 @@ class CObjectDocumenter(Documenter):
         "members": members_option,
         "noindex": bool_option,
         "private-members": bool_option,
+        "member-order": member_order_option,
     }
 
     @classmethod
@@ -183,10 +189,17 @@ class CObjectDocumenter(Documenter):
 
         return modname, []
 
-    def import_object(self) -> bool:
+    def import_object(self, raiseerror: bool = False) -> bool:
         """Load the C file and build up the document structure.
 
         This will load the C file's documented structure into :attr:`object`
+
+        Args:
+            raiseerror (bool): Raise error, this is ignored for the c implementation as
+                import errors don't happen.
+
+        Returns:
+            bool: True if the file was imported, false otherwise.
         """
         for source_dir in self.env.config.c_autodoc_roots:
             filename = os.path.join(source_dir, self.get_real_modname())
@@ -242,7 +255,7 @@ class CObjectDocumenter(Documenter):
         return True
 
     def get_doc(
-        self, encoding: Optional[str] = None, ignore: int = 1
+        self, encoding: Optional[str] = None, ignore: int = None
     ) -> List[List[str]]:
         """Decode and return lines of the docstring(s) for the object."""
         docstring = self.object.get_doc()
@@ -366,12 +379,6 @@ class CModuleDocumenter(CObjectDocumenter):
 class CTypeDocumenter(CObjectDocumenter):
     """
     The documenter for the autoctype directive.
-
-    This handles:
-        - types
-        - structs
-        - unions
-
     """
 
     objtype = "ctype"
@@ -393,39 +400,6 @@ class CTypeDocumenter(CObjectDocumenter):
             self.directive.genopt,
             self.directive.lineno,
             self.directive.state,
-        )
-
-    @classmethod
-    def can_document_member(
-        cls, member: Any, membername: str, isattr: bool, parent: Any
-    ) -> bool:
-        """
-        The general type documenter can handle; structs, typedefs, unions and
-        enums (Not the enumerations).
-
-        Parameters:
-            member (object): The member item to document.  This type is specific
-                to the item being processed by autodoc.  These classes will
-                only attempt to process
-                :class:`sphinx_c_autodoc.loader.CObjectDocumenter` members.
-
-            membername (str): The name of the item to document.  For example if
-                this is a function then this will be the name of the function,
-                no return types, no arguments.
-
-            isattr (bool): Is the member an attribute.  This is unused for c
-                documenation.
-
-            parent (object): The parent item of this `member`.
-
-        Returns:
-            bool: True if this class can document the `member`.
-        """
-        return isinstance(parent, CObjectDocumenter) and member.type in (
-            "enum",
-            "struct",
-            "type",
-            "union",
         )
 
     def generate(
@@ -457,7 +431,7 @@ class CTypeDocumenter(CObjectDocumenter):
             - The full signature of the item documented.
             - The line number in :attr:`directive.results`.
 
-        For intsnace a directive of ``..c:some_directive word1 word2 word3``
+        For instnace a directive of ``..c:some_directive word1 word2 word3``
         would result in ``word3`` being the short name and
         ``word1 word2 word3`` being the full signature.
 
@@ -516,6 +490,9 @@ class CTypeDocumenter(CObjectDocumenter):
     @staticmethod
     def _merge_directives(directives: List[StringList]) -> StringList:
         """
+        The last directive heading will be used to represent the heading for the entire
+        group of directives.
+
         Args:
             directives (list(StringList)): The list of directives to merge.
 
@@ -537,8 +514,8 @@ class CTypeDocumenter(CObjectDocumenter):
             del directive[0]
 
             merged_directive.extend(directive)
-            if len(directive_heading) > len(merged_heading):
-                merged_heading = directive_heading
+
+            merged_heading = directive_heading
 
         merged_directive.insert(0, merged_options)
         merged_directive.insert(0, merged_heading, source=merged_directive.source(0))
@@ -554,13 +531,17 @@ class CTypeDocumenter(CObjectDocumenter):
             StringList: The entire rst contents for this directive instance.
 
         """
-        # member is the normal native fields of a struct or union
-        members = self._find_member_directives("member")
-        # type is a struct or union declared in place in a struct or union
-        members += self._find_member_directives("type")
-        # macro is the enumeration constants for an enum type
-        members += self._find_member_directives("macro")
-        members.sort()
+        # Grab any constructs that could be declared inside of a struct, union or enum.
+        members = []
+        for sub_type in ("member", "struct", "union", "enumerator"):
+            members += self._find_member_directives(sub_type)
+
+        # Group all the items by their name.  This sort logic here leverages the order
+        # preservation that python sort has, in that napoleon documented constructs are
+        # always "member" however the actual c constructs will come after as "struct"
+        # or similar.
+        members.sort(key=lambda m: m[0])
+
         data_blocks = []
 
         for _, member_group in groupby(members, lambda m: m[0]):
@@ -584,6 +565,47 @@ class CTypeDocumenter(CObjectDocumenter):
             delta_length += len(directive) - original_length
 
         return self.directive.result
+
+
+class CStructDocumenter(CTypeDocumenter):
+    """
+    The documenter for the autocstruct directive.
+    """
+
+    objtype = "cstruct"
+    directivetype = "struct"
+
+    def filter_members(
+        self, members: List[Tuple[str, Any]], want_all: bool
+    ) -> List[Tuple[str, Any, bool]]:
+        """Filter the given member list.
+
+        For structures if they are documented then all members provided are
+        documented.
+        """
+        ret = []
+        isattr = False
+        for (membername, member) in members:
+            ret.append((membername, member, isattr))
+        return ret
+
+
+class CEnumDocumenter(CTypeDocumenter):
+    """
+    The documenter for the autocenum directive.
+    """
+
+    objtype = "cenum"
+    directivetype = "enum"
+
+
+class CUnionDocumenter(CStructDocumenter):
+    """
+    The documenter for the autocunion directive.
+    """
+
+    objtype = "cunion"
+    directivetype = "union"
 
 
 class CMemberDocumenter(CObjectDocumenter):
@@ -613,6 +635,16 @@ class CMacroDocumenter(CObjectDocumenter):
 
     objtype = "cmacro"
     directivetype = "macro"
+
+
+class CEnumeratorDocumenter(CObjectDocumenter):
+    """
+    The documenter for the autocenumerator directive.
+    These are enumerator constants, versus the enum (type).
+    """
+
+    objtype = "cenumerator"
+    directivetype = "enumerator"
 
 
 class CDataDocumenter(CObjectDocumenter):
@@ -660,6 +692,8 @@ class CModule(CObject):
     has_content = True
     required_arguments = 1
 
+    object_type = "module"
+
     def run(self) -> nodes.Node:
         """
         Not sure yet
@@ -684,8 +718,12 @@ def setup(app: Sphinx) -> None:
     app.add_autodocumenter(CModuleDocumenter)
     app.add_autodocumenter(CFunctionDocumenter)
     app.add_autodocumenter(CTypeDocumenter)
+    app.add_autodocumenter(CStructDocumenter)
+    app.add_autodocumenter(CUnionDocumenter)
+    app.add_autodocumenter(CEnumDocumenter)
     app.add_autodocumenter(CMemberDocumenter)
     app.add_autodocumenter(CMacroDocumenter)
+    app.add_autodocumenter(CEnumeratorDocumenter)
     app.add_autodocumenter(CDataDocumenter)
     app.add_directive_to_domain("c", "module", CModule)
     app.add_config_value("c_autodoc_roots", [""], "env")

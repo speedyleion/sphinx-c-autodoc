@@ -9,6 +9,12 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `v0.3.0-dev`_ (unreleased)
 ==========================
 
+Changed
+-------
+
+* Changed to support sphinx version 3.  Due to significant changes between
+  sphinx 2 and 3, sphinx 2 is no longer supported.
+
 Fixes
 -----
 

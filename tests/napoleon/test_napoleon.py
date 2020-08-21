@@ -46,7 +46,7 @@ class TestNapoleonSections:
     """
 
     napoleon_documented_function = """\
-        int napoleon_documented_functionint\xa0yes, int\xa0another_one
+        int napoleon_documented_function(int yes, int another_one)
         One can also use Goolge style docstrings with napoleon for documenting
         functions.
         Functions do not support mixing doxygen style and napoleon
@@ -80,20 +80,20 @@ class TestNapoleonSections:
 
     some_enum = """\
         enum some_enum
-        Enumerations are considered macros. If you want to documente them with
-        napoleon then you use the section title Enumerations:.
+        If you want to document the enumerators with napoleon
+        then you use the section title Enumerators:.
 
-        THE_FIRST_ENUM
+        enumerator THE_FIRST_ENUM
         Used for the first item
-        Documentation in a comment for THE_FIRST_ITEM. Note this is trailing, for some reason clang will apply leading comments to all the enumerations
+        Documentation in a comment for THE_FIRST_ITEM. Note this is trailing, for some reason clang will apply leading comments to all the enumerators
 
-        THE_SECOND_ENUM
+        enumerator THE_SECOND_ENUM
         Second verse same as the first.
 
-        THE_THIRD_ENUM
+        enumerator THE_THIRD_ENUM
         Not once, note twice, but thrice.
 
-        THE_LAST_ENUM
+        enumerator THE_LAST_ENUM
         Just to be sure."""
 
     doc_data = [
@@ -104,10 +104,10 @@ class TestNapoleonSections:
         ),
         (
             "example.c::members_documented_with_napoleon",
-            "type",
+            "struct",
             members_documented_with_napoleon,
         ),
-        ("example.c::some_enum", "type", some_enum),
+        ("example.c::some_enum", "enum", some_enum),
     ]
 
     @pytest.mark.parametrize("item, type_, expected_doc", doc_data)
@@ -141,7 +141,7 @@ class TestNapoleonSections:
         Tests the restructured text output returned by the directive.
         """
         custom_napoleon_section = """\
-            void *custom_napoleon_sectionchar\xa0first_param, int\xa0second_param
+            void *custom_napoleon_section(char first_param, int second_param)
             A function using a custom napoleon section that doesn't exist in this
             package.
             Parameters

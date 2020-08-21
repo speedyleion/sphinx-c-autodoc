@@ -5,6 +5,7 @@ Subpackages
 -----------
 
 .. toctree::
+   :maxdepth: 4
 
    sphinx_c_autodoc.clang
    sphinx_c_autodoc.domains
@@ -21,7 +22,6 @@ sphinx\_c\_autodoc.loader module
    :members:
    :undoc-members:
    :show-inheritance:
-
 
 Module contents
 ---------------

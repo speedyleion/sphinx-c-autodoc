@@ -18,7 +18,7 @@ class TestAutoCData:
         A variable"""
 
     inline_struct_variable = """\
-        struct inline_struct_variable
+        inline_struct_variable
         Even structures defined in variables can be handled.
 
         int a
@@ -56,7 +56,7 @@ class TestAutoCData:
 
         # For whatever reason the as text comes back with double spacing, so we
         # knock it down to single spacing to make the expected string smaller.
-        assert dedent(expected_doc) == body.astext().replace("\n\n", "\n")
+        assert body.astext().replace("\n\n", "\n") == dedent(expected_doc)
 
     def test_incorrectly_specified_variable_causes_warning(self, sphinx_state):
         """

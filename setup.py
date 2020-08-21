@@ -29,7 +29,7 @@ setuptools.setup(
         "Source": "https://github.com/speedyleion/sphinx-c-autodoc",
     },
     install_requires=[
-        "sphinx>=2,<3",
+        "sphinx>=3",
         "clang>=6",
         "beautifulsoup4",
     ],

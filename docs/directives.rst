@@ -57,13 +57,13 @@ instance from being added to the index provide this option.
 
             - They are in a header file, ends in `.h`. By nature header files are meant to
               be included in other files, thus anything declared there is
-              deamed public.
+              deemed public.
             - They can be visible outside of the compilation unit. These are
               things the linker can get access to. Mainly this means functions
               and variables that are not static.
 
         Just as for the standard `autodoc`_ options, one can use the negated
-        form of ``:no-private-members:`` to selectivly turn off this option
+        form of ``:no-private-members:`` to selectively turn off this option
         on a per module basis.
 
 .. rst:directive:: .. autocfunction:: filename::function
@@ -78,17 +78,16 @@ instance from being added to the index provide this option.
 
 .. rst:directive:: .. autocmacro:: filename::some_define
 
-    Document a C macro, or enumeration constant.
-
-    .. warning:: This should not be used for function like macros instead
-        utilize the ``.. autocfunction::`` directive.
+    Document a C macro.  Both macro constants as well as function like
+    macros.
 
 .. rst:directive:: .. autoctype:: filename::typedef
 
-    Document a typedef, struct, union, or enum.
+    Document a typedef
 
-    .. warning:: This should not be used for enumeration constants instead
-        utilize the ``.. autocmacro::`` directive.
+.. rst:directive:: .. autocenum:: filename::enum_name
+
+    Document a enum
 
     .. rst:directive:option:: members
 
@@ -102,9 +101,56 @@ instance from being added to the index provide this option.
           automatically documented.
         - Specified as ``:no-members:``, no members will be automatically
           documented.
-        - Specified with no arguments, ``:members:``, then all fields (if struct
-          or union) or all enumeration constants (if an enum) will be recursively
+        - Specified with no arguments, ``:members:``, then all enumerator
+          constants will be documented.
+        - Specified with a comma separated list of names,
+          ``:members: field_a, field_b``, only the items specified will be
+          recursively documented.
+
+.. rst:directive:: .. autocenumerator:: filename::enum_name.enumerator
+
+    Document a enumerator.  One of the constant values of an enum.
+
+.. rst:directive:: .. autocstruct:: filename::struct_name
+
+    Document a struct
+
+    .. rst:directive:option:: members
+
+        Specify which members to recursively document.
+
+        This option has 4 states:
+
+        - Omitted will result in the ``members`` entry of
+          `autodoc_default_options`_ being used. If ``members`` is omitted
+          from `autodoc_default_options`_ then no members will be
+          automatically documented.
+        - Specified as ``:no-members:``, no members will be automatically
           documented.
+        - Specified with no arguments, ``:members:``, then all fields will be
+          recursively documented.
+        - Specified with a comma separated list of names,
+          ``:members: field_a, field_b``, only the items specified will be
+          recursively documented.
+
+.. rst:directive:: .. autocunion:: filename::union_name
+
+    Document a union
+
+    .. rst:directive:option:: members
+
+        Specify which members to recursively document.
+
+        This option has 4 states:
+
+        - Omitted will result in the ``members`` entry of
+          `autodoc_default_options`_ being used. If ``members`` is omitted
+          from `autodoc_default_options`_ then no members will be
+          automatically documented.
+        - Specified as ``:no-members:``, no members will be automatically
+          documented.
+        - Specified with no arguments, ``:members:``, then all fields will be
+          recursively documented.
         - Specified with a comma separated list of names,
           ``:members: field_a, field_b``, only the items specified will be
           recursively documented.
@@ -115,8 +161,7 @@ instance from being added to the index provide this option.
 
 .. rst:directive:: .. autocmember:: filename::struct.field
 
-    Document the specified field (if a struct or union) or specified enumeration
-    constant (if an enum).
+    Document the specified field of a struct or union.
 
     .. note:: This is one of the overloaded uses of the term **member**. This
         name was used to keep consistent with the `member`_ wording of the

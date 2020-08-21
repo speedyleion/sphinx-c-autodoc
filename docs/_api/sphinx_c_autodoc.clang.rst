@@ -20,7 +20,6 @@ sphinx\_c\_autodoc.clang.patches module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 

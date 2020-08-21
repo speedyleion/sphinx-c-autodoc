@@ -20,7 +20,7 @@ Using this extension will take:
 
 and convert it into 
 
-.. autoctype:: example.c::members_documented_with_napoleon
+.. autocstruct:: example.c::members_documented_with_napoleon
     :members:
     :noindex:
 

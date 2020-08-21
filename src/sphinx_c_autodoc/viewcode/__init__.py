@@ -195,7 +195,7 @@ def _insert_documentation_backlinks(
         # Can happen when documenting a non existent C construct.
         # TODO consider if this should be a warning.
         if construct is None:
-            return
+            continue
 
         link_line = construct["start_line"]
         page_name = _get_source_page_name(doc.module)
@@ -437,7 +437,7 @@ def _add_pending_source_cross_reference(
 
 def _add_pending_back_reference(app: Sphinx, signode: Node, fullname: str) -> None:
     """
-    Updates the ``doc_links`` entry of the moduels stored in
+    Updates the ``doc_links`` entry of the modules stored in
     ``_viewcode_c_modules`` so that they can later be added to the source
     code listings as links to the documentation locations.
 

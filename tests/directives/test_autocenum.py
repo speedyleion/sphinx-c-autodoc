@@ -8,27 +8,27 @@ import pytest
 from sphinx.ext.autodoc.directive import AutodocDirective
 
 
-class TestAutoCMacro:
+class TestAutoCEnum:
     """
-    Testing class for the autoctype directive for use in enums
+    Testing class for the autocenum directive for use in enums
     """
 
     some_enum = """\
         enum some_enum
-        Enumerations are considered macros. If you want to documente them with
-        napoleon then you use the section title Enumerations:.
+        If you want to document the enumerators with napoleon
+        then you use the section title Enumerators:.
 
-        THE_FIRST_ENUM
+        enumerator THE_FIRST_ENUM
         Used for the first item
-        Documentation in a comment for THE_FIRST_ITEM. Note this is trailing, for some reason clang will apply leading comments to all the enumerations
+        Documentation in a comment for THE_FIRST_ITEM. Note this is trailing, for some reason clang will apply leading comments to all the enumerators
 
-        THE_SECOND_ENUM
+        enumerator THE_SECOND_ENUM
         Second verse same as the first.
 
-        THE_THIRD_ENUM
+        enumerator THE_THIRD_ENUM
         Not once, note twice, but thrice.
 
-        THE_LAST_ENUM
+        enumerator THE_LAST_ENUM
         Just to be sure."""
 
     doc_data = [
@@ -41,7 +41,7 @@ class TestAutoCMacro:
         Tests the restructured text output returned by the directive.
         """
         directive = AutodocDirective(
-            "autoctype",
+            "autocenum",
             [enum],
             {"members": None},
             None,
@@ -59,4 +59,4 @@ class TestAutoCMacro:
 
         # For whatever reason the as text comes back with double spacing, so we
         # knock it down to single spacing to make the expected string smaller.
-        assert dedent(expected_doc) == body.astext().replace("\n\n", "\n")
+        assert body.astext().replace("\n\n", "\n") == dedent(expected_doc)

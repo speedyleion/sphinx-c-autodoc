@@ -25,10 +25,15 @@ class TestAutoCMacro:
         UNDOCUMENTED_MACRO
         """
 
+    function_like_macro = """\
+        FUNCTION_LIKE_MACRO(_x, _y)
+        A function like macro with 2 parameters"""
+
     doc_data = [
         ("macros.c::MY_D_FINE", my_d_fine),
         ("macros.c::DOCUMENTED_AFTER", documented_after),
         ("macros.c::UNDOCUMENTED_MACRO", undocumented_macro),
+        ("macros.c::FUNCTION_LIKE_MACRO", function_like_macro),
     ]
 
     @pytest.mark.parametrize("macro, expected_doc", doc_data)

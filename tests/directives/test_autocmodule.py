@@ -18,7 +18,7 @@ class TestAutoCModule:
     module_c = """\
         This is a file comment
 
-        void my_func
+        void my_func()
 
         This is a function comment"""
 
@@ -51,7 +51,7 @@ class TestAutoCModule:
 
         Defines in C files are inherently private.
 
-        PRIVATE_FUNCTION_MACRO_a, _b
+        PRIVATE_FUNCTION_MACRO(_a, _b)
 
         Function macros in C files should also be private
 
@@ -69,11 +69,11 @@ class TestAutoCModule:
 
         enum private_enum
 
-        Enumerations in c files are inherently private
+        Enums in c files are inherently private
 
 
 
-        ENUM_1
+        enumerator ENUM_1
 
 
 
@@ -87,11 +87,11 @@ class TestAutoCModule:
 
 
 
-        void function1int\xa0a
+        void function1(int a)
 
         Non static functions are not private
 
-        static void function2int\xa0a
+        static void function2(int a)
 
         static functions, in c files are inherently private."""
 
@@ -113,7 +113,7 @@ class TestAutoCModule:
         directive = AutodocDirective(
             "autocmodule",
             [file_],
-            {"members": None, "private-members": True},
+            {"members": None, "private-members": True, "member-order": "bysource"},
             None,
             None,
             None,
@@ -121,7 +121,7 @@ class TestAutoCModule:
             sphinx_state,
             None,
         )
-        assert dedent(expected_doc) == self.get_directive_output(directive)
+        assert self.get_directive_output(directive) == dedent(expected_doc)
 
     def test_fail_module_load(self, sphinx_state):
         """
@@ -161,7 +161,7 @@ class TestAutoCModule:
             "autocmodule", ["module.c"], {}, None, None, None, None, sphinx_state, None
         )
 
-        assert dedent(just_file_doc) == self.get_directive_output(directive)
+        assert self.get_directive_output(directive) == dedent(just_file_doc)
 
     def test_members_called_out(self, sphinx_state):
         """
@@ -199,7 +199,7 @@ class TestAutoCModule:
             None,
         )
 
-        assert dedent(example_c) == self.get_directive_output(directive)
+        assert self.get_directive_output(directive) == dedent(example_c)
 
     def test_non_existent_member_causes_warning(self, sphinx_state):
         """
@@ -237,7 +237,7 @@ class TestAutoCModule:
             None,
         )
 
-        assert dedent(example_c) == self.get_directive_output(directive)
+        assert self.get_directive_output(directive) == dedent(example_c)
 
         warnings = sphinx_state.env.app._warning.getvalue()
 
@@ -252,7 +252,7 @@ class TestAutoCModule:
 
             Non static variables are not private
 
-            void function1int\xa0a
+            void function1(int a)
 
             Non static functions are not private"""
 
@@ -269,7 +269,7 @@ class TestAutoCModule:
         )
 
         output = self.get_directive_output(directive)
-        assert dedent(file_with_no_private_members) == output
+        assert output == dedent(file_with_no_private_members)
 
     def test_no_private_members_on_header_file(self, sphinx_state):
         header_with_no_private_members = """\
@@ -291,7 +291,7 @@ class TestAutoCModule:
         )
 
         output = self.get_directive_output(directive)
-        assert dedent(header_with_no_private_members) == output
+        assert output == dedent(header_with_no_private_members)
 
     @staticmethod
     def get_directive_output(directive):

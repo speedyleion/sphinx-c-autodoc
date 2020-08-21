@@ -25,7 +25,7 @@ static int my_var;
 float a_public_var;
 
 /**
- * Enumerations in c files are inherently private
+ * Enums in c files are inherently private
  */
 enum private_enum {
     ENUM_1

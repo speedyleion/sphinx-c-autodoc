@@ -26,7 +26,7 @@ def test_autodoc_of_c_file(tmp_path):
 
     assert "This is a file comment" in contents
 
-    # Check for anonymouse enumerations
+    # Check for anonymouse enums
     assert "anon_example_" in contents
 
     # Check for a bug where typedefed enums showed up as anonymouse and the

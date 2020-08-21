@@ -9,7 +9,6 @@ from bad logic can more easily be seen in the test output
 """
 import re
 import os
-import shutil
 from sphinx.cmd.build import main
 
 
@@ -24,7 +23,20 @@ def test_viewcode_of_sphinx_project(tmp_path):
     overall test run times down it is done this way.
     """
     source_dir = os.path.join(SCRIPT_DIR, "..", "assets")
-    main(["-a", "-E", "-W", source_dir, str(tmp_path)])
+    # With sphinx 3 it will throw a warning for duplicate declarations, even with no
+    # index usage, so allow warnings in this test.
+    main(
+        [
+            "-a",
+            "-E",
+            "-D",
+            "exclude_patterns=[]",
+            "-D",
+            "master_doc=viewcode_index",
+            source_dir,
+            str(tmp_path),
+        ]
+    )
     file_name = tmp_path / "example.html"
     with file_name.open() as f:
         contents = f.read()

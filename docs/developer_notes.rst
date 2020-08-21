@@ -14,8 +14,8 @@ AST:
     down of a C source file into its components. Normally an AST goes all the
     way down to things like if conditions and other constructs. However for
     the use in autodoc there is no reason to break down the contents of a
-    function. Structures, unions and enumerations are further broken down
-    into their member or enumeration constants though.
+    function. Structures, unions and enums are further broken down into their
+    member or enumerator constants though.
 
     For this extension the common AST is just a simple dictionary which has
     the following entries:

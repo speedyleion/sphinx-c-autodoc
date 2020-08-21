@@ -29,10 +29,8 @@
  * An attempt will be made to derive the arguments of the macro.  It will
  * probably work in most instances...
  *
- * As per the `function <http://www.sphinx-doc.org/en/1.0/domains.html#directive-c:function>`_
- * directive for the c domain, function like macros are documented as
- * functions. This means that one can document them with the ``:param:`` and
- * ``:returns:`` fields. One could even utilize the
+ * Function like macros can be documented with the ``:param:`` and ``:returns:``
+ * fields. One could even utilize the
  * `napoleon <https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html>`_
  * extension to format something like:
  *
@@ -92,10 +90,10 @@ struct members_documented_with_napoleon
 };
 
 /**
- * Enumerations are considered macros. If you want to documente them with
- * napoleon then you use the section title `Enumerations:`.
+ * If you want to document the enumerators with napoleon
+ * then you use the section title `Enumerators:`.
  *
- * Enumerations:
+ * Enumerators:
  *     THE_FIRST_ENUM: Used for the first item
  *     THE_SECOND_ENUM: Second verse same as the first.
  *     THE_THIRD_ENUM: Not once, note twice, but thrice.
@@ -104,22 +102,22 @@ struct members_documented_with_napoleon
 typedef enum{
     THE_FIRST_ENUM, /**< Documentation in a comment for THE_FIRST_ITEM.
                       * Note this is trailing, for some reason clang will
-                      * apply leading comments to *all* the enumerations */
+                      * apply leading comments to *all* the enumerators */
     THE_SECOND_ENUM = 30,
     THE_THIRD_ENUM = THE_SECOND_ENUM,
     THE_LAST_ENUM
 } some_enum;
 
 /**
- * Anonymous enums are supported, so that the enumerations can be documented.
+ * Anonymous enums are supported, so that the enumerators can be documented.
  *
  * .. note:: That one will not be able to autodoc the enum directly it will
  *     only be included by autodocing a module. Since it's name will be built up
  *     dynamically
  *
- * Enumerations:
- *     AN_ANONYMOUSE_1: The first enumeration from an anonymous enum.
- *     AN_ANONYMOUSE_2: The second enumeration from an anonymous enum.
+ * Enumerators:
+ *     AN_ANONYMOUSE_1: The first enumerator from an anonymous enum.
+ *     AN_ANONYMOUSE_2: The second enumerator from an anonymous enum.
  */
 enum{
     AN_ANONYMOUSE_1 = 30,

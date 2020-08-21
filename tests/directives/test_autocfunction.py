@@ -17,21 +17,21 @@ class TestAutoCFunction:
     """
 
     single_line_comment = """\
-        void single_line_function_comment
+        void single_line_function_comment()
         A Single line function comment"""
 
     return_value_function = """\
-        int return_value_function
+        int return_value_function()
         Function with a return value"""
 
     multiple_parameters = """\
-        int multiple_parametersint a, int b
+        int multiple_parameters(int a, int b)
         Function with multiple parameters"""
 
     # Note this doesn't look as nice as it will in actual HTML but you can get
     # an idea of the parameters and returns sections
     sphinx_documented_parameters = """\
-        char *sphinx_documented_parametersint param1, int param2
+        char *sphinx_documented_parameters(int param1, int param2)
         Function with sphinx documented parameters
         Parameters
         param1 -- The first parameter which is on multiple lines
@@ -43,7 +43,7 @@ class TestAutoCFunction:
     # The clang/doxygen parsing removes newlines but keeps the indentation
     # spaces. This should be collapsed in html output.
     doxy_documented_parameters = """\
-        char *doxy_documented_parametersint param1, int param2
+        char *doxy_documented_parameters(int param1, int param2)
         Function with doxygen style documented parameters
         Parameters
         param1 -- The first parameter which is on multiple lines      with this being the second line.
@@ -56,7 +56,7 @@ class TestAutoCFunction:
     # standard spaces, guessing it's something with the html generation from
     # sphinx
     doxy_documented_parameters_no_returns = """\
-        void doxy_documented_parameters_no_returnsint\xa0water, int\xa0air
+        void doxy_documented_parameters_no_returns(int water, int air)
         Doxygen style function
         This function has no returns section, but has a discussion section as described by clang.
         In Fact this has multiple discussion paragraphs.
@@ -65,14 +65,10 @@ class TestAutoCFunction:
         air -- A different element"""
 
     undocumented_function = """\
-        int undocumented_functionfloat\xa0baz
+        int undocumented_function(float baz)
         """
-    function_like_macro = """\
-        FUNCTION_LIKE_MACRO_x, _y
-        A function like macro with 2 parameters"""
-
     function_with_comment_in_parameter = """\
-        void * function_with_comment_in_parameterconst unknown_type *\xa0my_char_ptr
+        void *function_with_comment_in_parameter(const unknown_type *my_char_ptr)
         A function with comment inside of parameter declaration.
         Parameters
         my_char_ptr -- Pointer to my character, probably actually an array
@@ -89,7 +85,6 @@ class TestAutoCFunction:
             doxy_documented_parameters_no_returns,
         ),
         ("functions.c::undocumented_function", undocumented_function),
-        ("macros.c::FUNCTION_LIKE_MACRO", function_like_macro),
         (
             "functions.c::function_with_comment_in_parameter",
             function_with_comment_in_parameter,
@@ -120,4 +115,4 @@ class TestAutoCFunction:
 
         # For whatever reason the as text comes back with double spacing, so we
         # knock it down to single spacing to make the expected string smaller.
-        assert dedent(expected_doc) == body.astext().replace("\n\n", "\n")
+        assert body.astext().replace("\n\n", "\n") == dedent(expected_doc)

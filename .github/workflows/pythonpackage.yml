@@ -21,13 +21,14 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install tox codecov
+
+        # Make libclang available for the parsing of the c files with the python clang package
+        sudo ln -s /usr/lib/x86_64-linux-gnu/libclang-6.0.so.1 /usr/lib/x86_64-linux-gnu/libclang.so
     - name: Test with tox
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         TOX_SKIP_ENV: py37$
       run: |
-        # Make libclang available for the parsing of the c files with the python clang package
-        sudo ln -s /usr/lib/x86_64-linux-gnu/libclang-6.0.so.1 /usr/lib/x86_64-linux-gnu/libclang.so
         tox
         cp tests/.coverage .
         codecov

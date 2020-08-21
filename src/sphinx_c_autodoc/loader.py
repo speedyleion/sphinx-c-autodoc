@@ -29,7 +29,7 @@ TRAILING_COMMENT_START = ("/**<", "/*!<", "///<")
 
 #: Nodes which can be anonymous and still need to be documented. i.e.
 #: anonymous structures are usually part of another node. Anonymous enums are
-#: often used to use the enumerations but not force the type usage.
+#: often used to use the enumerators but not force the type usage.
 ALLOWED_ANONYMOUS = (cindex.CursorKind.ENUM_DECL,)
 
 # Must do this prior to calling into clang
@@ -53,6 +53,9 @@ class DocumentedObject:
             - type: A typedef
             - struct: A structure
             - union: A Union
+            - enumerator: An enumerator constant
+            - macro: A macro
+
         doc (str): The default documentation of the object. This is usally
             the comment with leading '*' removed.
         name (str): The name of the object. For example functions this would
@@ -207,7 +210,7 @@ class DocumentedObject:
         # be kept around from some declarations. This causes problems with
         # sphinx as the signature should remain all in one line.
         lines = root.declaration.text.splitlines()
-        declaration = " ".join(l.strip() for l in lines)
+        declaration = " ".join(line.strip() for line in lines)
         return declaration
 
     @property
@@ -284,23 +287,7 @@ class DocumentedMacro(DocumentedObject):
     A documented macro
     """
 
-    # Macros can be function like or they can be macro like so look up in the
-    # :attr:`type`.
-    _type = None
-
-    @property
-    def type(self) -> str:
-        """
-        Type of this object
-        :return: The type
-        """
-        if self._type is None:
-            if self.node.is_macro_function_like():
-                self._type = "function"
-            else:
-                self._type = "macro"
-
-        return self._type
+    type_ = "macro"
 
     def format_args(self, **kwargs: Any) -> str:
         """
@@ -338,7 +325,7 @@ class DocumentedMacro(DocumentedObject):
         Creates the full declaration of the macro. For function like macros
         this will include the parenthesised arguments.
         """
-        if self.type == "macro":
+        if not self.node.is_macro_function_like():
             return f"{self.name}"
 
         # We know this must be a function like macro, which means the first 2
@@ -357,6 +344,14 @@ class DocumentedMacro(DocumentedObject):
         ]
 
         return "{}({})".format(self.name, ", ".join(tokens))
+
+
+class DocumentedEnumerator(DocumentedMacro):
+    """
+    An enumerator, the constant values in an enum
+    """
+
+    type_ = "enumerator"
 
 
 class DocumentedMember(DocumentedObject):
@@ -547,16 +542,16 @@ class DocumentedStructure(DocumentedObject):
     def soup(self) -> None:
         """
         Since structures like objects use the "Members:" and
-        "Enumerations:" sections do *not* use the clang xml comments as they
+        "Enumerators:" sections do *not* use the clang xml comments as they
         don't preserve newlines, so the sections get lost.
         """
         return None
 
     def get_parsed_declaration(self) -> str:
         """
-        Structures, and similar, are just the type and the name.
+        Structures, and similar, are just name.
         """
-        return f"{self.type} {self.name}"
+        return f"{self.name}"
 
     @property
     def children(self) -> dict:
@@ -585,7 +580,7 @@ class DocumentedUnion(DocumentedStructure):
 
 class DocumentedEnum(DocumentedStructure):
     """
-    Class for Enumerations. Same as structures with a different :attr:`type`.
+    Class for Enums. Same as structures with a different :attr:`type`.
     """
 
     type_ = "enum"
@@ -633,7 +628,7 @@ CURSORKIND_TO_OBJECT_CLASS = {
     cindex.CursorKind.ENUM_DECL: DocumentedEnum,
     cindex.CursorKind.FIELD_DECL: DocumentedMember,
     cindex.CursorKind.MACRO_DEFINITION: DocumentedMacro,
-    cindex.CursorKind.ENUM_CONSTANT_DECL: DocumentedMacro,
+    cindex.CursorKind.ENUM_CONSTANT_DECL: DocumentedEnumerator,
     cindex.CursorKind.VAR_DECL: DocumentedVariable,
     cindex.CursorKind.TYPEDEF_DECL: DocumentedType,
 }

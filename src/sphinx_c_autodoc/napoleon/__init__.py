@@ -16,7 +16,7 @@ from sphinx.ext.napoleon import GoogleDocstring
 class CAutoDocString(GoogleDocstring):
     """
     A docstring that can handle documenting some extra c sections, in
-    particular, `members` sections of structs and unions and `enumerations`
+    particular, `members` sections of structs and unions and `enumerators`
     sections of enums.
     """
 
@@ -56,7 +56,7 @@ class CAutoDocString(GoogleDocstring):
             "attributes": self._parse_attributes_section,
             "caution": partial(self._parse_admonition, "caution"),
             "danger": partial(self._parse_admonition, "danger"),
-            "enumerations": partial(self._parse_nested_section, "macro"),
+            "enumerators": partial(self._parse_nested_section, "enumerator"),
             "error": partial(self._parse_admonition, "error"),
             "example": self._parse_examples_section,
             "examples": self._parse_examples_section,
@@ -104,7 +104,7 @@ class CAutoDocString(GoogleDocstring):
         lines = [""]
 
         # Type should be unused, it's not normal in c to do `var (type)` it's
-        # usuallly `type var`
+        # usually `type var`
         for name, _, desc in self._consume_fields():
             lines.extend([f".. c:{nested_title}:: {name}", ""])
             fields = self._format_field("", "", desc)

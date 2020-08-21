@@ -12,7 +12,6 @@ sphinx\_c\_autodoc.domains.c module
    :undoc-members:
    :show-inheritance:
 
-
 Module contents
 ---------------
 
