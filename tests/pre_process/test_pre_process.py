@@ -9,11 +9,11 @@ NEW_FILE_CONTENTS = """\
     /**
      * A comment for a variable that doesn't exist in original file
      */
-    static int new_contents_int;
+    static int compilation_db_define;
     """
 
 new_contents_int = """\
-    static int new_contents_int
+    static int compilation_db_define
     A comment for a variable that doesn't exist in original file"""
 
 
@@ -31,7 +31,7 @@ def test_pre_parsing(sphinx_state):
     sphinx_state.env.app.connect("c-autodoc-pre-process", pre_parser)
     directive = AutodocDirective(
         "autocdata",
-        ["variables.c::new_contents_int"],
+        ["variables.c::compilation_db_define"],
         {"members": None},
         None,
         None,

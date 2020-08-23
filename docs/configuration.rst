@@ -23,11 +23,30 @@ Example:
 
 Then a directive of the form::
 
-    .. autocfunctoin:: some_file.c::some_function
+    .. autocfunction:: some_file.c::some_function
 
 would be searched first as ``my/source/dir/some_file.c`` then, if not found, it
 would be searched as ``other/source/dir/some_file.c``.  Again this relative to
 the top documentation source directory.
+
+c_autodoc_compilation_database
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Path to a
+`compilation database <https://clang.llvm.org/docs/JSONCompilationDatabase.html>`_.
+The compilation database is relative to the documentation source directory, often where
+``conf.py`` is.
+
+The compilation database will be used as the source of compile options for each file.
+If a file is listed more than once in the compilation database, only the first instance
+of the file will be used.  Of importance is the ``directory`` entry for each file.
+The ``directory`` entry will be passed to libclang via the
+`working-directory <https://clang.llvm.org/docs/ClangCommandLineReference.html#cmdoption-clang-working-directory-arg>`_
+flag.  The ``-working-directory`` allows for the includes and other path relative
+arguments to be handled consistently.
+
+.. note:: Currently libclang only supports compilation databases named
+    ``compile_commands.json``.
 
 Events
 ------

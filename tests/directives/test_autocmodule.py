@@ -1,8 +1,6 @@
 """
 Test autocmodule directive
 """
-import logging
-
 from textwrap import dedent
 
 import pytest

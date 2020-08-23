@@ -234,7 +234,8 @@ class CObjectDocumenter(Documenter):
 
             # let extensions preprocess files
             self.env.app.emit("c-autodoc-pre-process", filename, contents)
-            modules_dict[filename] = loader.load(filename, contents[0])
+            compilation_db = self.get_compilation_database()
+            modules_dict[filename] = loader.load(filename, contents[0], compilation_db)
             ast = json.loads(str(modules_dict[filename]))
             source_dict.setdefault(
                 self.get_real_modname(), ViewCodeListing(contents[0], ast)
@@ -253,6 +254,33 @@ class CObjectDocumenter(Documenter):
                 self.object = self.object.children[self.object_name]  # type: ignore
 
         return True
+
+    def get_compilation_database(self) -> Optional[str]:
+        """
+        Get's the compilation database from the environment
+        `c_autodoc_compilation_database`
+
+        Returns:
+            str: The full path to the compilation database to use.  None if there is no
+                compilation database.
+
+        """
+        database = self.env.config.c_autodoc_compilation_database
+        if not database:
+            return None
+
+        # Prefixing with "/" will force "absolute" path which is relative
+        # to the source directory.
+        _, filename = self.env.relfn2path(f"/{database}")
+        if os.path.isfile(filename):
+            return filename
+
+        logger.warning(
+            'Compilation database "%s" not found.' % (filename,),
+            location=(self.env.docname, self.directive.lineno),
+        )
+
+        return None
 
     def get_doc(
         self, encoding: Optional[str] = None, ignore: int = None
@@ -727,6 +755,7 @@ def setup(app: Sphinx) -> None:
     app.add_autodocumenter(CDataDocumenter)
     app.add_directive_to_domain("c", "module", CModule)
     app.add_config_value("c_autodoc_roots", [""], "env")
+    app.add_config_value("c_autodoc_compilation_database", None, "env")
     app.add_event("c-autodoc-pre-process")
 
     patch_c_domain()

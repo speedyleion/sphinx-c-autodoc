@@ -728,21 +728,59 @@ def get_file_comment(cursor: Cursor, child: Optional[Cursor]) -> str:
     return ""
 
 
-def load(filename: str, contents: str) -> DocumentedObject:
+def get_compilation_args(filename: str, compilation_database: str = None) -> List[str]:
+    """
+    Get the compilation args for `filename` for the compilation database found in
+    `compilation_db_dir`
+
+    Args:
+        filename (str): The file to get the compilation arguments for.
+        compilation_database (str): The compilation database.
+
+    Returns:
+        list[str]: The compilation arguments.
+    """
+    if not compilation_database:
+        return []
+    directory = os.path.dirname(compilation_database)
+    comp_db = cindex.CompilationDatabase.fromDirectory(directory)
+    commands = comp_db.getCompileCommands(filename)
+
+    if not commands:
+        return []
+
+    # For now only handling the first file instance seen in the database.
+    # First argument is compiler path, last is the file to compile
+    args = list(commands[0].arguments)[1:-1]
+
+    # Since things like includes and defines could be relative we force the working
+    # directory.
+    working_dir = commands[0].directory
+    args.append(f"-working-directory={working_dir}")
+
+    return args
+
+
+def load(
+    filename: str, contents: str, compilation_database: str = None
+) -> DocumentedObject:
     """
     Load a C file into a tree of :class:`DocumentedObject`\'s
 
     Args:
         filename (str): The c file to load into a documented item
         contents (str): The contents of `filename`
+        compilation_database (str): The compilation database.
 
     Returns:
         :class:`DocumentedObject`: The documented version of `filename`.
 
     """
+    args = get_compilation_args(filename, compilation_database)
 
     tu = cindex.TranslationUnit.from_source(
         filename,
+        args=args,
         unsaved_files=((filename, contents),),
         options=cindex.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD,
     )

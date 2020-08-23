@@ -28,7 +28,12 @@ class CustomNapoleonDocString(CAutoDocString):
 
 
 def process_autodoc_docstring(
-    app, what, name, obj, options, lines,
+    app,
+    what,
+    name,
+    obj,
+    options,
+    lines,
 ):
     """
     Call back for autodoc's ``autodoc-process-docstring`` event.
