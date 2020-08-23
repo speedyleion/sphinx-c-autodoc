@@ -12,7 +12,7 @@ README = README.replace(".. c:function::", ".. code-block:: rst\n\n    .. c:func
 
 setuptools.setup(
     name="sphinx-c-autodoc",
-    version="0.2.0",
+    version="0.3.0",
     description="A sphinx autodoc extension for c modules",
     long_description=README,
     long_description_content_type="text/x-rst",
