@@ -451,19 +451,53 @@ class DocumentedFunction(DocumentedObject):
         name, _ = decl.split("(", 1)
         return name
 
+    def _get_arguments(self) -> str:
+        """
+        Get the arguments for this instance.
+
+        Returns:
+            str: The arguments for use in the function signature.
+        """
+        func = self.node
+
+        # Early logic used to iterate over, `func.get_arguments()`, however when there
+        # is an unknown type clang will sometimes fail to provide tokens for that
+        # argument. For example in "unknown_type foo[]" the brackets will cause clang
+        # to return back no tokens for the argument.
+        start = func.location
+        end = func.extent.end
+        if func.is_definition():
+            # When a function is a definition the last child is the compound statement
+            # so we need to move prior to the compound statement
+            children = list(func.get_children())
+            body_start = children[-1].extent.start.offset
+            end = cindex.SourceLocation.from_offset(func.tu, start.file, body_start - 1)
+
+        extent = cindex.SourceRange.from_locations(start, end)
+        non_comment_tokens = (
+            t
+            for t in cindex.TokenGroup.get_tokens(func.tu, extent=extent)
+            if t.kind != cindex.TokenKind.COMMENT
+        )
+
+        # Even though this will place spaces around all the tokens, the sphinx C domain
+        # will provide some formatting to make it look nicer in the final output.
+        full_signature = " ".join(t.spelling for t in non_comment_tokens)
+
+        _, _, arguments = full_signature.partition("(")
+        arguments = arguments.rstrip(")")
+        arguments = arguments.strip()
+
+        return arguments
+
     def get_parsed_declaration(self) -> str:
         """
         Creates the parenthesis version of the function signature.  i.e. this
         will be the `(int hello, int what)` portion of the header.
         """
-        func = self.node
-        args = []
-        for arg in func.get_arguments():
-            non_comment_tokens = (
-                t for t in arg.get_tokens() if t.kind != cindex.TokenKind.COMMENT
-            )
-            args.append(" ".join(t.spelling for t in non_comment_tokens))
+        args = self._get_arguments()
 
+        func = self.node
         tu = func.tu
 
         # For functions the extent encompasses the return value, and the
@@ -478,7 +512,7 @@ class DocumentedFunction(DocumentedObject):
             t.spelling for t in cindex.TokenGroup.get_tokens(tu, extent=extent)
         )
 
-        return "{} {}({})".format(return_type, func.spelling, ", ".join(args))
+        return "{} {}({})".format(return_type, func.spelling, args)
 
     def is_public(self) -> bool:
         """

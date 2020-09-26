@@ -90,3 +90,12 @@ void * custom_napoleon_section(char first_param, int second_param);
 void * function_with_comment_in_parameter(
     const unknown_type * /* A comment in the middle of parameter line */
         my_char_ptr );
+
+/**
+ * A function with array parameters
+ */
+void * function_with_array_parameters(const int array_1 [34][10], unknown_type array_2[], char array_3[][20])
+{
+/* an empty body to test things out */
+return (void*)0;
+};

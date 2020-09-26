@@ -128,3 +128,10 @@ typedef int (*wrapped_function_pointer)
     const int * hello,
     const float baz
     );
+
+#define SOME_SIZE 10;
+
+/**
+ * A char array typedef
+ */
+typedef char char_array[SOME_SIZE];

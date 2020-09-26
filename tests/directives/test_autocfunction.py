@@ -51,10 +51,6 @@ class TestAutoCFunction:
         Returns
         Some return value."""
 
-    # Currently Don't know why the \xa0 are comming back in the output. Looking
-    # through the debugger it appears that the xml comments from clang have
-    # standard spaces, guessing it's something with the html generation from
-    # sphinx
     doxy_documented_parameters_no_returns = """\
         void doxy_documented_parameters_no_returns(int water, int air)
         Doxygen style function
@@ -74,6 +70,10 @@ class TestAutoCFunction:
         my_char_ptr -- Pointer to my character, probably actually an array
         or string like representation."""
 
+    function_with_array_parameters = """\
+        void *function_with_array_parameters(const int array_1[34][10], unknown_type array_2[], char array_3[][20])
+        A function with array parameters"""
+
     doc_data = [
         ("functions.c::single_line_function_comment", single_line_comment),
         ("functions.c::return_value_function", return_value_function),
@@ -89,6 +89,7 @@ class TestAutoCFunction:
             "functions.c::function_with_comment_in_parameter",
             function_with_comment_in_parameter,
         ),
+        ("functions.c::function_with_array_parameters", function_with_array_parameters),
     ]
 
     @pytest.mark.parametrize("function, expected_doc", doc_data)

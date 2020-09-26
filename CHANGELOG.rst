@@ -15,6 +15,14 @@ Added
   `compilation databases <https://clang.llvm.org/docs/JSONCompilationDatabase.html>`_.
   can now be specified with the ``c_autodoc_compilation_database`` configuration value.
 
+Fixes
+-----
+
+* Display of function arguments with unknown array types.
+  Previously when a function had an argument that was an array and an unknown type, it
+  would result in being empty in the output documentation.  Now the full function
+  signature is provided token by token, with the exception of comments.
+
 `v0.3.0`_ (2020-08-22)
 ==========================
 

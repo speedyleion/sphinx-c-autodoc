@@ -39,12 +39,17 @@ class TestAutoCType:
         typedef int (*wrapped_function_pointer)(const int *, const float)
         A function pointer wrapped on multiple lines."""
 
+    char_array = """\
+        typedef char char_array[10]
+        A char array typedef"""
+
     doc_data = [
         ("types.c::my_int", my_int),
         ("types.c::undocumented", undocumented),
         ("types.c::unknown_return_type", function_type),
         ("types.c::what", function_pointer_type),
         ("types.c::wrapped_function_pointer", wrapped_function_pointer),
+        ("types.c::char_array", char_array),
     ]
 
     @pytest.mark.parametrize("type_, expected_doc", doc_data)
