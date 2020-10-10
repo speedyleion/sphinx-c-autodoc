@@ -50,6 +50,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'sphinx_rtd_theme',
+    'sphinxcontrib.autoprogram',
     'sphinx_c_autodoc',
     'sphinx_c_autodoc.napoleon',
     'sphinx_c_autodoc.viewcode',

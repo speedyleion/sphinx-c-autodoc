@@ -19,6 +19,7 @@ C Autodoc Extension For Sphinx.
    configuration
    napoleon
    viewcode
+   apidoc
    developer_notes
    contributing
    changelog

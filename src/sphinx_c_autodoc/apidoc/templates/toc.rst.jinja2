@@ -1,0 +1,7 @@
+{{ title | heading }}
+
+.. toctree::
+    :maxdepth: {{ maxdepth }}
+{% for doc_name in doc_names %}
+    {{ doc_name }}
+{%- endfor %}

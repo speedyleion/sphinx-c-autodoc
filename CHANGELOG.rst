@@ -11,6 +11,9 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 Added
 -----
 
+* The ``sphinx-c-apidoc`` command.  This command provides users the ability to quickly
+  build up a set of documentation files for a C directory.
+
 * A
   `compilation databases <https://clang.llvm.org/docs/JSONCompilationDatabase.html>`_.
   can now be specified with the ``c_autodoc_compilation_database`` configuration value.

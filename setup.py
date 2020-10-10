@@ -28,10 +28,16 @@ setuptools.setup(
     project_urls={
         "Source": "https://github.com/speedyleion/sphinx-c-autodoc",
     },
+    package_data={"": ["templates/*.jinja2"]},
     install_requires=[
         "sphinx>=3",
         "clang>=6",
         "beautifulsoup4",
     ],
+    entry_points={
+        "console_scripts": [
+            "sphinx-c-apidoc = sphinx_c_autodoc.apidoc:main",
+        ]
+    },
     python_requires=">=3.7",
 )
