@@ -38,10 +38,6 @@ class TestAutoCStruct:
         my_struct_type foo
         """
 
-    typedefed_struct = """\
-        typedef intermediate_type typedefed_struct
-        A typedef of a struct after the fact."""
-
     documented_members = """\
         struct documented_members
         A struct with documented members
@@ -75,7 +71,6 @@ class TestAutoCStruct:
     doc_data = [
         ("types.c::my_struct_type", my_struct_type),
         ("types.c::some_struct", some_struct),
-        ("types.c::typedefed_struct", typedefed_struct),
         ("types.c::documented_members", documented_members),
         ("types.c::nested_struct", nested_struct),
     ]

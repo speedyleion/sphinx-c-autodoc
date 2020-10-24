@@ -21,6 +21,11 @@ Added
 Fixes
 -----
 
+* No longer passing `typedef` to autodocumentation of types.
+  Previously the `typedef` keyword was being provided to sphinx as part of the
+  signature. This resulted in losing the ability to link to the type in html
+  documentation.
+
 * Display of function arguments with unknown array types.
   Previously when a function had an argument that was an array and an unknown type, it
   would result in being empty in the output documentation.  Now the full function

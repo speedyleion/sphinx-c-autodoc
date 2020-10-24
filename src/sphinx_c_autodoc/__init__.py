@@ -594,6 +594,17 @@ class CTypeDocumenter(CObjectDocumenter):
 
         return self.directive.result
 
+    def format_name(self) -> str:
+        """Format the name of *self.object*.
+
+        Sphinx doesn't like the typedef keyword being in typedef signatures so strip
+        them off here.
+        """
+        raw_name = self.object.format_name()
+
+        cleaned_name = raw_name.replace("typedef ", "")
+        return cleaned_name
+
 
 class CStructDocumenter(CTypeDocumenter):
     """

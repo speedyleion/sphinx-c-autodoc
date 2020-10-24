@@ -16,7 +16,7 @@ Using this extension will take:
 
 .. literalinclude:: ../tests/assets/c_source/example.c
     :language: c
-    :lines: 70-92
+    :lines: 73-95
 
 and convert it into 
 

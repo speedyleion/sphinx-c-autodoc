@@ -32,16 +32,20 @@ class TestAutoCType:
     # Similar to the unknown members of the union clang just falls back to
     # int's
     function_pointer_type = """\
-        typedef int (int *what)
+        int (int *what)
         A function pointer type with unknown return type"""
 
     wrapped_function_pointer = """\
-        typedef int (*wrapped_function_pointer)(const int *, const float)
+        typedef int (*wrapped_function_pointer)(const int*, const float)
         A function pointer wrapped on multiple lines."""
 
     char_array = """\
         typedef char char_array[10]
         A char array typedef"""
+
+    typedefed_struct = """\
+        typedef intermediate_type typedefed_struct
+        A typedef of a struct after the fact."""
 
     doc_data = [
         ("types.c::my_int", my_int),
@@ -50,6 +54,7 @@ class TestAutoCType:
         ("types.c::what", function_pointer_type),
         ("types.c::wrapped_function_pointer", wrapped_function_pointer),
         ("types.c::char_array", char_array),
+        ("types.c::typedefed_struct", typedefed_struct),
     ]
 
     @pytest.mark.parametrize("type_, expected_doc", doc_data)

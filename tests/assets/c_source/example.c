@@ -45,6 +45,11 @@
     some_func((_a))
 
 /**
+ * A plain old typedef
+ */
+typedef int a_typedef_type;
+
+/**
  * Structures can be documented.
  *
  * When the structure is anonymous and hidden inside a typedef, like this one,

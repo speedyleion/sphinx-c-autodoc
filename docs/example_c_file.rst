@@ -9,3 +9,4 @@ Begin Autodocumented C File
 
 .. autocmodule:: example.c
    :members:
+   :private-members:
