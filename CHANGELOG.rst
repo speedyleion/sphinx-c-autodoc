@@ -8,20 +8,24 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `v0.4.0-dev`_ (unreleased)
 ==========================
 
+`v0.3.1`_ (2020-10-24)
+==========================
+
 Added
 -----
 
 * The ``sphinx-c-apidoc`` command.  This command provides users the ability to quickly
   build up a set of documentation files for a C directory.
 
-* A
-  `compilation databases <https://clang.llvm.org/docs/JSONCompilationDatabase.html>`_.
-  can now be specified with the ``c_autodoc_compilation_database`` configuration value.
+* Support for compile flags via a 
+  `compilation database <https://clang.llvm.org/docs/JSONCompilationDatabase.html>`_.
+  A compilation database can now be specified with the
+  ``c_autodoc_compilation_database`` configuration value.
 
 Fixes
 -----
 
-* No longer passing `typedef` to autodocumentation of types.
+* No longer passing `typedef` to auto documentation of types.
   Previously the `typedef` keyword was being provided to sphinx as part of the
   signature. This resulted in losing the ability to link to the type in html
   documentation.
@@ -96,7 +100,8 @@ Fixes
 * Initial public release
 
 
-.. _v0.4.0-dev: https://github.com/speedyleion/sphinx-c-autodoc/compare/v0.3.0...master
+.. _v0.4.0-dev: https://github.com/speedyleion/sphinx-c-autodoc/compare/v0.3.1...master
+.. _v0.3.1: https://github.com/speedyleion/sphinx-c-autodoc/compare/v0.3.0...v0.3.1
 .. _v0.3.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v0.2.0...v0.3.0
 .. _v0.2.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v0.1.1...v0.2.0
 .. _v0.1.1: https://github.com/speedyleion/sphinx-c-autodoc/compare/v0.1.0...v0.1.1
