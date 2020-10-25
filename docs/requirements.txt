@@ -1,0 +1,3 @@
+# Most requirements are already pulled in through the sphinx dependency of the package.
+# This file just lists the ones that don't get pulled through there.
+sphinxcontrib.autoprogram
