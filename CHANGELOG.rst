@@ -8,6 +8,13 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `v0.4.0-dev`_ (unreleased)
 ==========================
 
+Fixes
+-----
+
+* Call out Sphinx 3.1 as minimum version in ``setup.py``. Previously the Sphinx
+  version in setup.py called out 3.0 or greater. This was incorrect as features
+  from Sphinx 3.1 are being utilized.
+
 `v0.3.1`_ (2020-10-24)
 ==========================
 

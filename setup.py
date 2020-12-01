@@ -31,7 +31,7 @@ setuptools.setup(
     },
     package_data={"": ["templates/*.jinja2"]},
     install_requires=[
-        "sphinx>=3",
+        "sphinx>=3.1",
         "clang>=6",
         "beautifulsoup4",
     ],
