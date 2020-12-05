@@ -149,11 +149,10 @@ class DocumentedObject:
         obj_dict["start_line"] = line_range[0]
         obj_dict["end_line"] = line_range[1]
 
-        if self.children:
-            obj_dict["children"] = []
+        obj_dict["children"] = []
 
-            for child in self.children.values():
-                obj_dict["children"].append(json.loads(str(child)))
+        for child in self.children.values():
+            obj_dict["children"].append(json.loads(str(child)))
 
         return json.dumps(obj_dict)
 

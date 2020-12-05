@@ -24,6 +24,7 @@ testdata = [
                     "type": "function",
                     "start_line": 7,
                     "end_line": 16,
+                    "children": [],
                 }
             ],
         },
@@ -50,6 +51,7 @@ testdata = [
                             "type": "member",
                             "start_line": 12,
                             "end_line": 12,
+                            "children": [],
                         }
                     ],
                 },
@@ -59,6 +61,7 @@ testdata = [
                     "type": "function",
                     "start_line": 15,
                     "end_line": 24,
+                    "children": [],
                 },
             ],
         },

@@ -27,3 +27,8 @@ Viewcode
     :module: does_not_exist.c
 
     Documentation for a function that calls out a module which doesn't exist.
+
+.. Ensure viewcode can handle iterating over an emtpy file, bug fix for #9
+
+.. autocmodule:: empty_file.c
+    :members:

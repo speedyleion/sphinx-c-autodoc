@@ -37,5 +37,6 @@ AST:
             A list of child constructs with the same fields as this.
             Children may be things such as struct members. Or
             functions within a file where the file is the root node.
+            An empty list is still provided for no children.
 
     The file itself should be the root node.
