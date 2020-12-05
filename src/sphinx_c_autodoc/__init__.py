@@ -479,7 +479,11 @@ class CTypeDocumenter(CObjectDocumenter):
 
             if line.lstrip().startswith(directive_string):
                 _, signature = line.split(directive_string)
-                sig_parts = signature.strip().split()
+
+                # members may document array types so break on the brace
+                # `int member_name [some_size][maybe_2nd_dimension]`
+                type_and_name, *(_) = signature.strip().partition("[")
+                sig_parts = type_and_name.strip().split()
                 members.append((sig_parts[-1], signature, line_no))
 
         return members

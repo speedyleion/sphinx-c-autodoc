@@ -68,11 +68,22 @@ class TestAutoCStruct:
         float three
         The third member of parent struct"""
 
+    struct_with_array_member = """\
+        struct struct_with_array_member
+        A struct with an array inside
+        
+        int foo[10]
+        An array member with an unknown type, it will show as int.
+        
+        float bar[10]
+        An array with a known type."""
+
     doc_data = [
         ("types.c::my_struct_type", my_struct_type),
         ("types.c::some_struct", some_struct),
         ("types.c::documented_members", documented_members),
         ("types.c::nested_struct", nested_struct),
+        ("types.c::struct_with_array_member", struct_with_array_member),
     ]
 
     @pytest.mark.parametrize("struct, expected_doc", doc_data)

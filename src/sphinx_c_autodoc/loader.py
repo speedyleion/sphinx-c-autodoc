@@ -374,7 +374,13 @@ class DocumentedMember(DocumentedObject):
         The parsed declaration of `bar` would be `int bar`.
         """
         type_ = self.node.type.spelling
-        return f"{type_} {self.name}"
+
+        # Libclang will return the type as `float [20]` when looking at
+        # `float foo[20]`.  We could look at the kind `TypeKind.CONSTANTARRAY`
+        # but partitioning on the "[" just seems more straight forward.
+        type_, *(array) = type_.partition("[")
+        array_contents = "".join(array)
+        return f"{type_} {self.name} {array_contents}"
 
     def is_public(self) -> bool:
         """

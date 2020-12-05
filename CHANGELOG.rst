@@ -11,7 +11,10 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 Fixes
 -----
 
-* Fix viewcode processing of empty files.  Previously an exception would be
+* Fix documentation of members that are arrays. Previously struct members that
+  were array types would cause an error as the array size was put between the
+  type and the member name.
+* Fix viewcode processing of empty files. Previously an exception would be
   raised when the viewcode extension tried to process empty files.
 * Call out Sphinx 3.1 as minimum version in ``setup.py``. Previously the Sphinx
   version in setup.py called out 3.0 or greater. This was incorrect as features

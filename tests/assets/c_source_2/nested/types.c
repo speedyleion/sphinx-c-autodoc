@@ -135,3 +135,17 @@ typedef int (*wrapped_function_pointer)
  * A char array typedef
  */
 typedef char char_array[SOME_SIZE];
+
+/**
+ * A struct with an array inside
+ *
+ * Members:
+ *     foo: An array member with an unknown type, it will show as int.
+ *     bar: An array with a known type.
+ */
+typedef struct
+{
+
+unknown_type foo[SOME_SIZE];
+float bar[SOME_SIZE];
+} struct_with_array_member;
