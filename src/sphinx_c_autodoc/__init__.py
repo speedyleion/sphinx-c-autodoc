@@ -88,6 +88,7 @@ class CObjectDocumenter(Documenter):
         "noindex": bool_option,
         "private-members": bool_option,
         "member-order": member_order_option,
+        "undoc-members": bool_option,
     }
 
     @classmethod
@@ -331,7 +332,6 @@ class CObjectDocumenter(Documenter):
         - they are private (except if given explicitly or the private-members
           option is set)
         - they are undocumented (except if the undoc-members option is set)
-          TODO not implemented yet.
 
         TODO not implemented yet.
         The user can override the skipping decision by connecting to the
@@ -342,7 +342,7 @@ class CObjectDocumenter(Documenter):
         for (membername, member) in members:
             if not want_all:
                 ret.append((membername, member, isattr))
-            else:
+            elif member.doc or self.options.undoc_members:
                 if member.is_public() or self.options.private_members:
                     ret.append((membername, member, isattr))
         return ret

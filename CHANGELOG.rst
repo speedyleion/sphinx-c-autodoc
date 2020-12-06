@@ -8,6 +8,16 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `v0.4.0-dev`_ (unreleased)
 ==========================
 
+Added
+-----
+
+* `:undoc-members:` and `:no-undoc-members:` option for the autocmodule
+  directive. This option set allows for controlling the listing of undocumented
+  constructs.  The default is to not list undocumented constructs.
+
+  .. note:: This is a behavior change.  To maintain previous behavior add
+      `:undoc-members:` to the project's `autodoc_default_options`_.
+
 Fixes
 -----
 
@@ -118,3 +128,5 @@ Fixes
 .. _v0.2.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v0.1.1...v0.2.0
 .. _v0.1.1: https://github.com/speedyleion/sphinx-c-autodoc/compare/v0.1.0...v0.1.1
 .. _v0.1.0: https://github.com/speedyleion/sphinx-c-autodoc/commits/v0.1.0
+
+.. _autodoc_default_options: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_default_options

@@ -291,6 +291,89 @@ class TestAutoCModule:
         output = self.get_directive_output(directive)
         assert output == dedent(header_with_no_private_members)
 
+    def test_no_undoc_members(self, sphinx_state):
+        header_with_undocumented_members = """\
+            This header file as some undocumented contents
+
+            struct struct_with_undocumented_member
+
+            The structure member bar is undocumented.  It will still show in the
+            documentation, only file level constructs will be filtered with this
+            option.
+            
+            
+            
+            int bar
+            
+            """
+
+        directive = AutodocDirective(
+            "autocmodule",
+            ["header_with_undocumented_members.h"],
+            {"members": None, "no-undoc-members": None},
+            None,
+            None,
+            None,
+            None,
+            sphinx_state,
+            None,
+        )
+
+        output = self.get_directive_output(directive)
+        assert output == dedent(header_with_undocumented_members)
+
+    def test_undoc_members_specified(self, sphinx_state):
+        header_with_undocumented_members = """\
+            This header file as some undocumented contents
+            
+            _MY_HEADER_GUARD
+
+
+
+            struct struct_with_undocumented_member
+
+            The structure member bar is undocumented.  It will still show in the
+            documentation, only file level constructs will be filtered with this
+            option.
+            
+            
+            
+            int bar
+            
+
+
+            struct undocumented_struct
+            
+            
+            
+            int foo
+            
+            
+            
+            
+            
+            float what
+            
+            """
+
+        directive = AutodocDirective(
+            "autocmodule",
+            ["header_with_undocumented_members.h"],
+            # Note: The undoc-members option is actually in the common conf.py
+            # file.  And it is an autodoc specific feature, this just tests
+            # that the extension obeys that.
+            {"members": None},
+            None,
+            None,
+            None,
+            None,
+            sphinx_state,
+            None,
+        )
+
+        output = self.get_directive_output(directive)
+        assert output == dedent(header_with_undocumented_members)
+
     @staticmethod
     def get_directive_output(directive):
         """

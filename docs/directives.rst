@@ -66,6 +66,15 @@ instance from being added to the index provide this option.
         form of ``:no-private-members:`` to selectively turn off this option
         on a per module basis.
 
+    .. rst:directive:option:: undoc-members
+
+        Specify if undocumented members are to show in the documentation.  This
+        option is off by default.
+
+        Just as for the standard `autodoc`_ options, one can use the negated
+        form of ``:no-undoc-members:`` to selectively turn off this option when
+        it has been enabled in `autodoc_default_options`_.
+
 .. rst:directive:: .. autocfunction:: filename::function
 
     Document the function ``function`` from file ``filename``.
