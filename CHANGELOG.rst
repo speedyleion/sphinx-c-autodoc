@@ -8,6 +8,13 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `v0.4.0-dev`_ (unreleased)
 ==========================
 
+Changed
+-------
+
+* Undocumented constructs are no longer added to the documentation by default.
+  To maintain previous behavior add `:undoc-members:` to the project's
+  `autodoc_default_options`_.
+
 Added
 -----
 
@@ -15,12 +22,11 @@ Added
   directive. This option set allows for controlling the listing of undocumented
   constructs.  The default is to not list undocumented constructs.
 
-  .. note:: This is a behavior change.  To maintain previous behavior add
-      `:undoc-members:` to the project's `autodoc_default_options`_.
-
 Fixes
 -----
 
+* Fix file level variables with unknown types.  Previously variables with
+  unknown types would cause an error in Sphinx processing.
 * Fix documentation of members that are arrays. Previously struct members that
   were array types would cause an error as the array size was put between the
   type and the member name.

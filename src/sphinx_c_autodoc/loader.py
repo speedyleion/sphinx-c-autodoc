@@ -658,6 +658,54 @@ class DocumentedVariable(DocumentedObject):
 
         return True
 
+    def get_parsed_declaration(self) -> str:
+        """
+        Get the declaration as parsed from the :attr:`node`.
+        """
+        # Libclang will return the type as `float [20]` when looking at
+        # `float foo[20]`.  We could look at the kind `TypeKind.CONSTANTARRAY`
+        # but partitioning on the "[" just seems more straight forward.
+        type_ = self.node.type.spelling
+        type_, *(array) = type_.partition("[")
+        array_contents = "".join(array)
+
+        real_type = self._find_declaration_type()
+        type_ = type_.replace("int", real_type)
+
+        return f"{type_} {self.name} {array_contents}"
+
+    def _find_declaration_type(self) -> str:
+        """
+        Makes an attempt to try and find the identifier, and storage class,
+        representing the variable type.
+
+        Returns:
+            str: The type of the variable.  If this can't be derived falls back to
+                `int`.
+        """
+        type_ = "int"
+        tokens = list(
+            filter(
+                lambda t: t.kind == cindex.TokenKind.IDENTIFIER, self.node.get_tokens()
+            )
+        )
+        try:
+            type_ = tokens[-2].spelling
+        except IndexError:
+            # For array variables with unknown types libclang fails to provide the
+            # tokens.
+            pass
+
+        # clang doesn't provide the storage class in the type name, so we'll add it here
+        storage_keyword = ""
+        storage_class = self.node.storage_class
+        if storage_class == cindex.StorageClass.STATIC:
+            storage_keyword = "static"
+        if storage_class == cindex.StorageClass.EXTERN:
+            storage_keyword = "extern"
+
+        return f"{storage_keyword} {type_}"
+
 
 CURSORKIND_TO_OBJECT_CLASS = {
     cindex.CursorKind.TRANSLATION_UNIT: DocumentedFile,

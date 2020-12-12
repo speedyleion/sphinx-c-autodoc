@@ -5,6 +5,8 @@
 *
 ***************************************/
 
+unknown_type * file_level_variable[32];
+
 /**
 
 This is a type comment

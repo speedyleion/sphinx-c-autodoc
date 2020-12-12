@@ -56,6 +56,7 @@ def test_viewcode_of_sphinx_project(tmp_path):
 
     chosen_links = (
         '<a class="reference internal" href="../_modules/file_2.c.html#c.unknown_member.foo"><span class="viewcode-link">[source]</span></a>',
+        '<a class="reference internal" href="../_modules/file_2.c.html#c.file_level_variable"><span class="viewcode-link">[source]</span></a>',
     )
     for l in chosen_links:
         assert l in contents
