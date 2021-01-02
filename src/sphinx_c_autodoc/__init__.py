@@ -317,7 +317,7 @@ class CObjectDocumenter(Documenter):
 
         return False, object_members
 
-    def filter_members(
+    def filter_members(  # type: ignore[override]
         self, members: List[Tuple[str, Any]], want_all: bool
     ) -> List[Tuple[str, Any, bool]]:
         """Filter the given member list.
@@ -618,7 +618,7 @@ class CStructDocumenter(CTypeDocumenter):
     objtype = "cstruct"
     directivetype = "struct"
 
-    def filter_members(
+    def filter_members(  # type: ignore[override]
         self, members: List[Tuple[str, Any]], want_all: bool
     ) -> List[Tuple[str, Any, bool]]:
         """Filter the given member list.

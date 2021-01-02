@@ -2,7 +2,7 @@ import pytest
 
 from textwrap import dedent
 from sphinx_c_autodoc import CTypeDocumenter
-from docutils.statemachine import ViewList, StringList
+from docutils.statemachine import StringList
 
 MACRO_ONE = """\
     .. c:macro:: MY_MACRO

@@ -5,7 +5,7 @@ from docutils.parsers.rst.states import Struct
 
 
 @pytest.fixture()
-def documenter_bridge():
+def documenter_bridge(sphinx_state):
     """
     Common documenter bridge used for creating directives. This only provides
     what's been deemed necessary for testing so anything extra should be
@@ -14,7 +14,4 @@ def documenter_bridge():
     Yields:
         DocumenterBridge for creating documenters.
     """
-    settings = Struct(tab_width=4)
-    document = Struct(settings=settings)
-    state = Struct(document=document)
-    yield DocumenterBridge(None, None, None, None, state=state)
+    yield DocumenterBridge(sphinx_state.env, None, None, None, state=sphinx_state)
