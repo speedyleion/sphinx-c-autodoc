@@ -9,7 +9,7 @@ import textwrap
 
 from collections import OrderedDict, namedtuple
 from itertools import takewhile
-from typing import Any, List, Optional, Union, Dict, Tuple
+from typing import Any, List, Optional, Union, Dict, Tuple, Sequence
 
 from bs4 import BeautifulSoup
 from bs4.element import Tag
@@ -849,7 +849,10 @@ def get_compilation_args(filename: str, compilation_database: str = None) -> Lis
 
 
 def load(
-    filename: str, contents: str, compilation_database: str = None
+    filename: str,
+    contents: str,
+    compilation_database: str = None,
+    compilation_args: Sequence[str] = None,
 ) -> DocumentedObject:
     """
     Load a C file into a tree of :class:`DocumentedObject`\'s
@@ -858,12 +861,16 @@ def load(
         filename (str): The c file to load into a documented item
         contents (str): The contents of `filename`
         compilation_database (str): The compilation database.
+        compilation_args (str): Compilation arguments.  Will be applied *after*
+            compilation database.
 
     Returns:
         :class:`DocumentedObject`: The documented version of `filename`.
 
     """
     args = get_compilation_args(filename, compilation_database)
+    if compilation_args:
+        args += compilation_args
 
     tu = cindex.TranslationUnit.from_source(
         filename,

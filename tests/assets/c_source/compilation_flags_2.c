@@ -1,10 +1,10 @@
 /*
-A file which shows how an include made available via a compilation database
+A file which shows how an include made available via compilation flags
 can fully resolve a function.
 */
 
 /*
-This include will only be found if the compilation database is used and has an
+This include will only be found if the compilation flags used and has an
 include option available.
 */
 #include "some_include.h"

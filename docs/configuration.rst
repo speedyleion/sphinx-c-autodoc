@@ -48,6 +48,24 @@ arguments to be handled consistently.
 .. note:: Currently libclang only supports compilation databases named
     ``compile_commands.json``.
 
+c_autodoc_compilation_args
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A list of arguments to pass to libclang.  This can be used for setting common
+defines used only for documentation and/or avoiding areas of the code that have
+trouble parsing for documentation.
+
+For example the following would result in libclang parsing the source files
+with the defines ``SPHINX_DOCS`` and ``SIMULATION``:
+
+.. code-block:: python
+
+    c_autodoc_compilation_args = ["-DSPHINX_DOCS", "-DSIMULATION"]
+
+``c_autodoc_compilation_args`` are added for *all* files being processed.
+``c_autodoc_compilation_args`` will be applied *after* any arguments provided
+by :ref:`configuration:c_autodoc_compilation_database`.
+
 Events
 ------
 

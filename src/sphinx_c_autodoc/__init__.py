@@ -236,7 +236,10 @@ class CObjectDocumenter(Documenter):
             # let extensions preprocess files
             self.env.app.emit("c-autodoc-pre-process", filename, contents)
             compilation_db = self.get_compilation_database()
-            modules_dict[filename] = loader.load(filename, contents[0], compilation_db)
+            compilation_args = self.env.config.c_autodoc_compilation_args
+            modules_dict[filename] = loader.load(
+                filename, contents[0], compilation_db, compilation_args
+            )
             ast = json.loads(str(modules_dict[filename]))
             source_dict.setdefault(
                 self.get_real_modname(), ViewCodeListing(contents[0], ast)
@@ -771,6 +774,7 @@ def setup(app: Sphinx) -> None:
     app.add_directive_to_domain("c", "module", CModule)
     app.add_config_value("c_autodoc_roots", [""], "env")
     app.add_config_value("c_autodoc_compilation_database", None, "env")
+    app.add_config_value("c_autodoc_compilation_args", [""], "env")
     app.add_event("c-autodoc-pre-process")
 
     patch_c_domain()

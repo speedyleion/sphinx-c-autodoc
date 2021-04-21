@@ -8,6 +8,13 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `v0.5.0-dev`_ (unreleased)
 ==========================
 
+Added
+-----
+
+* Support for global compilation args.
+  Compilation args can now be specified with the
+  ``c_autodoc_compilation_args`` configuration value.
+
 `v0.4.0`_ (2020-12-27)
 ==========================
 
