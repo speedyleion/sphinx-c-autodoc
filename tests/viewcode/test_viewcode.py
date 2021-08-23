@@ -10,6 +10,7 @@ from bad logic can more easily be seen in the test output
 import re
 import os
 from sphinx.cmd.build import main
+from bs4 import BeautifulSoup
 
 
 SCRIPT_DIR = os.path.dirname(__file__)
@@ -41,25 +42,31 @@ def test_viewcode_of_sphinx_project(tmp_path):
     with file_name.open() as f:
         contents = f.read()
 
+    # Looking for tags of the form
+    #
+    #   <a class="reference internal" href="_modules/example.c.html#c.MY_COOL_MACRO"><span class="viewcode-link"><span class="pre">[source]</span></span></a>
     chosen_links = (
-        '<dt id="c.MY_COOL_MACRO">',
-        '<a class="reference internal" href="_modules/example.c.html#c.MY_COOL_MACRO"><span class="viewcode-link">[source]</span></a>',
-        '<dt id="c.members_documented_with_napoleon.two.nested_two">',
-        '<a class="reference internal" href="_modules/example.c.html#c.members_documented_with_napoleon.two.nested_two"><span class="viewcode-link">[source]</span></a>',
+        "_modules/example.c.html#c.MY_COOL_MACRO",
+        "_modules/example.c.html#c.members_documented_with_napoleon.two.nested_two",
     )
-    for l in chosen_links:
-        assert l in contents
+
+    soup = BeautifulSoup(contents)
+    for href in chosen_links:
+        tag = soup.find("a", {"href": href})
+        assert "[source]" == tag.text
 
     file_name = tmp_path / "sub_dir" / "file_2.html"
     with file_name.open() as f:
         contents = f.read()
 
     chosen_links = (
-        '<a class="reference internal" href="../_modules/file_2.c.html#c.unknown_member.foo"><span class="viewcode-link">[source]</span></a>',
-        '<a class="reference internal" href="../_modules/file_2.c.html#c.file_level_variable"><span class="viewcode-link">[source]</span></a>',
+        "../_modules/file_2.c.html#c.unknown_member.foo",
+        "../_modules/file_2.c.html#c.file_level_variable",
     )
-    for l in chosen_links:
-        assert l in contents
+    soup = BeautifulSoup(contents)
+    for href in chosen_links:
+        tag = soup.find("a", {"href": href})
+        assert "[source]" == tag.text
 
     # Test the back links
     file_name = tmp_path / "_modules" / "example.c.html"
@@ -67,11 +74,13 @@ def test_viewcode_of_sphinx_project(tmp_path):
         contents = f.read()
 
     chosen_links = (
-        '<div class="viewcode-block" id="c.members_documented_with_napoleon.two.nested_two"><a class="viewcode-back" href="../example.html#c.members_documented_with_napoleon.two.nested_two">[docs]</a>',
-        '<div class="viewcode-block" id="c.MY_COOL_MACRO"><a class="viewcode-back" href="../example.html#c.MY_COOL_MACRO">[docs]</a>',
+        "../example.html#c.members_documented_with_napoleon.two.nested_two",
+        "../example.html#c.MY_COOL_MACRO",
     )
-    for l in chosen_links:
-        assert l in contents
+    soup = BeautifulSoup(contents)
+    for href in chosen_links:
+        tag = soup.find("a", {"href": href})
+        assert "[docs]" == tag.text
 
     # Test normal C constructs elsewhere in docs
     file_name = tmp_path / "viewcode.html"
@@ -79,13 +88,15 @@ def test_viewcode_of_sphinx_project(tmp_path):
         contents = f.read()
 
     chosen_links = (
-        '<a class="reference internal" href="_modules/example.c.html#c.napoleon_documented_function"><span class="viewcode-link">[source]</span></a>',
+        "_modules/example.c.html#c.napoleon_documented_function",
         # One needs to use noindex in order to avoid sphinx warning and once
         # one uses noindex then the permalinks are no longer generated :(
-        # '<a class="headerlink" href="#c.napoleon_documented_function" title="Permalink to this definition">',
+        # "#c.napoleon_documented_function"
     )
-    for l in chosen_links:
-        assert l in contents
+    soup = BeautifulSoup(contents)
+    for href in chosen_links:
+        tag = soup.find("a", {"href": href})
+        assert "[source]" == tag.text
 
     # Ensure only the one function that actually had a source file to be able to link to creates a link
     link_count = len(re.findall("viewcode-link", contents))

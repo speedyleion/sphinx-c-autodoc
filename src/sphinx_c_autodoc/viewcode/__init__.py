@@ -98,6 +98,7 @@ def missing_reference(
     """
     # pylint: disable=unused-argument
     if node["reftype"] == f"{C_DOMAIN_LINK_PREFIX}viewcode":
+        assert app.builder is not None
         # We have to wait until here to see if the module actually exists as a
         # plain c directive could be reference a module before the auto c
         # directives are encountered.
@@ -135,6 +136,7 @@ def add_source_listings(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]
         of the page, the name of the template to use for generating the final
         page.
     """
+    assert app.builder is not None
     modules_to_list = getattr(app.builder.env, "_viewcode_c_modules", {})
 
     iterator = status_iterator(
@@ -189,6 +191,7 @@ def _insert_documentation_backlinks(
         code_listing (ViewCodeListing):
             Contains the documentation locations which documented `highlighted_code`.
     """
+    assert app.builder is not None
     for doc in code_listing.doc_links.values():
         construct = _find_construct(doc.fullname, code_listing.ast)
 
@@ -411,6 +414,9 @@ def _add_pending_source_cross_reference(
     if module is None:
         return
 
+    assert app.builder is not None
+    assert app.builder.env is not None
+
     source_page = _get_source_page_name(module)
 
     # Using the `viewcode-link` to be consistent with the python versions in
@@ -452,6 +458,9 @@ def _add_pending_back_reference(app: Sphinx, signode: Node, fullname: str) -> No
     module = signode.get("module")
     if module is None:
         return
+
+    assert app.builder is not None
+    assert app.builder.env is not None
 
     env = app.builder.env
     code_listing = env._viewcode_c_modules.get(module)  # type: ignore

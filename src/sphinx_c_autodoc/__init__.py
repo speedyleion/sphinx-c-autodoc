@@ -286,9 +286,7 @@ class CObjectDocumenter(Documenter):
 
         return None
 
-    def get_doc(
-        self, encoding: Optional[str] = None, ignore: int = None
-    ) -> List[List[str]]:
+    def get_doc(self, ignore: int = None) -> Optional[List[List[str]]]:
         """Decode and return lines of the docstring(s) for the object."""
         docstring = self.object.get_doc()
         tab_width = self.directive.state.document.settings.tab_width
