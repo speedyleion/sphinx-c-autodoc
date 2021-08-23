@@ -15,6 +15,14 @@ Added
   Compilation args can now be specified with the
   ``c_autodoc_compilation_args`` configuration value.
 
+Fixes
+-----
+
+* Fix parsing of multi-paragraph function documentation that used doxygen style
+  markup.  Previously multi-paragraph function documentation which used doxygen
+  style markup would get merged in to one paragraph.  Now the multi-paragraph
+  nature is preserved.
+
 `v0.4.0`_ (2020-12-27)
 ==========================
 

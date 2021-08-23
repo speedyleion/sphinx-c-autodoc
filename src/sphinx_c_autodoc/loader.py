@@ -413,6 +413,10 @@ class DocumentedFunction(DocumentedObject):
         body = self.get_paragraph(root.find("abstract", recursive=False))
         body += self.get_paragraph(root.find("discussion", recursive=False))
 
+        # Single newlines are tread as the same paragraph in restructured text,
+        # providing 2 results in separate paragraphs.
+        body = body.replace("\n", "\n\n")
+
         for param in root.find_all("parameter"):
             name = param.find("name").text
             param_doc = self.get_paragraph(param.discussion)

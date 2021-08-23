@@ -117,3 +117,32 @@ class TestAutoCFunction:
         # For whatever reason the as text comes back with double spacing, so we
         # knock it down to single spacing to make the expected string smaller.
         assert body.astext().replace("\n\n", "\n") == dedent(expected_doc)
+
+    def test_multiple_paragraph_doxgyen_comment(self, sphinx_state):
+        """
+        Tests that when processing a multi paragraph doxygen comment that the
+        multiple paragraphs are preserved.
+        """
+        directive = AutodocDirective(
+            "autocfunction",
+            ["functions.c::doxy_documented_parameters_no_returns"],
+            {"members": None},
+            None,
+            None,
+            None,
+            None,
+            sphinx_state,
+            None,
+        )
+        output = directive.run()
+
+        # First item is the index entry
+        assert 2 == len(output)
+        body = output[1]
+
+        # first item is the function signature
+        paragraphs = body.children[1]
+
+        # 3 paragraphs from the description, and then one more child for the
+        # parameter listing
+        assert 4 == len(paragraphs)
