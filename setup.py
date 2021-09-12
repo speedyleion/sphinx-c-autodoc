@@ -12,19 +12,20 @@ README = README.replace(".. c:function::", ".. code-block:: rst\n\n    .. c:func
 
 setuptools.setup(
     name="sphinx-c-autodoc",
-    version="0.4.0",
+    version="1.0.0",
     description="A sphinx autodoc extension for c modules",
     long_description=README,
     long_description_content_type="text/x-rst",
     url="https://sphinx-c-autodoc.readthedocs.io/en/latest/",
     package_dir={"":"src"},
     packages=setuptools.find_packages("src"),
-    license="Unlicense",
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Programming Language :: Python :: 3",
         "Framework :: Sphinx :: Extension",
         "Operating System :: OS Independent",
+        "License :: OSI Approved :: The Unlicense (Unlicense)",
+        "License :: OSI Approved :: MIT License",
     ],
     project_urls={
         "Source": "https://github.com/speedyleion/sphinx-c-autodoc",

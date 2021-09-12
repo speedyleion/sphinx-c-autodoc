@@ -5,11 +5,16 @@ Change Log
 This document records all notable changes to `sphinx-c-autodoc <https://sphinx-c-autodoc.readthedocs.io/en/latest/>`_.
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
-`v0.5.0-dev`_ (unreleased)
+`v1.1.0-dev`_ (unreleased)
+==========================
+
+`v1.0.0`_ (2021-09-12)
 ==========================
 
 Added
 -----
+
+* Dual licensing with MIT license.
 
 * Support for global compilation args.
   Compilation args can now be specified with the
@@ -146,7 +151,8 @@ Fixes
 * Initial public release
 
 
-.. _v0.5.0-dev: https://github.com/speedyleion/sphinx-c-autodoc/compare/v0.4.0...master
+.. _v1.0.0-dev: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.0.0...master
+.. _v1.0.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v0.4.0...v1.0.0
 .. _v0.4.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v0.3.1...v0.4.0
 .. _v0.3.1: https://github.com/speedyleion/sphinx-c-autodoc/compare/v0.3.0...v0.3.1
 .. _v0.3.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v0.2.0...v0.3.0

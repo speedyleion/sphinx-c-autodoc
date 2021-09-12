@@ -21,13 +21,13 @@ sys.path.insert(0, SOURCE_DIR)
 # -- Project information -----------------------------------------------------
 
 project = u'Sphinx C Autodoc Extension'
-copyright = u'2019-2020, Nick'
+copyright = u'2019-2021, Nick'
 author = u'Nick'
 
 # The short X.Y version
-version = u'0.4'
+version = u'1.0'
 # The full version, including alpha/beta/rc tags
-release = u'0.4.0'
+release = u'1.0.0'
 
 
 # -- General configuration ---------------------------------------------------

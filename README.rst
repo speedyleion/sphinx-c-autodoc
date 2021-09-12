@@ -3,7 +3,7 @@ sphinx-c-autodoc
 
 |build-status| |coverage| |black| |docs|
 
-Dual-licensed under MIT or the [UNLICENSE](https://unlicense.org).
+Dual-licensed under MIT or the `UNLICENSE <https://unlicense.org>`_.
 
 .. inclusion_begin
 
