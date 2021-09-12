@@ -3,6 +3,8 @@ sphinx-c-autodoc
 
 |build-status| |coverage| |black| |docs|
 
+Dual-licensed under MIT or the [UNLICENSE](https://unlicense.org).
+
 .. inclusion_begin
 
 A basic attempt at extending `Sphinx`_ and `autodoc`_ to work with C files.
