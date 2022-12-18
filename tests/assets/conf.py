@@ -20,14 +20,14 @@ sys.path.insert(0, os.path.join(os.path.abspath("."), "..", "..", "src"))
 
 # -- Project information -----------------------------------------------------
 
-project = u"Test project for C sphinx extension"
-copyright = u"2019, The Tester"
-author = u"The Tester"
+project = "Test project for C sphinx extension"
+copyright = "2019, The Tester"
+author = "The Tester"
 
 # The short X.Y version
-version = u""
+version = ""
 # The full version, including alpha/beta/rc tags
-release = u"0.0.1"
+release = "0.0.1"
 
 
 # -- General configuration ---------------------------------------------------
@@ -133,8 +133,8 @@ latex_documents = [
     (
         master_doc,
         "TestprojectforCsphinxextension.tex",
-        u"Test project for C sphinx extension Documentation",
-        u"The Tester",
+        "Test project for C sphinx extension Documentation",
+        "The Tester",
         "manual",
     ),
 ]
@@ -148,7 +148,7 @@ man_pages = [
     (
         master_doc,
         "testprojectforcsphinxextension",
-        u"Test project for C sphinx extension Documentation",
+        "Test project for C sphinx extension Documentation",
         [author],
         1,
     )
@@ -164,7 +164,7 @@ texinfo_documents = [
     (
         master_doc,
         "TestprojectforCsphinxextension",
-        u"Test project for C sphinx extension Documentation",
+        "Test project for C sphinx extension Documentation",
         author,
         "TestprojectforCsphinxextension",
         "One line description of project.",
