@@ -4,13 +4,11 @@ on: [push]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7]
-
+        python-version: [3.7, 3.8, 3.9, 3.10, 3.11]
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python ${{ matrix.python-version }}
@@ -27,7 +25,8 @@ jobs:
     - name: Test with tox
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        TOX_SKIP_ENV: py37$
+        # Skis all coverage builds except the 3.11 coverage build
+        TOX_SKIP_ENV: [^31]-cov
       run: |
         tox
         cp tests/.coverage .
