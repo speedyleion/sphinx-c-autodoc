@@ -24,7 +24,7 @@ jobs:
         pip install tox 
 
         # Make libclang available for the parsing of the c files with the python clang package
-        sudo ln -s /usr/lib/x86_64-linux-gnu/libclang-14.so.1 /usr/lib/x86_64-linux-gnu/libclang.so
+        sudo ln -s /usr/lib/x86_64-linux-gnu/libclang-14.so.1 /usr/lib/x86_64-linux-gnu/libclang-14.so
     - name: Test with tox
       run: |
         tox -e py${{ steps.tox-env.outputs.environment }}
@@ -39,7 +39,7 @@ jobs:
           pip install tox codecov
           
           # Make libclang available for the parsing of the c files with the python clang package
-          sudo ln -s /usr/lib/x86_64-linux-gnu/libclang-14.so.1 /usr/lib/x86_64-linux-gnu/libclang.so
+          sudo ln -s /usr/lib/x86_64-linux-gnu/libclang-14.so.1 /usr/lib/x86_64-linux-gnu/libclang-14.so
       - name: Test with tox
         run: |
           tox -e cov
@@ -61,7 +61,7 @@ jobs:
           pip install tox
           
           # Make libclang available for the parsing of the c files with the python clang package
-          sudo ln -s /usr/lib/x86_64-linux-gnu/libclang-14.so.1 /usr/lib/x86_64-linux-gnu/libclang.so
+          sudo ln -s /usr/lib/x86_64-linux-gnu/libclang-14.so.1 /usr/lib/x86_64-linux-gnu/libclang-14.so
       - name: Static code checks
         env:
           TOX_SKIP_ENV: '^(?!check-)'
@@ -78,7 +78,7 @@ jobs:
           pip install tox
           
           # Make libclang available for the parsing of the c files with the python clang package
-          sudo ln -s /usr/lib/x86_64-linux-gnu/libclang-14.so.1 /usr/lib/x86_64-linux-gnu/libclang.so
+          sudo ln -s /usr/lib/x86_64-linux-gnu/libclang-14.so.1 /usr/lib/x86_64-linux-gnu/libclang-14.so
       - name: Build docs
         run: |
           tox -e docs
@@ -95,7 +95,7 @@ jobs:
           pip install tox
           
           # Make libclang available for the parsing of the c files with the python clang package
-          sudo ln -s /usr/lib/x86_64-linux-gnu/libclang-14.so.1 /usr/lib/x86_64-linux-gnu/libclang.so
+          sudo ln -s /usr/lib/x86_64-linux-gnu/libclang-14.so.1 /usr/lib/x86_64-linux-gnu/libclang-14.so
       - name: Test with tox
         run: |
           tox -e sphinx-${{ matrix.sphinx-version }}
