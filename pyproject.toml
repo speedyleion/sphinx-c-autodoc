@@ -20,21 +20,20 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.7"
 sphinx = "4.3.2"
-clang = "^6"
-beautifulsoup4 = "^4"
+clang = "6.0.0.2"
+beautifulsoup4 = "4.11.1"
 
 [tool.poetry.group.dev.dependencies]
-pylint = "^2.4.4"
-black = "^22"
-pycodestyle = "^2"
-mypy =  "^0"
-flake8 = "^4"
-pytest = "^7"
-pytest-cov = "^4"
+pylint = "2.13.9"
+black = "22.12.0"
+pycodestyle = "2.8.0"
+mypy =  "0.991"
+flake8 = "4.0.1"
+pytest = "7.2.0"
+pytest-cov = "4.0.0"
 sphinx_rtd_theme = "0.4.2"
-clang = "^6"
-sphinxcontrib-autoprogram = "^0.1"
-types-docutils = "^0.19"
+sphinxcontrib-autoprogram = "0.1.7"
+types-docutils = "0.19.1.1"
 
 [build-system]
 requires = ["poetry-core"]
