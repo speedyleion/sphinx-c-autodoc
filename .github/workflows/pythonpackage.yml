@@ -48,8 +48,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
-          directory: ./tests/
-          files: ./coverage.xml
+          files: ./tests/coverage.xml
           verbose: true
 
   checks:
