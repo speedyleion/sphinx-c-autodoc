@@ -452,9 +452,12 @@ class CTypeDocumenter(CObjectDocumenter):
         """
         generate stuff
         """
+        # The autodoc::Documenter is using the implied optional
+        # `real_modname: str = None` and mypy complains that this shouldn't be
+        # optional
         super().generate(
             more_content=more_content,
-            real_modname=real_modname,
+            real_modname=real_modname,  # type: ignore
             check_module=check_module,
             all_members=all_members,
         )
@@ -749,7 +752,7 @@ class CModule(CObject):
 
     object_type = "module"
 
-    def run(self) -> nodes.Node:
+    def run(self) -> List[nodes.Node]:
         """
         Not sure yet
         """
