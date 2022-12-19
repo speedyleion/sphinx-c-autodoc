@@ -24,7 +24,7 @@ clang = "^6"
 beautifulsoup4 = "^4"
 # This should go away once we move off, just want a repeatable build for now
 jinja2 = "^2"
-markupsafe = "^1"
+markupsafe = ">=1,<3"
 docutils = ">=0.16,<0.18"
 
 [tool.poetry.group.dev.dependencies]
