@@ -95,7 +95,7 @@ jobs:
           pip install tox
           
           # Make libclang available for the parsing of the c files with the python clang package
-          sudo ln -s /usr/lib/x86_64-linux-gnu/libclang-14.so.1 /usr/lib/x86_64-linux-gnu/libclang-14.so
+          sudo ln -s /usr/lib/x86_64-linux-gnu/libclang-14.so.1 /usr/lib/x86_64-linux-gnu/libclang.so
       - name: Test with tox
         run: |
           tox -e sphinx-${{ matrix.sphinx-version }}
