@@ -143,6 +143,8 @@ def override_methods() -> None:
     pythonic and or more efficient.
     """
     cindex.Cursor._raw_comment = None
+    # Not sure why pylint chokes here
+    # pylint: disable=assignment-from-no-return,too-many-function-args
     cindex.Cursor.raw_comment = property(Cursor_cached_raw_comment).setter(
         Cursor_set_raw_comment
     )
@@ -154,6 +156,8 @@ def add_new_methods() -> None:
     """
     cindex.SourceLocation.isFromMainFile = SourceLocation_isFromMainFile
     cindex.Cursor._comment_extent = None
+    # Not sure why pylint chokes here
+    # pylint: disable=assignment-from-no-return,too-many-function-args
     cindex.Cursor.comment_extent = property(Cursor_comment_extent).setter(
         Cursor_set_comment_extent
     )

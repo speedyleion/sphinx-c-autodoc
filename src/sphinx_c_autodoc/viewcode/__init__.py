@@ -155,7 +155,7 @@ def add_source_listings(app: Sphinx) -> Iterator[Tuple[str, Dict[str, Any], str]
         context = {
             "title": module,
             "body": (
-                "<h1>Source code for %s</h1>" % module + "\n".join(highlighted_source)
+                f"<h1>Source code for {module}</h1>" + "\n".join(highlighted_source)
             ),
         }
         yield (_get_source_page_name(module), context, "page.html")
