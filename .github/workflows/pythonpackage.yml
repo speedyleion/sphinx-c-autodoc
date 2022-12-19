@@ -41,12 +41,16 @@ jobs:
           # Make libclang available for the parsing of the c files with the python clang package
           sudo ln -s /usr/lib/x86_64-linux-gnu/libclang-14.so.1 /usr/lib/x86_64-linux-gnu/libclang.so
       - name: Test with tox
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           tox -e cov
-          cp tests/.coverage .
-          codecov
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+          directory: ./tests/
+          files: ./coverage.xml
+          verbose: true
 
   checks:
     runs-on: ubuntu-latest
