@@ -342,7 +342,7 @@ class DocumentedMacro(DocumentedObject):
             i.spelling for i in ident_iter if i.kind == cindex.TokenKind.IDENTIFIER
         ]
 
-        return "{}({})".format(self.name, ", ".join(tokens))
+        return f"{self.name}({', '.join(tokens)})"
 
 
 class DocumentedEnumerator(DocumentedMacro):
@@ -521,7 +521,7 @@ class DocumentedFunction(DocumentedObject):
             t.spelling for t in cindex.TokenGroup.get_tokens(tu, extent=extent)
         )
 
-        return "{} {}({})".format(return_type, func.spelling, args)
+        return f"{return_type} {func.spelling}({args})"
 
     def is_public(self) -> bool:
         """

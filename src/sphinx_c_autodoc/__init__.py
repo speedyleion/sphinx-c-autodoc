@@ -138,7 +138,9 @@ class CObjectDocumenter(Documenter):
             fullname, _, path, base = match.groups()  # type: ignore
         except AttributeError:
             logger.warning(
-                "invalid signature for auto%s (%r)" % (self.objtype, self.name),
+                "invalid signature for auto%s (%r)",
+                self.objtype,
+                self.name,
                 type="c_autodoc",
             )
             return False
@@ -213,8 +215,10 @@ class CObjectDocumenter(Documenter):
         else:
             logger.warning(
                 "Unable to find file, %s, in any of the directories %s "
-                "all directories are relative to the top documentation source directory"
-                % (self.get_real_modname(), self.env.config.c_autodoc_roots),
+                "all directories are relative to the top documentation source "
+                "directory",
+                self.get_real_modname(),
+                self.env.config.c_autodoc_roots,
                 location=(self.env.docname, self.directive.lineno),
             )
             return False
@@ -230,7 +234,7 @@ class CObjectDocumenter(Documenter):
         modules_dict = self.env.temp_data.setdefault("c:loaded_modules", {})
 
         if filename not in modules_dict:
-            with open(filename) as f:
+            with open(filename, encoding="utf-8") as f:
                 contents = [f.read()]
 
             # let extensions preprocess files
@@ -280,7 +284,8 @@ class CObjectDocumenter(Documenter):
             return filename
 
         logger.warning(
-            'Compilation database "%s" not found.' % (filename,),
+            'Compilation database "%s" not found.',
+            filename,
             location=(self.env.docname, self.directive.lineno),
         )
 
@@ -312,7 +317,9 @@ class CObjectDocumenter(Documenter):
                 object_members.append((member, self.object.children[member]))
             else:
                 logger.warning(
-                    'Missing member "%s" in object "%s"' % (member, self.fullname),
+                    'Missing member "%s" in object "%s"',
+                    member,
+                    self.fullname,
                     type="c_autodoc",
                 )
 
@@ -422,7 +429,8 @@ class CTypeDocumenter(CObjectDocumenter):
         """
         super().__init__(directive, name, indent)
 
-        # Sphinx 3.1 compatibility. 4.0 deprecated the "reporter" attribute. 5.0 removes it.
+        # Sphinx 3.1 compatibility. 4.0 deprecated the "reporter" attribute. 5.0
+        # removes it.
         reporter = getattr(self.directive, "reporter", None)
 
         self._original_directive = self.directive
