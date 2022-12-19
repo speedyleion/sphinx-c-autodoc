@@ -20,7 +20,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.7"
 sphinx = "4.3.2"
-clang = "6.0.0.2"
+clang = "14.0"
 beautifulsoup4 = "4.11.1"
 
 [tool.poetry.group.dev.dependencies]
