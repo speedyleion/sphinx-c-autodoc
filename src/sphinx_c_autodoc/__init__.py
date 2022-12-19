@@ -286,11 +286,11 @@ class CObjectDocumenter(Documenter):
 
         return None
 
-    def get_doc(self, ignore: int = None) -> Optional[List[List[str]]]:
+    def get_doc(self) -> Optional[List[List[str]]]:
         """Decode and return lines of the docstring(s) for the object."""
         docstring = self.object.get_doc()
         tab_width = self.directive.state.document.settings.tab_width
-        return [prepare_docstring(docstring, ignore, tab_width)]
+        return [prepare_docstring(docstring, tabsize=tab_width)]
 
     def get_object_members(self, want_all: bool) -> Tuple[bool, List[Tuple[str, Any]]]:
         """Return `(members_check_module, members)` where `members` is a
@@ -422,10 +422,13 @@ class CTypeDocumenter(CObjectDocumenter):
         """
         super().__init__(directive, name, indent)
 
+        # Sphinx 3.1 compatibility. 4.0 deprecated the "reporter" attribute. 5.0 removes it.
+        reporter = getattr(self.directive, "reporter", None)
+
         self._original_directive = self.directive
         self.directive = DocumenterBridge(
             self.directive.env,
-            self.directive.reporter,
+            reporter,
             self.directive.genopt,
             self.directive.lineno,
             self.directive.state,
