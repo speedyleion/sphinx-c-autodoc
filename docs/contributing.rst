@@ -13,7 +13,7 @@ your system. Some common tox environments are:
 - ``tox -e py37-cov`` to run the tests for coverage.
 - ``tox -e docs`` to generate the documentation.
 
-.. note:: Prior to contributing via a pull request pleas ensure all tox
+.. note:: Prior to contributing via a pull request please ensure all tox
     environments pass by running ``tox``, with no additional arguments.
 
 Coverage
