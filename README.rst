@@ -28,19 +28,24 @@ A function in ``my_c_file.c``:
         return a + b;
         }
 
-Could be referenced in documentation as::
+Could be referenced in documentation as:
+
+.. code-block:: rst
 
     .. autocfunction:: my_c_file.c::my_adding_function
 
 With the resulting documentation output of:
 
-.. c:function:: int my_adding_function(int a, int b)
 
-    A simple function that adds.
+.. code-block:: rst
 
-    :param a: The initial value
-    :param b: The value to add to `a`
-    :returns: The sum of `a` and `b`
+    .. c:function:: int my_adding_function(int a, int b)
+
+        A simple function that adds.
+
+        :param a: The initial value
+        :param b: The value to add to `a`
+        :returns: The sum of `a` and `b`
 
 .. _autodoc: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html
 .. _Sphinx: https://www.sphinx-doc.org/en/master/index.html
