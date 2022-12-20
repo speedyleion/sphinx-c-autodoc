@@ -33,7 +33,17 @@ class CAutoDocString(GoogleDocstring):
         if not hasattr(self, "_sections"):
             self._sections = self.get_default_sections()
 
-        super().__init__(docstring, config, app, what, name, obj, options)
+        # The GoogleDocstring is using the implied optional `config: Config = None`
+        # and mypy complains that these shouldn't be optional
+        super().__init__(
+            docstring,
+            config,  # type: ignore
+            app,  # type: ignore
+            what,
+            name,
+            obj,
+            options,
+        )
 
     def get_default_sections(self) -> Dict[str, Callable]:
         """

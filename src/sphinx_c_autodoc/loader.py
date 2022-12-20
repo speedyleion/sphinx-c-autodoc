@@ -43,6 +43,9 @@ class DocumentedObject:
     """
     A representation of a c object for documentation purposes.
 
+    Arguments:
+        node (:class:`~clang.cindex.Cursor`): The node representing this object.
+
     Attributes:
         type_ (str): The type of this item one of:
 
@@ -69,15 +72,15 @@ class DocumentedObject:
             the type as well as the name.
         _line_range (Tuple[int, int]): The line range of the C construct,
             this will include any leading or trailing comments that may be
-            part of the constructs documentation.
+            part of the construct's documentation.
     """
 
     type_ = "object"
 
-    def __init__(self) -> None:
+    def __init__(self, node: Cursor) -> None:
         self.doc = ""
         self.name = ""
-        self.node: Cursor = None
+        self.node = node
         self._children: Optional[OrderedDict] = None
         self._soup: Optional[BeautifulSoup] = None
         self._declaration: Optional[str] = None
@@ -88,7 +91,7 @@ class DocumentedObject:
         The lines in the source file that this object covers.
 
         This will include any leading or trailing comments that may be part
-        of the constructs documentation.
+        of the construct's documentation.
         """
         if self._line_range is None:
             node_extent = self.node.extent
@@ -554,9 +557,9 @@ class DocumentedType(DocumentedObject):
         # Function prototypes need to be handled different. When clang can't
         # successfully parse the file it falls back to naming the return type
         # as the display name.
-        # Unfortunatly some versions of clang behave a little differently, some
-        # will return a POINTER while others will return FUNCITONNOPROTO. The
-        # POINTER's are easy to derive the real type from, but the test
+        # Unfortunately some versions of clang behave a little differently, some
+        # will return a `POINTER` while others will return `FUNCITONNOPROTO`. The
+        # `POINTER`s are easy to derive the real type from, but the test
         # environment doesn't use that version of clang.
         type_ = self.node.underlying_typedef_type
         if type_.kind == cindex.TypeKind.POINTER:  # pragma: no cover
@@ -753,14 +756,13 @@ def object_from_cursor(cursor: Cursor) -> Optional[DocumentedObject]:
 
     nested_cursor = get_nested_node(cursor)
     class_ = CURSORKIND_TO_OBJECT_CLASS.get(nested_cursor.kind, DocumentedObject)
-    doc = class_()
+    doc = class_(nested_cursor)
 
     doc.name = name
     psuedo_comment = PsuedoToken(
         nested_cursor.raw_comment, nested_cursor.comment_extent
     )
     doc.doc = parse_comment(psuedo_comment)
-    doc.node = nested_cursor
 
     return doc
 
@@ -821,7 +823,9 @@ def get_file_comment(cursor: Cursor, child: Optional[Cursor]) -> str:
     return ""
 
 
-def get_compilation_args(filename: str, compilation_database: str = None) -> List[str]:
+def get_compilation_args(
+    filename: str, compilation_database: Optional[str] = None
+) -> List[str]:
     """
     Get the compilation args for `filename` for the compilation database found in
     `compilation_db_dir`
@@ -857,8 +861,8 @@ def get_compilation_args(filename: str, compilation_database: str = None) -> Lis
 def load(
     filename: str,
     contents: str,
-    compilation_database: str = None,
-    compilation_args: Sequence[str] = None,
+    compilation_database: Optional[str] = None,
+    compilation_args: Optional[Sequence[str]] = None,
 ) -> DocumentedObject:
     """
     Load a C file into a tree of :class:`DocumentedObject`\'s
@@ -881,12 +885,14 @@ def load(
     tu = cindex.TranslationUnit.from_source(
         filename,
         args=args,
-        unsaved_files=((filename, contents),),
+        unsaved_files=[
+            (filename, contents),
+        ],
         options=cindex.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD,
     )
     cursor = tu.cursor
 
-    root_document = DocumentedFile()
+    root_document = DocumentedFile(cursor)
 
     # Some nodes show up from header includes as well as compiler defines, so
     # skip those. Macro instantiations are the locations where macros are
@@ -903,7 +909,7 @@ def load(
     ]
 
     # Macro definitions always come first in the child list, but that may not
-    # be their location in the file, so sort all of the nodes by location
+    # be their location in the file, so sort all the nodes by location
     sorted_nodes = sorted(child_nodes, key=lambda x: x.extent.start.offset)
 
     comment_nodes(cursor, sorted_nodes)
