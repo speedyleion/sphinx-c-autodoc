@@ -8,7 +8,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `v1.2.0-dev`_ (unreleased)
 ==========================
 
-`v1.1.1`_ (2022-12-20)
+`v1.1.1`_ (2022-12-21)
 ==========================
 
 Fixed
