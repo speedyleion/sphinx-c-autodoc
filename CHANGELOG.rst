@@ -8,6 +8,16 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `v1.2.0-dev`_ (unreleased)
 ==========================
 
+`v1.1.1`_ (2022-12-20)
+==========================
+
+Fixed
+-----
+
+* Packaging
+  * Incorrectly pinned Sphinx, Clang, BeautifulSoup4
+  * Was missing `sphinx-c-apidoc` entry point
+
 `v1.1.0`_ (2022-12-20)
 ==========================
 
@@ -159,7 +169,8 @@ Fixes
 * Initial public release
 
 
-.. _v1.2.0-dev: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.1.0...master
+.. _v1.2.0-dev: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.1.1...master
+.. _v1.1.1: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.1.0...v1.1.1
 .. _v1.1.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.0.0...v1.1.0
 .. _v1.0.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v0.4.0...v1.0.0
 .. _v0.4.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v0.3.1...v0.4.0
