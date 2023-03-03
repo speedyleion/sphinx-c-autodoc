@@ -891,14 +891,14 @@ test = ["pytest"]
 
 [[package]]
 name = "sphinxcontrib-autoprogram"
-version = "0.1.7"
+version = "0.1.8"
 description = "Documenting CLI programs"
 category = "dev"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7"
 files = [
-    {file = "sphinxcontrib-autoprogram-0.1.7.tar.gz", hash = "sha256:bc642e3f2817a7539f306e021697f72b225bea5ad23b30dc14a7b9d1408d1f1a"},
-    {file = "sphinxcontrib_autoprogram-0.1.7-py2.py3-none-any.whl", hash = "sha256:746adb4214c3d2917af948499b3ed4b7b88b208a48c96368c0cff356474dba42"},
+    {file = "sphinxcontrib-autoprogram-0.1.8.tar.gz", hash = "sha256:5a69729db9d283e0e4c6d349bd60e62a4b8ebd2c07c0ab634b82d08a4121f10a"},
+    {file = "sphinxcontrib_autoprogram-0.1.8-py2.py3-none-any.whl", hash = "sha256:222b029217b05cb22a6c72a473bafd0e57bbe666420be636d91e5ea71b704610"},
 ]
 
 [package.dependencies]
@@ -1179,4 +1179,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7"
-content-hash = "e4ff7d87c2a0d0dc15a35d4a3767736baa5bb1135f20b953ceab6dfced7fa68a"
+content-hash = "391d00b0fc208e3269a4ca548e75aba93f1e086ccdcdd590ba9cee74216c709c"
