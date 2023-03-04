@@ -87,6 +87,5 @@ def sphinx_state(local_app):
     # Sphinx monkeypatches docutils when run. This is how it get's
     # monkeypatched so that the python directives and roles can be found
     with sphinx_domains(env):
-
         # Provide the state back to the test.
         yield state

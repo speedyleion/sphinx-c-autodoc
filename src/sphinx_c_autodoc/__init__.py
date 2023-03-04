@@ -347,7 +347,7 @@ class CObjectDocumenter(Documenter):
         """
         ret = []
         isattr = False
-        for (membername, member) in members:
+        for membername, member in members:
             if not want_all:
                 ret.append((membername, member, isattr))
             elif member.doc or self.options.undoc_members:
@@ -643,7 +643,7 @@ class CStructDocumenter(CTypeDocumenter):
         """
         ret = []
         isattr = False
-        for (membername, member) in members:
+        for membername, member in members:
             ret.append((membername, member, isattr))
         return ret
 
