@@ -28,7 +28,7 @@ sphinx-c-apidoc = 'sphinx_c_autodoc.apidoc:main'
 [tool.poetry.group.dev.dependencies]
 pylint = "2.13.9"
 black = "23.1.0"
-pycodestyle = "2.8.0"
+pycodestyle = "2.10.0"
 mypy =  "1.0.1"
 pytest = "7.2.2"
 pytest-cov = "4.0.0"
