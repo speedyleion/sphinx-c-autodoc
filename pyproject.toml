@@ -34,7 +34,7 @@ pytest = "7.3.1"
 pytest-cov = "4.0.0"
 sphinx_rtd_theme = "1.2.0"
 sphinxcontrib-autoprogram = "0.1.8"
-types-docutils = "0.19.1.7"
+types-docutils = "0.20.0.1"
 
 [build-system]
 requires = ["poetry-core"]
