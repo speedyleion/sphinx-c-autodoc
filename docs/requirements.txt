@@ -4,4 +4,4 @@
 # Use autoprogram for the autodoc CLI
 sphinxcontrib.autoprogram
 # Due to read the docs libclang linking in conf.py we want to use clang 6
-clang == 6
+clang == 16.0.1.1
