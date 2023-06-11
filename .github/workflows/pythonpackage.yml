@@ -93,6 +93,7 @@ jobs:
           pip install tox
           
           # Make libclang available for the parsing of the c files with the python clang package
+          ln -ls ./llvm
           sudo ln -s ./llvm/libclang-16.so /usr/lib/x86_64-linux-gnu/libclang-16.so
       - name: Build docs
         run: |
