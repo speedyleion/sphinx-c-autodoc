@@ -83,17 +83,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Cache LLVM and Clang
+        id: cache-llvm
+        uses: actions/cache@v3
+        with:
+          path: |
+            ./llvm
+          key: llvm-16
       - name: Install LLVM and Clang
         uses: KyleMayes/install-llvm-action@v1
         with:
           version: "16.0"
+          cached: ${{ steps.cache-llvm.outputs.cache-hit }}
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install tox
           
           # Make libclang available for the parsing of the c files with the python clang package
-          ln -ls ./llvm
+          ls -ls ./llvm
           sudo ln -s ./llvm/libclang-16.so /usr/lib/x86_64-linux-gnu/libclang-16.so
       - name: Build docs
         run: |
