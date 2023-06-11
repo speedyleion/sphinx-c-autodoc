@@ -8,6 +8,12 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `v1.2.0-dev`_ (unreleased)
 ==========================
 
+Added
+-----
+
+* Support for Clang 16. Clang 16 changed the way anonymous constructs are
+  represented when walking the AST. These differences are now accounted for.
+
 `v1.1.1`_ (2022-12-21)
 ==========================
 
