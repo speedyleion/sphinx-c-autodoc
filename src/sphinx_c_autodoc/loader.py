@@ -732,17 +732,17 @@ def object_from_cursor(cursor: Cursor) -> Optional[DocumentedObject]:
     """
     Create an instance from a :class:`cindex.Cursor`
     """
-    # Spelling is always good on the "primary" node.
+    # Prior to clang 16, anonymous constructs would have an empty `spelling` and
+    # `displayname`. Clang 16 began naming anonymous constructs as:
+    #   "<construct> (anonymous at # <path_to_c_file>:<lineno>)"
+    # So need to look at the type spelling to determine if a construct is anonymous
     name = cursor.spelling
-
-    if not name:
+    if any(anon in cursor.type.spelling for anon in ("anonymous at", "unnamed at")):
         # An anonymous construct which isn't contained in a typedef will have a
         # type spelling of:
         # "<construct> (anonymous at # <path_to_c_file>:<lineno>)"
         # Typedef's should be handled by the get_nested_node() function
-        if cursor.kind in ALLOWED_ANONYMOUS and any(
-            anon in cursor.type.spelling for anon in ("anonymous at", "unnamed at")
-        ):
+        if cursor.kind in ALLOWED_ANONYMOUS:
             filename = os.path.basename(cursor.location.file.name)
             # remove the extension from the filename since the '.' is not a
             # valid c identifier. splitext will remove the trailing most
