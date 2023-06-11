@@ -16,7 +16,7 @@ class TestAutoCModule:
     module_c = """\
         This is a file comment
 
-        void my_func()
+        void my_func(void)
 
         This is a function comment"""
 
@@ -300,11 +300,11 @@ class TestAutoCModule:
             The structure member bar is undocumented.  It will still show in the
             documentation, only file level constructs will be filtered with this
             option.
-            
-            
-            
+
+
+
             int bar
-            
+
             """
 
         directive = AutodocDirective(
@@ -325,7 +325,7 @@ class TestAutoCModule:
     def test_undoc_members_specified(self, sphinx_state):
         header_with_undocumented_members = """\
             This header file as some undocumented contents
-            
+
             _MY_HEADER_GUARD
 
 
@@ -335,25 +335,25 @@ class TestAutoCModule:
             The structure member bar is undocumented.  It will still show in the
             documentation, only file level constructs will be filtered with this
             option.
-            
-            
-            
+
+
+
             int bar
-            
+
 
 
             struct undocumented_struct
-            
-            
-            
+
+
+
             int foo
-            
-            
-            
-            
-            
+
+
+
+
+
             float what
-            
+
             """
 
         directive = AutodocDirective(

@@ -17,11 +17,11 @@ class TestAutoCFunction:
     """
 
     single_line_comment = """\
-        void single_line_function_comment()
+        void single_line_function_comment(void)
         A Single line function comment"""
 
     return_value_function = """\
-        int return_value_function()
+        int return_value_function(void)
         Function with a return value"""
 
     multiple_parameters = """\
