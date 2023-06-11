@@ -95,14 +95,13 @@ jobs:
         with:
           version: "16.0"
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
+      - name: Symlink libclang.so (Linux)
+        run: sudo ln -s libclang-16.so.1 /lib/x86_64-linux-gnu/libclang-16.so
+        working-directory: ${{ env.LLVM_PATH }}/lib
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install tox
-          
-          # Make libclang available for the parsing of the c files with the python clang package
-          ls -ls ./llvm
-          sudo ln -s ./llvm/libclang-16.so /usr/lib/x86_64-linux-gnu/libclang-16.so
       - name: Build docs
         run: |
           tox -e docs
