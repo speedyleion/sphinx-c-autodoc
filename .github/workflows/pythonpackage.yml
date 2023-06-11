@@ -78,6 +78,7 @@ jobs:
         uses: KyleMayes/install-llvm-action@v1
         with:
           version: "16.0"
+        run: sudo ln -s ./llvm/libclang-16.so /usr/lib/x86_64-linux-gnu/libclang-16.so
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
