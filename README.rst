@@ -36,13 +36,17 @@ Could be referenced in documentation as:
 
 With the resulting documentation output of:
 
-.. c:function:: int my_adding_function(int a, int b)
+.. Note this isn't using the c:function directive because that doesn't work on
+   pypi
 
+int my_adding_function(int a, int b) 
     A simple function that adds.
 
-    :param a: The initial value
-    :param b: The value to add to `a`
-    :returns: The sum of `a` and `b`
+    :Parameters:
+        * **a** - The initial value
+        * **b** - The value to add to `a`
+
+    :Returns: The sum of `a` and `b`
 
 .. _autodoc: https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html
 .. _Sphinx: https://www.sphinx-doc.org/en/master/index.html
