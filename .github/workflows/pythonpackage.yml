@@ -24,8 +24,7 @@ jobs:
         with:
           version: "16.0"
       - name: Symlink libclang.so
-        run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so \
-          /usr/lib/x86_64-linux-gnu/libclang-16.so
+        run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-16.so
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -43,8 +42,7 @@ jobs:
         with:
           version: "16.0"
       - name: Symlink libclang.so
-        run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so \
-          /usr/lib/x86_64-linux-gnu/libclang-16.so
+        run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-16.so
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -68,8 +66,7 @@ jobs:
         with:
           version: "16.0"
       - name: Symlink libclang.so
-        run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so \
-          /usr/lib/x86_64-linux-gnu/libclang-16.so
+        run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-16.so
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -89,8 +86,7 @@ jobs:
         with:
           version: "16.0"
       - name: Symlink libclang.so
-        run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so \
-          /usr/lib/x86_64-linux-gnu/libclang-16.so
+        run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-16.so
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -110,8 +106,7 @@ jobs:
         with:
           version: "16.0"
       - name: Symlink libclang.so
-        run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so \
-          /usr/lib/x86_64-linux-gnu/libclang-16.so
+        run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-16.so
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
