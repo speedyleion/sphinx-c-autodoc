@@ -448,6 +448,12 @@ class DocumentedFunction(DocumentedObject):
         """
         decl = self.declaration
         _, args = decl.split("(", 1)
+
+        # To keep consistency between clang versions we force the "void"
+        # argument. Earlier versions of clang has 'foo()' and newer ones
+        # have 'foo(void)'
+        if args == ")":  # pragma: no cover
+            args = "void)"
         return "(" + args
 
     def format_name(self) -> str:
@@ -737,12 +743,16 @@ def object_from_cursor(cursor: Cursor) -> Optional[DocumentedObject]:
     #   "<construct> (anonymous at # <path_to_c_file>:<lineno>)"
     # So need to look at the type spelling to determine if a construct is anonymous
     name = cursor.spelling
-    if any(anon in cursor.type.spelling for anon in ("anonymous at", "unnamed at")):
+    anonymous_type = any(
+        anon in cursor.type.spelling for anon in ("anonymous at", "unnamed at")
+    )
+
+    if not name or anonymous_type:
         # An anonymous construct which isn't contained in a typedef will have a
         # type spelling of:
         # "<construct> (anonymous at # <path_to_c_file>:<lineno>)"
         # Typedef's should be handled by the get_nested_node() function
-        if cursor.kind in ALLOWED_ANONYMOUS:
+        if cursor.kind in ALLOWED_ANONYMOUS and anonymous_type:
             filename = os.path.basename(cursor.location.file.name)
             # remove the extension from the filename since the '.' is not a
             # valid c identifier. splitext will remove the trailing most
