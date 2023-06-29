@@ -348,12 +348,20 @@ class DocumentedMacro(DocumentedObject):
         return f"{self.name}({', '.join(tokens)})"
 
 
-class DocumentedEnumerator(DocumentedMacro):
+class DocumentedEnumerator(DocumentedObject):
     """
     An enumerator, the constant values in an enum
     """
 
     type_ = "enumerator"
+
+    def format_name(self) -> str:
+        """
+        The name of the object.
+
+        For things like functions and others this will include the return type.
+        """
+        return self.name
 
 
 class DocumentedMember(DocumentedObject):
