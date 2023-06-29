@@ -43,8 +43,9 @@ my_value_e = """\
 
 doc_data = [
     ("example.c::some_enum", some_enum),
-    ("issue_174.c::my_value_e", my_value_e)
+    ("issue_174.c::my_value_e", my_value_e),
 ]
+
 
 @pytest.mark.parametrize("enum, expected_doc", doc_data)
 def test_doc(enum, expected_doc, sphinx_state):
