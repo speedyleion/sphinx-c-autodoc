@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sphinx-c-autodoc"
-version = "1.2.1"
+version = "1.2.2"
 description = "A sphinx autodoc extension for c modules"
 authors = ["Nick <speedyleion@users.noreply.github.com>"]
 license = "MIT License, The Unlicense (Unlicense)"

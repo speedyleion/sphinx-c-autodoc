@@ -8,6 +8,16 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `v1.3.0-dev`_ (unreleased)
 ==========================
 
+`v1.2.2`_ (2023-06-28)
+==========================
+
+Fixed
+-----
+
+* Failed parsing of enumerators which were defined based on macros `#174`_
+
+.. _#174: https://github.com/speedyleion/sphinx-c-autodoc/issues/174
+
 `v1.2.1`_ (2023-06-12)
 ==========================
 
@@ -189,7 +199,8 @@ Fixes
 * Initial public release
 
 
-.. _v1.3.0-dev: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.2.0...master
+.. _v1.3.0-dev: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.2.2...master
+.. _v1.2.2: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.2.1...v1.2.2
 .. _v1.2.1: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.2.0...v1.2.1
 .. _v1.2.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.1.1...v1.2.0
 .. _v1.1.1: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.1.0...v1.1.1
