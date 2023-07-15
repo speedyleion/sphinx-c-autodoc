@@ -107,6 +107,10 @@ html_theme = 'sphinx_rtd_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+# html_css_files = [
+#     "css/custom.css"
+# ]
+
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
 #
@@ -248,3 +252,6 @@ set_type_checking_flag = True
 if 'READTHEDOCS' in os.environ:
     from clang import cindex
     cindex.Config.set_library_file("/usr/lib/x86_64-linux-gnu/libclang-6.0.so.1")
+
+def setup(app):
+   app.add_css_file('css/custom.css')

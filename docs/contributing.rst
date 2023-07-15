@@ -9,8 +9,8 @@ The main development of this project utilizes
 provide a libclang implementation so this must be installed and available on
 your system. Some common tox environments are:
 
-- ``tox -e py37`` to run the tests.
-- ``tox -e py37-cov`` to run the tests for coverage.
+- ``tox -e py38`` to run the tests.
+- ``tox -e py38-cov`` to run the tests for coverage.
 - ``tox -e docs`` to generate the documentation.
 
 .. note:: Prior to contributing via a pull request please ensure all tox
