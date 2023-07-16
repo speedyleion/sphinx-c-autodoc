@@ -248,3 +248,6 @@ set_type_checking_flag = True
 if 'READTHEDOCS' in os.environ:
     from clang import cindex
     cindex.Config.set_library_file("/usr/lib/x86_64-linux-gnu/libclang-6.0.so.1")
+
+def setup(app):
+   app.add_css_file('css/custom.css')
