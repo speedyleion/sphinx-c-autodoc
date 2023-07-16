@@ -1,7 +1,7 @@
-# Most requirements are already pulled in through the pyproject.toml
-# This file lists the ones that are extra for generating docs on read the docs
-
-# Use autoprogram for the autodoc CLI
+sphinx >= 3.1
+sphinx_rtd_theme >= "1.2.2"
+beautifulsoup4 
 sphinxcontrib.autoprogram
+
 # Due to read the docs libclang linking in conf.py we want to use clang 6
 clang == 6
