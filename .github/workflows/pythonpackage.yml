@@ -73,6 +73,9 @@ jobs:
 
   checks:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        check: ["pylint", "pycodestyle", "black", "mypy"]
     steps:
       - uses: actions/checkout@v3
       - name: Cache LLVM and Clang
@@ -93,10 +96,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install tox
       - name: Static code checks
-        env:
-          TOX_SKIP_ENV: '^(?!check-)'
         run: |
-          tox
+          tox -e check-${{ matrix.check }}
 
   docs:
     runs-on: ubuntu-latest
