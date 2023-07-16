@@ -32,33 +32,33 @@ class TestCompilerFlags:
 
     no_define = """\
         A file which has 2 different define paths based on SOME_DEFINE
-        
+
         some_type foo(int a, int b)
-        
+
         This is a version of foo that is normally available from this module"""
 
     define = """\
         A file which has 2 different define paths based on SOME_DEFINE
-        
+
         some_type foo(int a)
-        
+
         This is a version of foo which is only available when the define
         SOME_DEFINE is available."""
 
     no_include = """\
         A file which shows how an include made available via compilation flags
         can fully resolve a function.
-    
+
         some_type foo(int a)
-        
+
         When the include is not found this will return some_type."""
 
     include = """\
         A file which shows how an include made available via compilation flags
         can fully resolve a function.
-    
+
         float foo(int a)
-        
+
         When the include is found this will return a float instead of some_type."""
 
     doc_data = [
@@ -85,7 +85,7 @@ class TestCompilerFlags:
             None,
             None,
             sphinx_state,
-            None,
+            sphinx_state.state_machine,
         )
         output = self.get_directive_output(directive)
         assert output == dedent(expected_doc)
@@ -108,7 +108,7 @@ class TestCompilerFlags:
             None,
             None,
             sphinx_state,
-            None,
+            sphinx_state.state_machine,
         )
         output = self.get_directive_output(directive)
         assert output == dedent(expected_doc)
@@ -137,7 +137,7 @@ class TestCompilerFlags:
             None,
             None,
             sphinx_state,
-            None,
+            sphinx_state.state_machine,
         )
         output = self.get_directive_output(directive)
         assert output == dedent(expected_doc)
@@ -165,7 +165,7 @@ class TestCompilerFlags:
             None,
             None,
             sphinx_state,
-            None,
+            sphinx_state.state_machine,
         )
         output = self.get_directive_output(directive)
         assert output == dedent(expected_doc)
@@ -185,7 +185,7 @@ class TestCompilerFlags:
             None,
             None,
             sphinx_state,
-            None,
+            sphinx_state.state_machine,
         )
         output = self.get_directive_output(directive)
         assert output == dedent(expected_doc)
@@ -206,7 +206,7 @@ class TestCompilerFlags:
             None,
             None,
             sphinx_state,
-            None,
+            sphinx_state.state_machine,
         )
         output = self.get_directive_output(directive)
         assert output == dedent(expected_doc)

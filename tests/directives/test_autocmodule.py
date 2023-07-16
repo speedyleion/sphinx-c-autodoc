@@ -117,7 +117,7 @@ class TestAutoCModule:
             None,
             None,
             sphinx_state,
-            None,
+            sphinx_state.state_machine,
         )
         assert self.get_directive_output(directive) == dedent(expected_doc)
 
@@ -135,7 +135,7 @@ class TestAutoCModule:
             None,
             None,
             sphinx_state,
-            None,
+            sphinx_state.state_machine,
         )
 
         output = directive.run()
@@ -156,7 +156,8 @@ class TestAutoCModule:
             This is a file comment"""
 
         directive = AutodocDirective(
-            "autocmodule", ["module.c"], {}, None, None, None, None, sphinx_state, None
+            "autocmodule", ["module.c"], {}, None, None, None, None,
+            sphinx_state, sphinx_state.state_machine
         )
 
         assert self.get_directive_output(directive) == dedent(just_file_doc)
@@ -194,7 +195,7 @@ class TestAutoCModule:
             None,
             None,
             sphinx_state,
-            None,
+            sphinx_state.state_machine,
         )
 
         assert self.get_directive_output(directive) == dedent(example_c)
@@ -232,7 +233,7 @@ class TestAutoCModule:
             None,
             None,
             sphinx_state,
-            None,
+            sphinx_state.state_machine,
         )
 
         assert self.get_directive_output(directive) == dedent(example_c)
@@ -263,7 +264,7 @@ class TestAutoCModule:
             None,
             None,
             sphinx_state,
-            None,
+            sphinx_state.state_machine,
         )
 
         output = self.get_directive_output(directive)
@@ -285,7 +286,7 @@ class TestAutoCModule:
             None,
             None,
             sphinx_state,
-            None,
+            sphinx_state.state_machine,
         )
 
         output = self.get_directive_output(directive)
@@ -316,7 +317,7 @@ class TestAutoCModule:
             None,
             None,
             sphinx_state,
-            None,
+            sphinx_state.state_machine,
         )
 
         output = self.get_directive_output(directive)
@@ -368,7 +369,7 @@ class TestAutoCModule:
             None,
             None,
             sphinx_state,
-            None,
+            sphinx_state.state_machine,
         )
 
         output = self.get_directive_output(directive)

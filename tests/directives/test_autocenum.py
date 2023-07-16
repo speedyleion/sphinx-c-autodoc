@@ -61,7 +61,7 @@ def test_doc(enum, expected_doc, sphinx_state):
         None,
         None,
         sphinx_state,
-        None,
+        sphinx_state.state_machine,
     )
     output = directive.run()
 
