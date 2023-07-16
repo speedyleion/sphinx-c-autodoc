@@ -123,7 +123,7 @@ class DocumentedObject:
 
         return self._children
 
-    # pylint: disable=no-self-use, unused-argument
+    # pylint: disable=unused-argument
     def format_args(self, **kwargs: Any) -> str:
         """
         Creates the parenthesis version of the function signature.  i.e. this
