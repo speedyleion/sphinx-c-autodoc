@@ -6,7 +6,7 @@ The processing idea:
 1. Walk through every node in the document finding out if it is a C
    construct. Then find out which file, if any it is associated with:
 
-   a. Create a pending cross refernce to the file.
+   a. Create a pending cross reference to the file.
 
    b. Add the file to the environment list of files to create source listings
       of, :attr:`app.env._viewcode_c_modules`
@@ -42,7 +42,7 @@ from sphinx.util.nodes import make_refnode
 try:
     from sphinx.util.display import status_iterator
 except ImportError:  # pragma: no cover
-    from sphinx.util import status_iterator
+    from sphinx.util import status_iterator  # pylint: disable=no-name-in-module
 
 from sphinx_c_autodoc import ViewCodeListing
 
