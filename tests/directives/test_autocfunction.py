@@ -106,7 +106,7 @@ class TestAutoCFunction:
             None,
             None,
             sphinx_state,
-            None,
+            sphinx_state.state_machine,
         )
         output = directive.run()
 
@@ -132,7 +132,7 @@ class TestAutoCFunction:
             None,
             None,
             sphinx_state,
-            None,
+            sphinx_state.state_machine,
         )
         output = directive.run()
 

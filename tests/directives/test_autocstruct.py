@@ -71,10 +71,10 @@ class TestAutoCStruct:
     struct_with_array_member = """\
         struct struct_with_array_member
         A struct with an array inside
-        
+
         int foo[10]
         An array member with an unknown type, it will show as int.
-        
+
         float bar[10]
         An array with a known type."""
 
@@ -102,7 +102,7 @@ class TestAutoCStruct:
             None,
             None,
             sphinx_state,
-            None,
+            sphinx_state.state_machine,
         )
         output = directive.run()
 
