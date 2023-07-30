@@ -156,8 +156,15 @@ class TestAutoCModule:
             This is a file comment"""
 
         directive = AutodocDirective(
-            "autocmodule", ["module.c"], {}, None, None, None, None,
-            sphinx_state, sphinx_state.state_machine
+            "autocmodule",
+            ["module.c"],
+            {},
+            None,
+            None,
+            None,
+            None,
+            sphinx_state,
+            sphinx_state.state_machine,
         )
 
         assert self.get_directive_output(directive) == dedent(just_file_doc)
