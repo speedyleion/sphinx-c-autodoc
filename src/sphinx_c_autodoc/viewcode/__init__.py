@@ -42,7 +42,8 @@ from sphinx.util.nodes import make_refnode
 try:
     from sphinx.util.display import status_iterator
 except ImportError:  # pragma: no cover
-    from sphinx.util import status_iterator  # pylint: disable=no-name-in-module
+    # pylint: disable=no-name-in-module
+    from sphinx.util import status_iterator  # type: ignore
 
 from sphinx_c_autodoc import ViewCodeListing
 
