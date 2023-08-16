@@ -199,7 +199,7 @@ Fixes
 * Initial public release
 
 
-.. _v1.3.0-dev: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.2.2...master
+.. _v1.3.0-dev: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.2.2...main
 .. _v1.2.2: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.2.1...v1.2.2
 .. _v1.2.1: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.2.0...v1.2.1
 .. _v1.2.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.1.1...v1.2.0
