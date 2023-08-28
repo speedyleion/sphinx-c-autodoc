@@ -21,7 +21,6 @@ python = "^3.8"
 sphinx = ">=3.1"
 clang = ">=6"
 beautifulsoup4 = "*"
-furo = "^2023.5.20"
 
 [tool.poetry.scripts]
 sphinx-c-apidoc = 'sphinx_c_autodoc.apidoc:main'
@@ -35,6 +34,7 @@ pytest-cov = "4.1.0"
 sphinxcontrib-autoprogram = "0.1.8"
 types-docutils = "0.20.0.1"
 pylint = "^2.17.4"
+furo = "^2023.5.20"
 
 [build-system]
 requires = ["poetry-core"]
