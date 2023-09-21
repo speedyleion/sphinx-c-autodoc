@@ -8,6 +8,16 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `v1.3.0-dev`_ (unreleased)
 ==========================
 
+Added
+-----
+
+* Support for Sphinx 7
+
+Removed
+-------
+
+* Support for python 3.7
+
 `v1.2.2`_ (2023-06-28)
 ==========================
 
