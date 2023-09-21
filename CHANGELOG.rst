@@ -5,7 +5,10 @@ Change Log
 This document records all notable changes to `sphinx-c-autodoc <https://sphinx-c-autodoc.readthedocs.io/en/latest/>`_.
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
-`v1.3.0-dev`_ (unreleased)
+`v1.3.1-dev`_ (unreleased)
+==========================
+
+`v1.3.0`_ (2023-09-21)
 ==========================
 
 Added
@@ -209,7 +212,8 @@ Fixes
 * Initial public release
 
 
-.. _v1.3.0-dev: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.2.2...main
+.. _v1.3.1-dev: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.3.0...main
+.. _v1.3.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.2.2...v1.3.0
 .. _v1.2.2: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.2.1...v1.2.2
 .. _v1.2.1: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.2.0...v1.2.1
 .. _v1.2.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.1.1...v1.2.0
