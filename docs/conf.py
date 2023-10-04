@@ -214,5 +214,9 @@ c_autodoc_roots = ['../tests/assets/c_source']
 
 set_type_checking_flag = True
 
+if 'READTHEDOCS' in os.environ:
+    from clang import cindex
+    cindex.Config.set_library_file("/usr/lib/llvm-14/lib/libclang.so.1")
+
 def setup(app):
    app.add_css_file('css/custom.css')
