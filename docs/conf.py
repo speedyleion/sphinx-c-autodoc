@@ -214,39 +214,9 @@ c_autodoc_roots = ['../tests/assets/c_source']
 
 set_type_checking_flag = True
 
-# -- Force Scan of API ------------------------------------------------------
-
-# Skip scan when running tests, since sphinx extensions are tested.
-# if 'PYTEST_CURRENT_TEST' not in os.environ:
-#     # This will force scanning the source directory so that the api can be autopopulated.
-#     import sphinx.ext.apidoc as apidoc
-#     import shutil
-#     args = ['-e', '-o', '_api', '-a', '-f', SOURCE_DIR]
-
-#     try:
-#         shutil.rmtree('_api')
-#     except:
-#         pass
-
-#     apidoc.main(args)
-
-#     # Not fond of this but needed to shut up warning about the main modules file not in TOC.
-#     try:
-#         contents = [':orphan:\n\n']
-#         with open('_api/modules.rst', 'r') as mod_file:
-#             contents.extend(mod_file.readlines())
-#         with open('_api/modules.rst', 'w') as mod_file:
-#             mod_file.writelines(contents)
-#     except:
-#         pass
-
-# force libclang access for read the docs.
-# Read the docs installs doxygen which will install libclang, unfortunatly it
-# doesn't appear the so is in the path so need to grab a _backend_ version of
-# the file.
 if 'READTHEDOCS' in os.environ:
     from clang import cindex
-    cindex.Config.set_library_file("/usr/lib/x86_64-linux-gnu/libclang-6.0.so.1")
+    cindex.Config.set_library_file("/usr/lib/llvm-14/lib/libclang.so.1")
 
 def setup(app):
    app.add_css_file('css/custom.css')

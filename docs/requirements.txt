@@ -3,5 +3,5 @@ furo
 beautifulsoup4 
 sphinxcontrib.autoprogram
 
-# Due to read the docs libclang linking in conf.py we want to use clang 6
-clang == 6
+# Need to specify the clang to match the RTD installed version 
+clang == 14
