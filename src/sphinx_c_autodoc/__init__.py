@@ -153,7 +153,8 @@ class CObjectDocumenter(Documenter):
 
         # The implementation of self.resolve_name() always returns back a str,
         # but typing wise it says optional to be nsync with the Sphinx definition.
-        self.modname, self.objpath = self.resolve_name(fullname, parents, path, base)  # type: ignore
+        self.modname, self.objpath = \
+            self.resolve_name(fullname, parents, path, base)  # type: ignore
 
         self.fullname = self.modname
         return True
