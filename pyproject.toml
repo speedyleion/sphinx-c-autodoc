@@ -26,6 +26,10 @@ beautifulsoup4 = "*"
 sphinx-c-apidoc = 'sphinx_c_autodoc.apidoc:main'
 
 [tool.poetry.group.dev.dependencies]
+sphinx = [
+    {version = ">=3.1,<7.2", python = "<3.9"},
+    {version = ">=7.2", python = ">=3.9"}
+]
 black = "23.9.1"
 pycodestyle = "2.11.0"
 mypy =  "1.5.1"

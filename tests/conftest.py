@@ -3,19 +3,20 @@ Common pytest configuration for the test suites
 """
 
 import os
-import sys
 
 import pytest
+import sphinx
 
 from docutils.parsers.rst.states import RSTStateMachine, Struct, Inliner, state_classes
 from docutils.parsers.rst.languages import en
 from docutils.statemachine import StringList
 from docutils.utils import new_document
-from sphinx.testing.path import path
 from sphinx.util.docutils import sphinx_domains
 
-# SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
-# sys.path.append(os.path.join(SCRIPT_DIR, '..', 'src'))
+if sphinx.version_info < (7, 2):
+    from sphinx.testing.path import path as Path
+else:
+    from pathlib import Path
 
 pytest_plugins = "sphinx.testing.fixtures"
 
@@ -34,8 +35,8 @@ def local_app(make_app):
     # Provide sphinx with the path to the documentation directory.
     conf_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "assets"))
 
-    # Note the sphinx fixture expects a :class:`path` object, not a string
-    yield make_app(srcdir=path(conf_dir))
+    # Note the sphinx fixture expects a :class:`Path` object, not a string
+    yield make_app(srcdir=Path(conf_dir))
 
 
 @pytest.fixture()

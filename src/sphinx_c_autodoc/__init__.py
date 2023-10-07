@@ -151,14 +151,18 @@ class CObjectDocumenter(Documenter):
         else:
             parents = path.rstrip(".").split(".")
 
-        self.modname, self.objpath = self.resolve_name(fullname, parents, path, base)
+        # The implementation of self.resolve_name() always returns back a str,
+        # but typing wise it says optional to be nsync with the Sphinx definition.
+        self.modname, self.objpath = self.resolve_name(  # type: ignore
+            fullname, parents, path, base
+        )
 
         self.fullname = self.modname
         return True
 
     def resolve_name(
-        self, modname: str, parents: List[str], path: Optional[str], base: str
-    ) -> Tuple[str, List[str]]:
+        self, modname: Optional[str], parents: List[str], path: Optional[str], base: str
+    ) -> Tuple[Optional[str], List[str]]:
         """
         Resolve the module and object name of the object to document.
         This can be derived in two ways:
@@ -297,7 +301,7 @@ class CObjectDocumenter(Documenter):
         tab_width = self.directive.state.document.settings.tab_width
         return [prepare_docstring(docstring, tabsize=tab_width)]
 
-    def get_object_members(self, want_all: bool) -> Tuple[bool, List[Tuple[str, Any]]]:
+    def get_object_members(self, want_all: bool) -> Tuple[bool, List[Any]]:
         """Return `(members_check_module, members)` where `members` is a
         list of `(membername, member)` pairs of the members of *self.object*.
 
@@ -311,7 +315,7 @@ class CObjectDocumenter(Documenter):
         # should be safe to assume this is a list or None at this point.
         desired_members = self.options.members or []
 
-        object_members: List[Tuple[str, Any]] = []
+        object_members: List[Any] = []
         for member in desired_members:
             if member in self.object.children:
                 object_members.append((member, self.object.children[member]))
