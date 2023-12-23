@@ -32,7 +32,7 @@ sphinx = [
 ]
 black = "23.12.1"
 pycodestyle = "2.11.1"
-mypy =  "1.7.1"
+mypy =  "1.8.0"
 pytest = "7.4.3"
 pytest-cov = "4.1.0"
 sphinxcontrib-autoprogram = "0.1.8"
