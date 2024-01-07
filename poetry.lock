@@ -200,13 +200,13 @@ files = [
 
 [[package]]
 name = "clang"
-version = "16.0.1.1"
+version = "17.0.6"
 description = "libclang python bindings"
 optional = false
 python-versions = "*"
 files = [
-    {file = "clang-16.0.1.1-py3-none-any.whl", hash = "sha256:aa80abef73cb9994f038346d6f32920d0fb273217641ccbacf2e8eddbfc499e8"},
-    {file = "clang-16.0.1.1.tar.gz", hash = "sha256:4d5918f5a8985f157947238e19b6043a93fb5f77b7a9f2b01faf8e948b4478a9"},
+    {file = "clang-17.0.6-py3-none-any.whl", hash = "sha256:d05ad6dddc9b360e94b9420e239c639a9117902cce8a57fd288a5226eea3092e"},
+    {file = "clang-17.0.6.tar.gz", hash = "sha256:d228511e6a29e866dcbe99e10ed10649317b9b3e636ba805f6867b7afb6e8c44"},
 ]
 
 [[package]]
