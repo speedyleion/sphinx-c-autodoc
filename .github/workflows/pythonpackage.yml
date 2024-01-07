@@ -68,8 +68,9 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./tests/coverage.xml
+          files: ./coverage.xml
           verbose: true
+          fail_ci_if_error: true
 
   checks:
     runs-on: ubuntu-latest
