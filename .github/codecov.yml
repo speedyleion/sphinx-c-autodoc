@@ -2,7 +2,7 @@
   status:
     project:
       default:
-        target: 100
+        target: 100%
         threshold: 0%
         paths: 
           - "src"

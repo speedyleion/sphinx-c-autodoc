@@ -702,9 +702,9 @@ class DocumentedVariable(DocumentedObject):
 
         Returns:
             str: The type of the variable.  If this can't be derived falls back to
-                `int`.
+                `unknown_type` to match the behavior of clang.
         """
-        type_ = "int"
+        type_ = "unknown_type"
         tokens = list(
             filter(
                 lambda t: t.kind == cindex.TokenKind.IDENTIFIER, self.node.get_tokens()
