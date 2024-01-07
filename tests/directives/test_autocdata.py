@@ -36,7 +36,7 @@ class TestAutoCData:
         MAYBE_CONST is the type."""
 
     unknown_file_level_array_type = """\
-        int unknown_array_type_var[24]
+        unknown_type unknown_array_type_var[24]
         A an array variable with an unknown type.
         For whatever reason clang will come back with no extent on this so
         we have to fall back to this being treated as an int"""
