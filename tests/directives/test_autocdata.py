@@ -10,6 +10,7 @@ from sphinx.ext.autodoc.directive import AutodocDirective
 
 CLANG_VERSION = pkg_resources.get_distribution("clang").parsed_version
 
+
 class TestAutoCData:
     """
     Testing class for the autocdata directive
@@ -49,7 +50,14 @@ class TestAutoCData:
         ("variables.c::file_level_variable", file_level_variable),
         ("example.c::inline_struct_variable", inline_struct_variable),
         ("variables.c::unknown_type_var", unknown_file_level_variable_type),
-        pytest.param("variables.c::unknown_array_type_var", unknown_file_level_array_type, marks=pytest.mark.skipif(CLANG_VERSION.release < (17,), reason="Clang 17+ fixes array type parsing")),
+        pytest.param(
+            "variables.c::unknown_array_type_var",
+            unknown_file_level_array_type,
+            marks=pytest.mark.skipif(
+                CLANG_VERSION.release < (17,),
+                reason="Clang 17+ fixes array type parsing",
+            ),
+        ),
         ("variables.c::unknown_extern_type_var", unknown_extern_file_variable),
     ]
 
