@@ -4,8 +4,11 @@ Test the parsing of c data (variables) objects
 from textwrap import dedent
 
 import pytest
+import pkg_resources
 
 from sphinx.ext.autodoc.directive import AutodocDirective
+
+CLANG_VERSION = pkg_resources.get_distribution("clang").parsed_version
 
 
 class TestAutoCData:
@@ -36,10 +39,8 @@ class TestAutoCData:
         MAYBE_CONST is the type."""
 
     unknown_file_level_array_type = """\
-        int unknown_array_type_var[24]
-        A an array variable with an unknown type.
-        For whatever reason clang will come back with no extent on this so
-        we have to fall back to this being treated as an int"""
+        unknown_type unknown_array_type_var[24]
+        A an array variable with an unknown type."""
 
     unknown_extern_file_variable = """\
         extern unknown_type *unknown_extern_type_var
@@ -49,7 +50,14 @@ class TestAutoCData:
         ("variables.c::file_level_variable", file_level_variable),
         ("example.c::inline_struct_variable", inline_struct_variable),
         ("variables.c::unknown_type_var", unknown_file_level_variable_type),
-        ("variables.c::unknown_array_type_var", unknown_file_level_array_type),
+        pytest.param(
+            "variables.c::unknown_array_type_var",
+            unknown_file_level_array_type,
+            marks=pytest.mark.skipif(
+                CLANG_VERSION.release < (17,),
+                reason="Clang 17+ fixes array type parsing",
+            ),
+        ),
         ("variables.c::unknown_extern_type_var", unknown_extern_file_variable),
     ]
 

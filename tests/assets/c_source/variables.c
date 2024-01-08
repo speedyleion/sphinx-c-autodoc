@@ -22,9 +22,7 @@ static MAYBE_CONST /* throw in a pinch of comment to the mix */
 
 /**
  * A an array variable with an unknown type.
- * For whatever reason clang will come back with no extent on this so
- * we have to fall back to this being treated as an int
-*/
+ */
 unknown_type unknown_array_type_var[24];
 
 /**

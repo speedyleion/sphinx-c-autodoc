@@ -712,9 +712,9 @@ class DocumentedVariable(DocumentedObject):
         )
         try:
             type_ = tokens[-2].spelling
-        except IndexError:
-            # For array variables with unknown types libclang fails to provide the
-            # tokens.
+        except IndexError:  # pragma: no cover
+            # For versions 16 and before, libclang fails to provide the tokens for array
+            # variables with unknown types
             pass
 
         # clang doesn't provide the storage class in the type name, so we'll add it here
