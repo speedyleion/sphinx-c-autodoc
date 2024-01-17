@@ -21,7 +21,7 @@ jobs:
           echo "environment=${VERSION//.}" >> $GITHUB_OUTPUT
       - name: Cache LLVM and Clang
         id: cache-llvm
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: llvm/lib/libclang.so*
           key: llvm-17
@@ -46,7 +46,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Cache LLVM and Clang
         id: cache-llvm
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: llvm/lib/libclang.so*
           key: llvm-17
@@ -81,7 +81,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Cache LLVM and Clang
         id: cache-llvm
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: llvm/lib/libclang.so*
           key: llvm-17
@@ -106,7 +106,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Cache LLVM and Clang
         id: cache-llvm
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: llvm/lib/libclang.so*
           key: llvm-17
@@ -133,7 +133,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Cache LLVM and Clang
         id: cache-llvm
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: llvm/lib/libclang.so*
           key: llvm-6
