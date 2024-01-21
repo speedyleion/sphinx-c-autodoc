@@ -23,7 +23,7 @@ A function in ``my_c_file.c``:
      *
      * @returns The sum of `a` and `b`.
      *
-     *
+     */
     int my_adding_function(int a, int b) {
         return a + b;
         }
