@@ -23,7 +23,7 @@ A function in ``my_c_file.c``:
      *
      * @returns The sum of `a` and `b`.
      *
-     *
+     */
     int my_adding_function(int a, int b) {
         return a + b;
         }
@@ -71,7 +71,7 @@ Similar Tools
     :scale: 100%
     :target: https://github.com/speedyleion/sphinx-c-autodoc/actions?query=workflow%3A%22Python+package%22
 
-.. |coverage| image:: https://codecov.io/gh/speedyleion/sphinx-c-autodoc/branch/master/graph/badge.svg
+.. |coverage| image:: https://codecov.io/gh/speedyleion/sphinx-c-autodoc/branch/main/graph/badge.svg
     :alt: Coverage
     :scale: 100%
     :target: https://codecov.io/gh/speedyleion/sphinx-c-autodoc
