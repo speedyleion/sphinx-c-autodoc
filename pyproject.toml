@@ -38,7 +38,7 @@ pytest-cov = "4.1.0"
 sphinxcontrib-autoprogram = "0.1.8"
 types-docutils = "0.20.0.20240106"
 pylint = "^3.0.0"
-furo = "^2023.5.20"
+furo = "^2024.0.0"
 setuptools = "^69.0.3"
 
 [build-system]
