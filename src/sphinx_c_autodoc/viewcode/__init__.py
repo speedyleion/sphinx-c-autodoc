@@ -399,7 +399,7 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
 
 
 def _add_pending_source_cross_reference(
-    app: Sphinx, signode: addnodes.desc, fullname: str
+    app: Sphinx, signode: addnodes.desc_signature, fullname: str
 ) -> None:
     """
     Adds a pending source cross reference to the signature in the doctree, `signode`.
@@ -450,7 +450,7 @@ def _add_pending_source_cross_reference(
 
 
 def _add_pending_back_reference(
-    app: Sphinx, signode: addnodes.desc, fullname: str
+    app: Sphinx, signode: addnodes.desc_signature, fullname: str
 ) -> None:
     """
     Updates the ``doc_links`` entry of the modules stored in
