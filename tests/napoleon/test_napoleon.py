@@ -1,6 +1,7 @@
 """
 Test the napoleon extension provided by this package.
 """
+
 from textwrap import dedent
 
 import pytest

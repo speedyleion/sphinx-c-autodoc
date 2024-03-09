@@ -4,6 +4,7 @@ Performs end to end testing of the c extension
 For all of these tests warnigns are treated as errors so that any warnings
 from bad logic can more easily be seen in the test output
 """
+
 import re
 import os
 import shutil

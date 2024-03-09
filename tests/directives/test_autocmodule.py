@@ -1,6 +1,7 @@
 """
 Test autocmodule directive
 """
+
 from textwrap import dedent
 
 import pytest

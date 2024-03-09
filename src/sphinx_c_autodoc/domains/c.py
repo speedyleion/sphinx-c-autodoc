@@ -9,6 +9,7 @@ In particular:
   referencing with viewcode.
 
 """
+
 from sphinx.domains.c import CObject, ASTDeclaration
 from sphinx.addnodes import desc_signature
 from sphinx.ext.autodoc import identity, bool_option

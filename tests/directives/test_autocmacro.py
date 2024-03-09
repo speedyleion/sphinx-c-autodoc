@@ -1,6 +1,7 @@
 """
 Test the parsing of c macro objects
 """
+
 from textwrap import dedent
 
 import pytest
