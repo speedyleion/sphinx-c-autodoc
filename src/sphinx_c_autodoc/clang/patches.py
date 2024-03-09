@@ -3,6 +3,7 @@ Provide functionality to patch the python clang bindings for some missing
 functionality.
 
 """
+
 # invalid-name: This is being disabled because the methods are using the c
 #   style object nameing convetion of <ClassName>_<methodName>. The class name is
 #   in title case, matching the python convention for classes. The method names

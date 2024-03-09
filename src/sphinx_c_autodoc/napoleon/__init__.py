@@ -2,6 +2,7 @@
 Extend napoleon to provide a `Members` section for C structs and unions
 similar to the `Attributes` section in python objects.
 """
+
 from functools import partial
 
 from typing import Optional, Any, List, Union, Dict, Callable

@@ -1,6 +1,7 @@
 """
 Test the parsing of c data (variables) objects
 """
+
 from textwrap import dedent
 
 import pytest

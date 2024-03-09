@@ -1,6 +1,7 @@
 """
 Test autoctype directive
 """
+
 from textwrap import dedent
 
 import pytest

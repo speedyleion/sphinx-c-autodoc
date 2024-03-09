@@ -2,6 +2,7 @@
 Expose some CXComment functionality to python for libclang
 
 """
+
 import ctypes
 
 from typing import Optional

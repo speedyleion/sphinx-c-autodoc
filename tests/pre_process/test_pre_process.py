@@ -1,6 +1,7 @@
 """
 Test the pre-parse hook
 """
+
 from textwrap import dedent
 
 from sphinx.ext.autodoc.directive import AutodocDirective

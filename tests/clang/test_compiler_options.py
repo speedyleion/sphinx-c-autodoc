@@ -1,6 +1,7 @@
 """
 Test the usage of the compilation database
 """
+
 import json
 import os
 

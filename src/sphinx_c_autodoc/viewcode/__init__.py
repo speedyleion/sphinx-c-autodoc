@@ -25,6 +25,7 @@ The processing idea:
 .. _viewcode: https://www.sphinx-doc.org/en/master/usage/extensions/viewcode.html
 
 """
+
 from dataclasses import dataclass
 from typing import Any, Dict, Iterator, Tuple, List, Optional
 

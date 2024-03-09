@@ -1,6 +1,7 @@
 """
 Test the parsing of c enum objects
 """
+
 from textwrap import dedent
 
 import pytest

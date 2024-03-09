@@ -2,6 +2,7 @@
 Provide apidoc like functionality for C projects.
 
 """
+
 import argparse
 import os
 
