@@ -1032,13 +1032,13 @@ files = [
 
 [[package]]
 name = "types-docutils"
-version = "0.20.0.20240310"
+version = "0.20.0.20240317"
 description = "Typing stubs for docutils"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "types-docutils-0.20.0.20240310.tar.gz", hash = "sha256:84a8e82ebcb2e3b3440f3755862f4c29019c452150886998fab2f53ad403f0bd"},
-    {file = "types_docutils-0.20.0.20240310-py3-none-any.whl", hash = "sha256:858e637e369f17ceec124344ff8a86164a46f200aacc20efd5929ae850c6b95a"},
+    {file = "types-docutils-0.20.0.20240317.tar.gz", hash = "sha256:23657aab0de58634d111914b677b1855867f16cd9a9ea110254e23b48653e1a8"},
+    {file = "types_docutils-0.20.0.20240317-py3-none-any.whl", hash = "sha256:4f11b3986b74f39169313ab528ffac101c45fca9c36c4cd22dbeec6143c99b7f"},
 ]
 
 [[package]]
@@ -1087,4 +1087,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "2e781e3ac11ed69476b8db6dc732720c8b5031ba47b13235e2c7bc25efba8ea2"
+content-hash = "c5a0f6fbb41b03c90bfa48209179acf727ce090848c71c9a8ab09cd76351ac8f"
