@@ -30,7 +30,7 @@ sphinx = [
     {version = ">=3.1,<7.2", python = "<3.9"},
     {version = ">=7.2", python = ">=3.9"}
 ]
-black = "24.4.0"
+black = "24.4.2"
 pycodestyle = "2.11.1"
 mypy =  "1.9.0"
 pytest = "8.1.1"
