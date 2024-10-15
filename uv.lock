@@ -961,7 +961,7 @@ dev = [
     { name = "pylint", specifier = "==3.0.0" },
     { name = "pytest", specifier = "==8.2.2" },
     { name = "pytest-cov", specifier = "==5.0.0" },
-    { name = "setuptools" },
+    { name = "setuptools", specifier = ">=75.1.0" },
     { name = "sphinx", marker = "python_full_version < '3.9'", specifier = ">=3.1,<7.2" },
     { name = "sphinx", marker = "python_full_version >= '3.9'", specifier = ">=7.2" },
     { name = "sphinxcontrib-autoprogram", specifier = "==0.1.9" },
