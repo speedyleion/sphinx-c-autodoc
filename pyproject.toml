@@ -23,6 +23,9 @@ dependencies = [
 repository = "https://github.com/speedyleion/sphinx-c-autodoc"
 documentation = "https://sphinx-c-autodoc.readthedocs.io/en/latest/"
 
+[project.scripts]
+sphinx-c-apidoc = 'sphinx_c_autodoc.apidoc:main'
+
 [tool.uv]
 dev-dependencies= [
     "sphinx >=3.1,<7.2; python_version <'3.9'",
