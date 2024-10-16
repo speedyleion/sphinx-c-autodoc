@@ -21,6 +21,7 @@ class CAutoDocString(GoogleDocstring):
     sections of enums.
     """
 
+    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         docstring: Union[str, List[str]],
@@ -124,6 +125,7 @@ class CAutoDocString(GoogleDocstring):
         return lines
 
 
+# pylint: disable=too-many-positional-arguments
 def process_autodoc_docstring(
     app: Any,
     what: str,

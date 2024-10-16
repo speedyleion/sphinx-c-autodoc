@@ -35,7 +35,7 @@ dev-dependencies= [
     "pytest-cov==5.0.0",
     "sphinxcontrib-autoprogram==0.1.9",
     "types-docutils==0.20.0.20240310",
-    "pylint==3.0.0",
+    "pylint==3.3.1",
     "furo>=2024.0.0",
 ]
 
