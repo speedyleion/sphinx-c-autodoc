@@ -381,7 +381,7 @@ def doctree_read(app: Sphinx, doctree: Node) -> None:
             The root node of the document to walk through. This will be
             modified in place, by modifiying signature nodes of C constructs.
     """
-    c_nodes = (n for n in doctree.traverse(addnodes.desc) if n.get("domain") == "c")
+    c_nodes = (n for n in doctree.findall(addnodes.desc) if n.get("domain") == "c")
     for node in c_nodes:
         signature_nodes = (n for n in node if isinstance(n, addnodes.desc_signature))
 
