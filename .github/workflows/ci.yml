@@ -166,7 +166,7 @@ jobs:
         run: |
           sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-11.so
           sudo apt-get update
-          sudo apt-get install libtinfo5
+          sudo apt-get install libtinfo
       - name: Install uv
         uses: astral-sh/setup-uv@v3
         with:
