@@ -82,7 +82,7 @@ jobs:
           verbose: true
           fail_ci_if_error: true
 
-  checks:
+  check:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -107,7 +107,7 @@ jobs:
         with:
           version: "0.4.22"
           enable-cache: true
-          cache-suffix: ${{ matrix.check }}
+          cache-suffix: "check"
       - name: Install dependencies
         run: |
           uv tool install tox --with tox-uv
