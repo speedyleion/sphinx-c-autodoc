@@ -39,7 +39,6 @@ dev-dependencies= [
     "types-docutils==0.20.0.20240310",
     "pylint==3.0.0",
     "furo>=2024.0.0",
-    "setuptools>=75.1.0",
 ]
 
 [build-system]
