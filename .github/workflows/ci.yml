@@ -156,7 +156,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: llvm/lib/libclang.so*
-          key: llvm-6
+          key: llvm-11
       - name: Install LLVM and Clang
         uses: KyleMayes/install-llvm-action@v1
         with:
