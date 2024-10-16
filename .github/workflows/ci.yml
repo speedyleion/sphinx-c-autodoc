@@ -1,5 +1,5 @@
 ---
-name: Python package
+name: CI
 
 "on": [push]
 
@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
@@ -32,10 +32,15 @@ jobs:
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
       - name: Symlink libclang.so
         run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-17.so
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.4.22"
+          enable-cache: true
+          cache-suffix: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install tox
+          uv tool install tox --with tox-uv
       - name: Test with tox
         run: |
           tox -e py${{ steps.tox-env.outputs.environment }}
@@ -57,10 +62,15 @@ jobs:
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
       - name: Symlink libclang.so
         run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-17.so
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.4.22"
+          enable-cache: true
+          cache-suffix: "coverage"
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install tox
+          uv tool install tox --with tox-uv
       - name: Test with tox
         run: |
           tox -e cov
@@ -72,7 +82,7 @@ jobs:
           verbose: true
           fail_ci_if_error: true
 
-  checks:
+  check:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -92,10 +102,15 @@ jobs:
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
       - name: Symlink libclang.so
         run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-17.so
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.4.22"
+          enable-cache: true
+          cache-suffix: "check"
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install tox
+          uv tool install tox --with tox-uv
       - name: Static code checks
         run: |
           tox -e check-${{ matrix.check }}
@@ -117,18 +132,23 @@ jobs:
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
       - name: Symlink libclang.so
         run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-17.so
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.4.22"
+          enable-cache: true
+          cache-suffix: "docs"
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install tox
+          uv tool install tox --with tox-uv
       - name: Build docs
         run: |
           tox -e docs
   sphinx:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        sphinx-version: ["three", "four"]
+        sphinx-version: ["four"]
     steps:
       - uses: actions/checkout@v4
       - name: Cache LLVM and Clang
@@ -136,18 +156,26 @@ jobs:
         uses: actions/cache@v4
         with:
           path: llvm/lib/libclang.so*
-          key: llvm-6
+          key: llvm-11
       - name: Install LLVM and Clang
         uses: KyleMayes/install-llvm-action@v1
         with:
-          version: "6.0"
+          version: "11.0"
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
       - name: Symlink libclang.so
-        run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang.so
+        run: |
+          sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-11.so
+          sudo apt-get update
+          sudo apt install libtinfo5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.4.22"
+          enable-cache: true
+          cache-suffix: ${{ matrix.sphinx-version }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install tox
+          uv tool install tox --with tox-uv
       - name: Test with tox
         run: |
           tox -e sphinx-${{ matrix.sphinx-version }}

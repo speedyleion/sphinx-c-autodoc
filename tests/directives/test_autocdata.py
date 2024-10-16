@@ -5,11 +5,11 @@ Test the parsing of c data (variables) objects
 from textwrap import dedent
 
 import pytest
-import pkg_resources
+import importlib
 
 from sphinx.ext.autodoc.directive import AutodocDirective
 
-CLANG_VERSION = pkg_resources.get_distribution("clang").parsed_version
+CLANG_VERSION = tuple([int(v) for v in importlib.metadata.version("clang").split(".")])
 
 
 class TestAutoCData:
@@ -55,7 +55,7 @@ class TestAutoCData:
             "variables.c::unknown_array_type_var",
             unknown_file_level_array_type,
             marks=pytest.mark.skipif(
-                CLANG_VERSION.release < (17,),
+                CLANG_VERSION < (17,),
                 reason="Clang 17+ fixes array type parsing",
             ),
         ),

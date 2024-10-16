@@ -51,7 +51,7 @@ def test_viewcode_of_sphinx_project(tmp_path):
         "_modules/example.c.html#c.members_documented_with_napoleon.two.nested_two",
     )
 
-    soup = BeautifulSoup(contents)
+    soup = BeautifulSoup(contents, features="html.parser")
     for href in chosen_links:
         tag = soup.find("a", {"href": href})
         assert "[source]" == tag.text
@@ -64,7 +64,7 @@ def test_viewcode_of_sphinx_project(tmp_path):
         "../_modules/file_2.c.html#c.unknown_member.foo",
         "../_modules/file_2.c.html#c.file_level_variable",
     )
-    soup = BeautifulSoup(contents)
+    soup = BeautifulSoup(contents, features="html.parser")
     for href in chosen_links:
         tag = soup.find("a", {"href": href})
         assert "[source]" == tag.text
@@ -78,7 +78,7 @@ def test_viewcode_of_sphinx_project(tmp_path):
         "../example.html#c.members_documented_with_napoleon.two.nested_two",
         "../example.html#c.MY_COOL_MACRO",
     )
-    soup = BeautifulSoup(contents)
+    soup = BeautifulSoup(contents, features="html.parser")
     for href in chosen_links:
         tag = soup.find("a", {"href": href})
         assert "[docs]" == tag.text
@@ -94,7 +94,7 @@ def test_viewcode_of_sphinx_project(tmp_path):
         # one uses noindex then the permalinks are no longer generated :(
         # "#c.napoleon_documented_function"
     )
-    soup = BeautifulSoup(contents)
+    soup = BeautifulSoup(contents, features="html.parser")
     for href in chosen_links:
         tag = soup.find("a", {"href": href})
         assert "[source]" == tag.text
