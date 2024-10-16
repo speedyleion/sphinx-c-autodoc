@@ -1,4 +1,4 @@
-sphinx >= 7.2
+sphinx >= 4.0
 furo
 beautifulsoup4 
 sphinxcontrib.autoprogram

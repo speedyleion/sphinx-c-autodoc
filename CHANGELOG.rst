@@ -8,7 +8,7 @@ This project adheres to `Semantic Versioning <https://semver.org/>`_.
 `v1.4.1-dev`_ (unreleased)
 ==========================
 
-`v1.4.0`_ (2023-10-16)
+`v1.4.0`_ (2024-10-16)
 ==========================
 
 Removed
