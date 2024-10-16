@@ -853,7 +853,7 @@ dev = [
     { name = "pytest", specifier = "==8.3.3" },
     { name = "pytest-cov", specifier = "==5.0.0" },
     { name = "sphinxcontrib-autoprogram", specifier = "==0.1.9" },
-    { name = "types-docutils", specifier = "==0.20.0.20240310" },
+    { name = "types-docutils", specifier = "==0.21.0.20241005" },
 ]
 
 [[package]]
@@ -1007,11 +1007,11 @@ wheels = [
 
 [[package]]
 name = "types-docutils"
-version = "0.20.0.20240310"
+version = "0.21.0.20241005"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/71/b2/b6a49c61a620e9123c6a0837f6e99fd29895430700439e1f10252f7b04d9/types-docutils-0.20.0.20240310.tar.gz", hash = "sha256:84a8e82ebcb2e3b3440f3755862f4c29019c452150886998fab2f53ad403f0bd", size = 16336 }
+sdist = { url = "https://files.pythonhosted.org/packages/23/31/6f51a6b05ad750fd7875ffd45e7a88063258782f35e5dff1f291061e394e/types-docutils-0.21.0.20241005.tar.gz", hash = "sha256:48f804a2b50da3a1b1681c4ca1b6184416a6e4129e302d15c44e9d97c59b3365", size = 20701 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9e/e3/5b4a0c39f16077c012de6c4836fcfa66a270a8753a4cea2e783c5dddccd1/types_docutils-0.20.0.20240310-py3-none-any.whl", hash = "sha256:858e637e369f17ceec124344ff8a86164a46f200aacc20efd5929ae850c6b95a", size = 23665 },
+    { url = "https://files.pythonhosted.org/packages/20/73/8ccc09357cfe9f4b8a5b31af3276dd270924bf4915a13cf816b585221b59/types_docutils-0.21.0.20241005-py3-none-any.whl", hash = "sha256:4d9021422f2f3fca8b0726fb8949395f66a06c0d951479eb3b1387d75b134430", size = 28520 },
 ]
 
 [[package]]
