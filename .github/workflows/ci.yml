@@ -145,7 +145,7 @@ jobs:
         run: |
           tox -e docs
   sphinx:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         sphinx-version: ["four"]
@@ -165,7 +165,6 @@ jobs:
       - name: Symlink libclang.so
         run: |
           sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-11.so
-          sudo ln -s /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/libtinfo.so.5
       - name: Install uv
         uses: astral-sh/setup-uv@v3
         with:
