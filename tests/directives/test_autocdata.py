@@ -9,7 +9,7 @@ import importlib
 
 from sphinx.ext.autodoc.directive import AutodocDirective
 
-CLANG_VERSION = tuple([int(v) for v in importlib.metadata.version("clang").split('.')])
+CLANG_VERSION = tuple([int(v) for v in importlib.metadata.version("clang").split(".")])
 
 
 class TestAutoCData:
