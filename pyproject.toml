@@ -15,8 +15,8 @@ classifiers = [
 ]
 requires-python = ">=3.9"
 dependencies = [
-    "sphinx>=7.2",
-    "clang>=6",
+    "sphinx>=4.0",
+    "clang>=11",
     "beautifulsoup4",
 ]
 [project.urls]
