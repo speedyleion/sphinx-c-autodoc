@@ -26,7 +26,7 @@ jobs:
           path: llvm/lib/libclang.so*
           key: llvm-17
       - name: Install LLVM and Clang
-        uses: KyleMayes/install-llvm-action@v1
+        uses: KyleMayes/install-llvm-action@v2
         with:
           version: "17.0"
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
@@ -56,7 +56,7 @@ jobs:
           path: llvm/lib/libclang.so*
           key: llvm-17
       - name: Install LLVM and Clang
-        uses: KyleMayes/install-llvm-action@v1
+        uses: KyleMayes/install-llvm-action@v2
         with:
           version: "17.0"
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
@@ -96,7 +96,7 @@ jobs:
           path: llvm/lib/libclang.so*
           key: llvm-17
       - name: Install LLVM and Clang
-        uses: KyleMayes/install-llvm-action@v1
+        uses: KyleMayes/install-llvm-action@v2
         with:
           version: "17.0"
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
@@ -126,7 +126,7 @@ jobs:
           path: llvm/lib/libclang.so*
           key: llvm-17
       - name: Install LLVM and Clang
-        uses: KyleMayes/install-llvm-action@v1
+        uses: KyleMayes/install-llvm-action@v2
         with:
           version: "17.0"
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
@@ -158,7 +158,7 @@ jobs:
           path: llvm/lib/libclang.so*
           key: llvm-11
       - name: Install LLVM and Clang
-        uses: KyleMayes/install-llvm-action@v1
+        uses: KyleMayes/install-llvm-action@v2
         with:
           version: "11.0"
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
