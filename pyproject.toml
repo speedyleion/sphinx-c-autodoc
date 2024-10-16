@@ -40,5 +40,5 @@ dev-dependencies= [
 ]
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling==1.25.0"]
 build-backend = "hatchling.build"

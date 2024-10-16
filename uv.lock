@@ -830,8 +830,8 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "beautifulsoup4" },
-    { name = "clang", specifier = ">=6" },
-    { name = "sphinx", specifier = ">=7.2" },
+    { name = "clang", specifier = ">=11" },
+    { name = "sphinx", specifier = ">=4.0" },
 ]
 
 [package.metadata.requires-dev]
