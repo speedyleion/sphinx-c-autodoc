@@ -66,10 +66,10 @@ Similar Tools
 * `breathe <https://github.com/michaeljones/breathe>`_ A doxygen output to
   sphinx tool.
 
-.. |build-status| image:: https://github.com/speedyleion/sphinx-c-autodoc/workflows/Python%20package/badge.svg
+.. |build-status| image:: https://github.com/speedyleion/sphinx-c-autodoc/actions/workflows/ci.yml/badge.svg
     :alt: Build Status
     :scale: 100%
-    :target: https://github.com/speedyleion/sphinx-c-autodoc/actions?query=workflow%3A%22Python+package%22
+    :target: https://github.com/speedyleion/sphinx-c-autodoc/actions/workflows/ci.yml
 
 .. |coverage| image:: https://codecov.io/gh/speedyleion/sphinx-c-autodoc/branch/main/graph/badge.svg
     :alt: Coverage
