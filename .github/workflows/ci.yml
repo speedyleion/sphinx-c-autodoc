@@ -1,5 +1,5 @@
 ---
-name: Python package
+name: CI
 
 "on": [push]
 
@@ -163,7 +163,9 @@ jobs:
           version: "11.0"
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
       - name: Symlink libclang.so
-        run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-11.so
+        run: |
+          sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-11.so
+          sudo apt install libtinfo5
       - name: Install uv
         uses: astral-sh/setup-uv@v3
         with:
