@@ -438,6 +438,7 @@ class CTypeDocumenter(CObjectDocumenter):
         # removes it.
         reporter = getattr(self.directive, "reporter", None)
 
+        self._original_directive_appended: bool = False
         self._original_directive = self.directive
         self.directive = DocumenterBridge(
             self.directive.env,
@@ -467,7 +468,35 @@ class CTypeDocumenter(CObjectDocumenter):
             all_members=all_members,
         )
 
-        self._original_directive.result.append(self.consolidate_members())
+        if not self._original_directive_appended:
+            self._original_directive.result.append(self.consolidate_members())
+            self._original_directive_appended = True
+
+    def _generate(
+        self,
+        more_content: Optional[StringList] = None,
+        real_modname: Optional[str] = None,
+        check_module: bool = False,
+        all_members: bool = False,
+    ) -> None:
+        """
+        generate stuff, private function override.
+        This call was introduced in https://github.com/sphinx-doc/sphinx/pull/13201
+        See issue TODO INSERT ISSUE URL
+        """
+        # The autodoc::Documenter is using the implied optional
+        # `real_modname: str = None` and mypy complains that this shouldn't be
+        # optional
+        super()._generate(
+            more_content=more_content,
+            real_modname=real_modname,  # type: ignore
+            check_module=check_module,
+            all_members=all_members,
+        )
+
+        if not self._original_directive_appended:
+            self._original_directive.result.append(self.consolidate_members())
+            self._original_directive_appended = True
 
     def _find_member_directives(self, name: str) -> List[Tuple[str, str, int]]:
         """
