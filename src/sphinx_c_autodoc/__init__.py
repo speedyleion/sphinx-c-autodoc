@@ -437,7 +437,8 @@ class CTypeDocumenter(CObjectDocumenter):
         """
         super().__init__(directive, name, indent)
 
-        # Sphinx 8.1 compatibility. Sphinx 8.2 moved most of the logic from `generate()` to `_generate()`
+        # Sphinx 8.1 compatibility. Sphinx 8.2 moved most of the logic from
+        # `generate()` to `_generate()`
         if sphinx.version_info < (8, 2):  # pragma: no cover
             self.generate = self._generate  # type: ignore
             self._super_generate = super().generate
