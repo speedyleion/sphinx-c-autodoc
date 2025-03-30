@@ -37,6 +37,7 @@ dev-dependencies= [
     "types-docutils==0.20.0.20240310",
     "pylint==3.3.2",
     "furo>=2024.0.0",
+    "sphinx>=8.2 ; python_full_version >= '3.11'",
 ]
 
 [build-system]
