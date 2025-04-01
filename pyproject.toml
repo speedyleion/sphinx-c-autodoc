@@ -29,7 +29,7 @@ sphinx-c-apidoc = 'sphinx_c_autodoc.apidoc:main'
 [tool.uv]
 dev-dependencies= [
     "black==24.10.0",
-    "pycodestyle==2.12.1",
+    "pycodestyle==2.13.0",
     "mypy==1.13.0",
     "pytest==8.3.4",
     "pytest-cov==6.0.0",
