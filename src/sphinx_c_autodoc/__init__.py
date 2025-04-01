@@ -19,10 +19,11 @@ import re
 from dataclasses import dataclass, field
 from itertools import groupby
 
-from typing import Any, List, Optional, Tuple, Dict
+from typing import Any, List, Optional, Tuple, Dict, cast
 
 from docutils.statemachine import ViewList, StringList
 from docutils import nodes
+import sphinx
 from sphinx.domains.c import CObject
 from sphinx.application import Sphinx
 from sphinx.util import logging
@@ -236,9 +237,11 @@ class CObjectDocumenter(Documenter):
         # TODO The :attr:`temp_data` is reset for each document ideally want to
         # use or make an attribute on `self.env` that is reset per run or just
         # not pickled.
-        modules_dict = self.env.temp_data.setdefault("c:loaded_modules", {})
+        modules_dict = cast(
+            Dict[str, Any], self.env.temp_data.setdefault("c:loaded_modules", {})
+        )
 
-        if filename not in modules_dict:
+        if filename not in modules_dict:  # type: ignore
             with open(filename, encoding="utf-8") as f:
                 contents = [f.read()]
 
@@ -434,35 +437,41 @@ class CTypeDocumenter(CObjectDocumenter):
         """
         super().__init__(directive, name, indent)
 
-        # Sphinx 3.1 compatibility. 4.0 deprecated the "reporter" attribute. 5.0
-        # removes it.
-        reporter = getattr(self.directive, "reporter", None)
+        # Sphinx 8.1 compatibility. Sphinx 8.2 moved most of the logic from
+        # `generate()` to `_generate()`
+        if sphinx.version_info < (8, 2):  # pragma: no cover
+            self.generate = self._generate  # type: ignore
+            self._super_generate = super().generate
+        else:
+            self._super_generate = super()._generate
 
         self._original_directive = self.directive
         self.directive = DocumenterBridge(
             self.directive.env,
-            reporter,
+            None,
             self.directive.genopt,
             self.directive.lineno,
             self.directive.state,
         )
 
-    def generate(
+    def _generate(
         self,
         more_content: Optional[StringList] = None,
         real_modname: Optional[str] = None,
         check_module: bool = False,
         all_members: bool = False,
     ) -> None:
+        """Generate reST for the object given by *self.name*, and possibly for
+        its members.
+
+        If *more_content* is given, include that content. If *real_modname* is
+        given, use that module name to find attribute docs. If *check_module* is
+        True, only generate if the object is defined in the module name it is
+        imported from. If *all_members* is True, document all members.
         """
-        generate stuff
-        """
-        # The autodoc::Documenter is using the implied optional
-        # `real_modname: str = None` and mypy complains that this shouldn't be
-        # optional
-        super().generate(
+        self._super_generate(
             more_content=more_content,
-            real_modname=real_modname,  # type: ignore
+            real_modname=real_modname,
             check_module=check_module,
             all_members=all_members,
         )
