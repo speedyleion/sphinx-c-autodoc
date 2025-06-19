@@ -31,7 +31,7 @@ dev-dependencies= [
     "black==25.1.0",
     "pycodestyle==2.13.0",
     "mypy==1.16.1",
-    "pytest==8.4.0",
+    "pytest==8.4.1",
     "pytest-cov==6.2.1",
     "sphinxcontrib-autoprogram==0.1.9",
     "types-docutils==0.20.0.20240310",
