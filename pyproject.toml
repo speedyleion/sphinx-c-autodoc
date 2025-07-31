@@ -30,7 +30,7 @@ sphinx-c-apidoc = 'sphinx_c_autodoc.apidoc:main'
 dev-dependencies= [
     "black==25.1.0",
     "pycodestyle==2.14.0",
-    "mypy==1.16.1",
+    "mypy==1.17.1",
     "pytest==8.4.1",
     "pytest-cov==6.2.1",
     "sphinxcontrib-autoprogram==0.1.9",
