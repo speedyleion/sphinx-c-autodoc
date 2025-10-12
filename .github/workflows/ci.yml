@@ -31,7 +31,8 @@ jobs:
           version: "20.1"
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
       - name: Symlink libclang.so
-        run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-20.so
+        run: find /usr/lib/x86_64-linux-gnu/libclang-20.so -iname *liblcang*
+#        run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-20.so
       - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
