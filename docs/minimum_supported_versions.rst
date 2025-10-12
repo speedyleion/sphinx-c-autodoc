@@ -8,48 +8,52 @@ currently supported Python versions. The minimum supported dependency versions
 will be the newest version of the dependency that was available when the minimum
 supported Python version was released.
 
-Dropping support for a dependency version is considered a major change and will
-result in a major version bump.
+Dropping support for a dependency version is not considered a major change and
+will only result in a minor version bump.
 
 Planned support calendar. The end dates aren't December 31st, they're the
 October end of life dates for the associated Python version.
 
 +------+------+------+------+------+------+------+------+------+
-| 2021 | 2022 | 2023 | 2024 | 2025 | 2026 | 2027 | 2028 | 2029 |
+| 2022 | 2023 | 2024 | 2025 | 2026 | 2027 | 2028 | 2029 | 2030 |
 +======+======+======+======+======+======+======+======+======+
-|         Python 3.9               | xxxx | xxxx | xxxx | xxxx |
+|       Python 3.10                | xxxx | xxxx | xxxx | xxxx |
 +----------------------------------+------+------+------+------+
-|              Python 3.10                | xxxx | xxxx | xxxx |
+|             Python 3.11                 | xxxx | xxxx | xxxx |
 +------+----------------------------------+------+------+------+
-| xxxx |             Python 3.11                 | xxxx | xxxx |
+| xxxx |      Python 3.12                        | xxxx | xxxx |
 +------+------+----------------------------------+------+------+
-| xxxx | xxxx |      Python 3.12                        | xxxx |
-+------+------+------+----------------------------------+------+
-| xxxx | xxxx | xxxx |      Python 3.13                        |
-+-----------------------------------------+------+------+------+
-|              Sphinx 4.x                 | xxxx | xxxx | xxxx |
-+------+----------------------------------+------+------+------+
-| xxxx |                Sphinx 5.x               | xxxx | xxxx |
-+------+-----------------------------------------+------+------+
-| xxxx |                Sphinx 6.x               | xxxx | xxxx |
-+------+------+----------------------------------+------+------+
-| xxxx | xxxx |             Sphinx 7.x                  | xxxx |
-+------+------+------+----------------------------------+------+
-| xxxx | xxxx | xxxx |             Sphinx 8.x                  |
+| xxxx | xxxx |      Python 3.13                               |
++------+------+------+-----------------------------------------+
+| xxxx | xxxx | xxxx |      Python 3.14                        |
 +------+------+------+-------------+------+------+------+------+
-|           Clang 11.x             | xxxx | xxxx | xxxx | xxxx |
-+------+---------------------------+------+------+------+------+
-| xxxx |             Clang 12.x           | xxxx | xxxx | xxxx |
+|       Sphinx 4.x                 | xxxx | xxxx | xxxx | xxxx |
++----------------------------------+------+------+------+------+
+|                Sphinx 5.x               | xxxx | xxxx | xxxx |
++-----------------------------------------+------+------+------+
+|                Sphinx 6.x               | xxxx | xxxx | xxxx |
 +------+----------------------------------+------+------+------+
-| xxxx |             Clang 13.x           | xxxx | xxxx | xxxx |
+| xxxx |             Sphinx 7.x                  | xxxx | xxxx |
++------+------+----------------------------------+------+------+
+| xxxx | xxxx |             Sphinx 8.x                         |
++------+------+--------------------+------+------+------+------+
+|             Clang 12.x           | xxxx | xxxx | xxxx | xxxx |
++----------------------------------+------+------+------+------+
+|             Clang 13.x           | xxxx | xxxx | xxxx | xxxx |
++----------------------------------+------+------+------+------+
+|                Clang 14.x               | xxxx | xxxx | xxxx |
 +------+----------------------------------+------+------+------+
-| xxxx |                Clang 14.x               | xxxx | xxxx |
+| xxxx |            Clang 15.x            | xxxx | xxxx | xxxx |
++------+----------------------------------+------+------+------+
+| xxxx |            Clang 16.x                   | xxxx | xxxx |
 +------+------+----------------------------------+------+------+
-| xxxx | xxxx |            Clang 15.x            | xxxx | xxxx |
+| xxxx | xxxx |      Clang 17.x                  | xxxx | xxxx |
 +------+------+----------------------------------+------+------+
-| xxxx | xxxx |            Clang 16.x                   | xxxx |
-+------+------+------+----------------------------------+------+
-| xxxx | xxxx | xxxx |            Clang 17.x                   |
+| xxxx | xxxx | xxxx |      Clang 18.x           | xxxx | xxxx |
++------+------+------+---------------------------+------+------+
+| xxxx | xxxx | xxxx |      Clang 19.x           | xxxx | xxxx |
++------+------+------+---------------------------+------+------+
+| xxxx | xxxx | xxxx |      Clang 20.x                         |
 +------+------+------+-----------------------------------------+
 |                    Beautiful Soup 4                          |
 +--------------------------------------------------------------+
