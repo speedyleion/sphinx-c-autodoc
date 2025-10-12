@@ -164,8 +164,8 @@ jobs:
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
       - name: Symlink libclang.so
         run: |
+          sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-12.so
           sudo ls -la /usr/lib/x86_64-linux-gnu/
-#          sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-12.so
 #          sudo apt-get update
 #          sudo apt install libtinfo5
       - name: Install uv
