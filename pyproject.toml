@@ -32,7 +32,7 @@ dev-dependencies= [
     "pycodestyle==2.14.0",
     "mypy==1.18.2",
     "pytest==8.4.2",
-    "pytest-cov==6.2.1",
+    "pytest-cov==6.3.0",
     "sphinxcontrib-autoprogram==0.1.9",
     "types-docutils==0.20.0.20240310",
     "pylint==3.3.9",
