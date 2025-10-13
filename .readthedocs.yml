@@ -10,7 +10,7 @@ build:
   tools:
     python: "3"
   apt_packages:
-    - libclang
+    - libclang1
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
