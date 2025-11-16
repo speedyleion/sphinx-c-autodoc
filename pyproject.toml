@@ -13,10 +13,10 @@ classifiers = [
     "License :: OSI Approved :: The Unlicense (Unlicense)",
     "License :: OSI Approved :: MIT License",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "sphinx>=4.0",
-    "clang>=11",
+    "clang>=12",
     "beautifulsoup4",
 ]
 [project.urls]
