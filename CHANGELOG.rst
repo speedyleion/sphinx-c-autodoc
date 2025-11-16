@@ -240,7 +240,8 @@ Fixes
 * Initial public release
 
 
-.. _v1.5.1-dev: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.5.0...main
+.. _v1.6.1-dev: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.5.0...main
+.. _v1.6.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.5.0...v1.6.0
 .. _v1.5.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.4.0...v1.5.0
 .. _v1.4.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.3.0...v1.4.0
 .. _v1.3.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.2.2...v1.3.0
