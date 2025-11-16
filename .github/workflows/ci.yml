@@ -33,7 +33,7 @@ jobs:
       - name: Symlink libclang.so
         run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-20.so
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           version: "0.9.9"
           enable-cache: true
@@ -63,7 +63,7 @@ jobs:
       - name: Symlink libclang.so
         run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-20.so
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           version: "0.9.9"
           enable-cache: true
@@ -103,7 +103,7 @@ jobs:
       - name: Symlink libclang.so
         run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-20.so
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           version: "0.9.9"
           enable-cache: true
@@ -133,7 +133,7 @@ jobs:
       - name: Symlink libclang.so
         run: sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-20.so
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           version: "0.9.9"
           enable-cache: true
@@ -168,7 +168,7 @@ jobs:
           sudo apt-get update
           sudo apt install libtinfo5
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           version: "0.9.9"
           enable-cache: true
