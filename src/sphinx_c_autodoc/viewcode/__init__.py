@@ -38,7 +38,6 @@ from sphinx.environment import BuildEnvironment
 from sphinx.util import logging
 from sphinx.util.nodes import make_refnode
 
-
 # Sphinx 7 moved the status iterator into the display module
 try:
     from sphinx.util.display import status_iterator

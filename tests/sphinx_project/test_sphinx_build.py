@@ -10,7 +10,6 @@ import os
 import shutil
 from sphinx.cmd.build import main
 
-
 SCRIPT_DIR = os.path.dirname(__file__)
 
 

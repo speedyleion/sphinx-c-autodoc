@@ -13,7 +13,6 @@ import os
 from sphinx.cmd.build import main
 from bs4 import BeautifulSoup
 
-
 SCRIPT_DIR = os.path.dirname(__file__)
 
 
