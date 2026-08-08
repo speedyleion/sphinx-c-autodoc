@@ -175,7 +175,7 @@ def add_dll_entry_points() -> None:
     """
     cindex_list = getattr(cindex, "FUNCTION_LIST", None)
     # the function list was named `functionList` in clang 20 and before
-    if cindex_list is None: # pragma: no cover
+    if cindex_list is None:  # pragma: no cover
         # pylint: disable=no-member
         cindex_list = cindex.functionList
     # Create a sequence of all of the currently known function names in cindex.
