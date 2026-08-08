@@ -7,6 +7,9 @@
     'config:recommended',
   ],
   internalChecksFilter: 'strict',
+  lockFileMaintenance: {
+    enabled: true,
+  },
   packageRules: [
     {
       matchDatasources: ['pypi'],
