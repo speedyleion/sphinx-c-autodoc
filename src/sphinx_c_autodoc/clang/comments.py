@@ -16,10 +16,9 @@ def cxstring_to_str(value: Any) -> Optional[str]:
     """Convert a CXString unless the clang bindings already converted it."""
     # No cover because coverage uses clang 21, but clang 20 and earlier will
     # exercise the else branch
-    if isinstance(value, cindex._CXString):  # pragma: no cover
-        return cindex._CXString.from_result(value)
-    else:  # pragma: no cover
-        return value  # pragma: no cover
+    if not isinstance(value, cindex._CXString):  # pragma: no cover
+        return value
+    return cindex._CXString.from_result(value)
 
 
 # pylint: disable=too-few-public-methods
