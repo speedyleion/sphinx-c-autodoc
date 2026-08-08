@@ -6,4 +6,15 @@
   extends: [
     'config:recommended',
   ],
+  internalChecksFilter: 'strict',
+  packageRules: [
+    {
+      matchDatasources: ['pypi'],
+      minimumReleaseAge: '14 days',
+    },
+    {
+      matchManagers: ['github-actions'],
+      minimumReleaseAge: '14 days',
+    },
+  ],
 }

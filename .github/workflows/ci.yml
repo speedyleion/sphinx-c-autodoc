@@ -38,12 +38,9 @@ jobs:
           version: "0.12.3"
           enable-cache: true
           cache-suffix: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: |
-          uv tool install tox --with tox-uv
       - name: Test with tox
         run: |
-          tox -e py${{ steps.tox-env.outputs.environment }}
+          uv run --locked tox -e py${{ steps.tox-env.outputs.environment }}
 
   coverage:
     runs-on: ubuntu-latest
@@ -68,12 +65,9 @@ jobs:
           version: "0.12.3"
           enable-cache: true
           cache-suffix: "coverage"
-      - name: Install dependencies
-        run: |
-          uv tool install tox --with tox-uv
       - name: Test with tox
         run: |
-          tox -e cov
+          uv run --locked tox -e cov
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
         with:
@@ -108,12 +102,9 @@ jobs:
           version: "0.12.3"
           enable-cache: true
           cache-suffix: "check"
-      - name: Install dependencies
-        run: |
-          uv tool install tox --with tox-uv
       - name: Static code checks
         run: |
-          tox -e check-${{ matrix.check }}
+          uv run --locked tox -e check-${{ matrix.check }}
 
   docs:
     runs-on: ubuntu-latest
@@ -138,12 +129,9 @@ jobs:
           version: "0.12.3"
           enable-cache: true
           cache-suffix: "docs"
-      - name: Install dependencies
-        run: |
-          uv tool install tox --with tox-uv
       - name: Build docs
         run: |
-          tox -e docs
+          uv run --locked tox -e docs
   sphinx:
     runs-on: ubuntu-22.04
     strategy:
@@ -173,9 +161,6 @@ jobs:
           version: "0.12.3"
           enable-cache: true
           cache-suffix: ${{ matrix.sphinx-version }}
-      - name: Install dependencies
-        run: |
-          uv tool install tox --with tox-uv
       - name: Test with tox
         run: |
-          tox -e sphinx-${{ matrix.sphinx-version }}
+          uv run --locked tox -e sphinx-${{ matrix.sphinx-version }}
