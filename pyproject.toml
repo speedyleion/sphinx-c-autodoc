@@ -27,6 +27,7 @@ documentation = "https://sphinx-c-autodoc.readthedocs.io/en/latest/"
 sphinx-c-apidoc = 'sphinx_c_autodoc.apidoc:main'
 
 [tool.uv]
+exclude-newer = "14 days"
 dev-dependencies= [
     "black==26.5.1",
     "pycodestyle==2.14.0",
