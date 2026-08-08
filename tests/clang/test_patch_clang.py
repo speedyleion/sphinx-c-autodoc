@@ -16,5 +16,8 @@ def test_re_patch():
     """
     patch_clang()
 
-    functions = tuple(f[0] for f in cindex.functionList)
+    cindex_function_list = getattr(cindex, "FUNCTION_LIST", None)
+    if cindex_function_list is None:
+        cindex_function_list = cindex.functionList
+    functions = tuple(f[0] for f in cindex_function_list)
     assert len(functions) == len(set(functions))
