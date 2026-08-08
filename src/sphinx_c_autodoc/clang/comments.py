@@ -12,11 +12,8 @@ from clang import cindex
 
 # Access is necessary because clang does not expose a public CXString converter.
 # pylint: disable=protected-access
-def cxstring_to_str(value: Any) -> Optional[str]:
-    """Convert a CXString unless the clang bindings already converted it."""
-    if isinstance(value, cindex._CXString):
-        return cindex._CXString.from_result(value)
-    return value
+def cxstring_to_str(value: cindex._CXString) -> Optional[str]:
+    return cindex._CXString.from_result(value)
 
 
 # pylint: disable=too-few-public-methods
