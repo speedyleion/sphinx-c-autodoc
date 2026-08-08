@@ -15,10 +15,11 @@ from clang import cindex
 def cxstring_to_str(value: Any) -> Optional[str]:
     """Convert a CXString unless the clang bindings already converted it."""
     # No cover because coverage uses clang 21, but clang 20 and earlier will
-    # excercise the branch
+    # exercise the else branch
     if isinstance(value, cindex._CXString):  # pragma: no cover
         return cindex._CXString.from_result(value)
-    return value
+    else:  # pragma: no cover
+        return value  # pragma: no cover
 
 
 # pylint: disable=too-few-public-methods
