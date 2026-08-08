@@ -1062,7 +1062,7 @@ def parse_comment(comment: Union[Token, PsuedoToken]) -> str:
     spelling = comment.spelling
     # Spelling will come back as None in Clang 20 and before, in Clang 21
     # and beyond it comes back as an empty string, ""
-    if spelling is None: # pragma: no cover
+    if spelling is None:  # pragma: no cover
         return ""
 
     # Comments from clang start at the '/*' portion, but if the comment itself
