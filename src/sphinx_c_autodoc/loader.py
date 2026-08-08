@@ -754,8 +754,17 @@ def object_from_cursor(cursor: Cursor) -> Optional[DocumentedObject]:
     anonymous_type = any(
         anon in cursor.type.spelling for anon in ("anonymous at", "unnamed at")
     )
+    anonymous_construct = (
+        cursor.kind
+        in (
+            cindex.CursorKind.STRUCT_DECL,
+            cindex.CursorKind.UNION_DECL,
+            cindex.CursorKind.ENUM_DECL,
+        )
+        and anonymous_type
+    )
 
-    if not name or anonymous_type:
+    if not name or anonymous_construct:
         # An anonymous construct which isn't contained in a typedef will have a
         # type spelling of:
         # "<construct> (anonymous at # <path_to_c_file>:<lineno>)"
@@ -1051,7 +1060,9 @@ def parse_comment(comment: Union[Token, PsuedoToken]) -> str:
     # Happens when there is no documentation comment in the source file for the
     # item.
     spelling = comment.spelling
-    if spelling is None:
+    # Spelling will come back as None in Clang 20 and before, in Clang 21
+    # and beyond it comes back as an empty string, ""
+    if spelling is None:  # pragma: no cover
         return ""
 
     # Comments from clang start at the '/*' portion, but if the comment itself

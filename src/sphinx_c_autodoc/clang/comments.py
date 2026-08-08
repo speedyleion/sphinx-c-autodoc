@@ -5,9 +5,20 @@ Expose some CXComment functionality to python for libclang
 
 import ctypes
 
-from typing import Optional
+from typing import Any, Optional
 
 from clang import cindex
+
+
+# Access is necessary because clang does not expose a public CXString converter.
+# pylint: disable=protected-access
+def cxstring_to_str(value: Any) -> Optional[str]:
+    """Convert a CXString unless the clang bindings already converted it."""
+    # No cover because coverage uses clang 21, but clang 20 and earlier will
+    # exercise the else branch
+    if not isinstance(value, cindex._CXString):  # pragma: no cover
+        return value
+    return cindex._CXString.from_result(value)
 
 
 # pylint: disable=too-few-public-methods
@@ -22,4 +33,7 @@ class Comment(ctypes.Structure):
         """
         Return this comment as an xml string
         """
-        return cindex.conf.lib.clang_FullComment_getAsXML(self)
+        full_comment = cxstring_to_str(cindex.conf.lib.clang_FullComment_getAsXML(self))
+        # Clang 21 and up return empty string '', instead of None
+        # Keeping at callers logic to look for None until Clang 21 is min Clang version
+        return full_comment or None

@@ -18,7 +18,7 @@ from typing import Optional, Tuple, List
 from clang import cindex
 from clang.cindex import Cursor, SourceLocation, SourceRange, TranslationUnit
 
-from sphinx_c_autodoc.clang.comments import Comment
+from sphinx_c_autodoc.clang.comments import Comment, cxstring_to_str
 
 
 def SourceLocation_isFromMainFile(self: SourceLocation) -> bool:
@@ -85,7 +85,9 @@ def Cursor_cached_raw_comment(self: Cursor) -> Optional[str]:
     it up each time it's called.
     """
     if self._raw_comment is None:
-        self._raw_comment = cindex.conf.lib.clang_Cursor_getRawCommentText(self)
+        self._raw_comment = cxstring_to_str(
+            cindex.conf.lib.clang_Cursor_getRawCommentText(self)
+        )
 
     return self._raw_comment
 
@@ -120,7 +122,6 @@ FUNCTION_LIST: List[Tuple] = [
         "clang_FullComment_getAsXML",
         [Comment],
         cindex._CXString,
-        cindex._CXString.from_result,
     ),
 ]
 
@@ -172,10 +173,15 @@ def add_dll_entry_points() -> None:
     Add functions available in the clang dll but not listed in the python
     clang bindings.
     """
+    cindex_list = getattr(cindex, "FUNCTION_LIST", None)
+    # the function list was named `functionList` in clang 20 and before
+    if cindex_list is None:  # pragma: no cover
+        # pylint: disable=no-member
+        cindex_list = cindex.functionList
     # Create a sequence of all of the currently known function names in cindex.
-    known_names = tuple(f[0] for f in cindex.functionList)
+    known_names = tuple(f[0] for f in cindex_list)
 
     # Add any unknown versions in
     for func in FUNCTION_LIST:
         if func[0] not in known_names:
-            cindex.functionList.append(func)
+            cindex_list.append(func)
