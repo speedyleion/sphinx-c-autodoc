@@ -28,7 +28,9 @@ sphinx-c-apidoc = 'sphinx_c_autodoc.apidoc:main'
 
 [tool.uv]
 exclude-newer = "14 days"
-dev-dependencies= [
+
+[dependency-groups]
+dev = [
     "black==26.5.1",
     "pycodestyle==2.14.0",
     "mypy==2.3.0",
