@@ -5,9 +5,8 @@ Provide apidoc like functionality for C projects.
 
 import argparse
 import os
-
 from pathlib import Path
-from typing import Sequence, Optional
+from typing import Optional, Sequence
 
 from sphinx.util.template import ReSTRenderer
 

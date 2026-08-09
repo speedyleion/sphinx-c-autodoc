@@ -4,14 +4,11 @@ Expose some CXComment functionality to python for libclang
 """
 
 import ctypes
-
 from typing import Any, Optional
 
 from clang import cindex
 
 
-# Access is necessary because clang does not expose a public CXString converter.
-# pylint: disable=protected-access
 def cxstring_to_str(value: Any) -> Optional[str]:
     """Convert a CXString unless the clang bindings already converted it."""
     # No cover because coverage uses clang 21, but clang 20 and earlier will
@@ -21,7 +18,6 @@ def cxstring_to_str(value: Any) -> Optional[str]:
     return cindex._CXString.from_result(value)
 
 
-# pylint: disable=too-few-public-methods
 class Comment(ctypes.Structure):
     """
     A CXComment from clang

@@ -4,16 +4,14 @@ similar to the `Attributes` section in python objects.
 """
 
 from functools import partial
+from typing import Any, Callable, Dict, List, Optional, Union
 
-from typing import Optional, Any, List, Union, Dict, Callable
-
+from sphinx.application import Sphinx
 from sphinx.config import Config
 from sphinx.ext.autodoc import Options
-from sphinx.application import Sphinx
 from sphinx.ext.napoleon import GoogleDocstring
 
 
-# pylint: disable=too-few-public-methods
 class CAutoDocString(GoogleDocstring):
     """
     A docstring that can handle documenting some extra c sections, in
@@ -21,7 +19,6 @@ class CAutoDocString(GoogleDocstring):
     sections of enums.
     """
 
-    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         docstring: Union[str, List[str]],
@@ -95,7 +92,6 @@ class CAutoDocString(GoogleDocstring):
 
         return default_sections
 
-    # pylint: disable=unused-argument
     def _parse_nested_section(self, nested_title: str, section: str) -> List[str]:
         """
         Parse a members section of a comment.
@@ -127,7 +123,6 @@ class CAutoDocString(GoogleDocstring):
         return lines
 
 
-# pylint: disable=too-many-positional-arguments
 def process_autodoc_docstring(
     app: Any,
     what: str,
