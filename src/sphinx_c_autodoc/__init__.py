@@ -21,7 +21,7 @@ from typing import Any, ClassVar, Dict, List, Optional, Tuple, cast
 
 import sphinx
 from docutils import nodes
-from docutils.statemachine import StringList, ViewList
+from docutils.statemachine import StringList
 from sphinx.application import Sphinx
 from sphinx.domains.c import CObject
 from sphinx.ext.autodoc import (
@@ -470,7 +470,11 @@ class CTypeDocumenter(CObjectDocumenter):
             all_members=all_members,
         )
 
-        self._original_directive.result.append(self.consolidate_members())
+        # When source is omitted, docutils accepts a ViewList and extends the
+        # result with its contents, but types-docutils omits that overload.
+        self._original_directive.result.append(
+            self.consolidate_members()  # ty: ignore[invalid-argument-type]
+        )
 
     def _find_member_directives(self, name: str) -> List[Tuple[str, str, int]]:
         """
@@ -554,7 +558,7 @@ class CTypeDocumenter(CObjectDocumenter):
         Returns:
             StringList: One directive
         """
-        merged_heading = StringList()
+        merged_heading = ""
         merged_directive = StringList()
         merged_options = StringList()
         for directive in directives:
@@ -563,7 +567,9 @@ class CTypeDocumenter(CObjectDocumenter):
             )
             if options:
                 merged_options.extend(options)
-                del directive[1 : 1 + len(options)]
+                # ViewList supports slice deletion at runtime, but the stub
+                # currently accepts only integer indices.
+                del directive[1 : 1 + len(options)]  # ty: ignore[invalid-argument-type]
 
             directive_heading = directive[0]
             del directive[0]
@@ -572,7 +578,12 @@ class CTypeDocumenter(CObjectDocumenter):
 
             merged_heading = directive_heading
 
-        merged_directive.insert(0, merged_options)
+        # With no source, docutils requires a ViewList here and inserts all of
+        # its contents, but types-docutils declares only a string parameter.
+        merged_directive.insert(
+            0,
+            merged_options,  # ty: ignore[invalid-argument-type]
+        )
         merged_directive.insert(0, merged_heading, source=merged_directive.source(0))
         return merged_directive
 
@@ -767,10 +778,10 @@ class CModule(CObject):
         state = self.state
         node = nodes.section()
 
-        rst = ViewList(self.content, "testing")
+        rst = StringList(self.content, "testing")
 
         # Parse the restructured text into nodes.
-        state.nested_parse(rst, 0, node, match_titles=1)
+        state.nested_parse(rst, 0, node, match_titles=True)
 
         return node.children
 
