@@ -6,15 +6,14 @@ import json
 import os
 import re
 import textwrap
-
 from collections import OrderedDict, namedtuple
 from itertools import takewhile
-from typing import Any, List, Optional, Union, Dict, Tuple, Sequence, cast
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union, cast
 
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 from clang import cindex
-from clang.cindex import Cursor, Token, StorageClass
+from clang.cindex import Cursor, StorageClass, Token
 
 from sphinx_c_autodoc.clang.patches import patch_clang
 
@@ -123,7 +122,6 @@ class DocumentedObject:
 
         return self._children
 
-    # pylint: disable=unused-argument
     def format_args(self, **kwargs: Any) -> str:
         """
         Creates the parenthesis version of the function signature.  i.e. this

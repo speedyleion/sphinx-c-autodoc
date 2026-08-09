@@ -4,16 +4,10 @@ functionality.
 
 """
 
-# invalid-name: This is being disabled because the methods are using the c
-#   style object nameing convetion of <ClassName>_<methodName>. The class name is
-#   in title case, matching the python convention for classes. The method names
-#   are in camel case, matching the cindex method name conventions.
-# protected-access: Due to the monkey patching protected access is needed so
-#   that the other consumers are less affected and so that they don't need to do
-#   protected access.
-# pylint: disable=invalid-name,protected-access
+# This module deliberately accesses private cindex members while containing the
+# monkey-patching in one place for other consumers.
 
-from typing import Optional, Tuple, List
+from typing import List, Optional, Tuple
 
 from clang import cindex
 from clang.cindex import Cursor, SourceLocation, SourceRange, TranslationUnit
@@ -21,7 +15,7 @@ from clang.cindex import Cursor, SourceLocation, SourceRange, TranslationUnit
 from sphinx_c_autodoc.clang.comments import Comment, cxstring_to_str
 
 
-def SourceLocation_isFromMainFile(self: SourceLocation) -> bool:
+def source_location_is_from_main_file(self: SourceLocation) -> bool:
     """
     Tests if a :class:`cindex.SourceLocation` is in the main translation unit
     being parsed.
@@ -33,7 +27,7 @@ def SourceLocation_isFromMainFile(self: SourceLocation) -> bool:
     return cindex.conf.lib.clang_Location_isFromMainFile(self)
 
 
-def Cursor_is_macro_function_like(self: Cursor) -> bool:
+def cursor_is_macro_function_like(self: Cursor) -> bool:
     """
     Determine if the macro is a function like macro
 
@@ -43,7 +37,7 @@ def Cursor_is_macro_function_like(self: Cursor) -> bool:
     return cindex.conf.lib.clang_Cursor_isMacroFunctionLike(self)
 
 
-def Cursor_getParsedComment(self: Cursor) -> Comment:
+def cursor_get_parsed_comment(self: Cursor) -> Comment:
     """
     Get the parsed comment for the cursor
 
@@ -53,7 +47,7 @@ def Cursor_getParsedComment(self: Cursor) -> Comment:
     return cindex.conf.lib.clang_Cursor_getParsedComment(self)
 
 
-def Cursor_comment_extent(self: Cursor) -> SourceRange:
+def cursor_comment_extent(self: Cursor) -> SourceRange:
     """
     Gets the extent of the associated comment.
 
@@ -70,7 +64,7 @@ def Cursor_comment_extent(self: Cursor) -> SourceRange:
     return self._comment_extent
 
 
-def Cursor_set_comment_extent(self: Cursor, value: SourceRange) -> None:
+def cursor_set_comment_extent(self: Cursor, value: SourceRange) -> None:
     """
     Provides a mechanism to a set a Cursor's comment extent. For things like
     macros clang doesn't provide a mechanism to associate comments. So it may
@@ -79,7 +73,7 @@ def Cursor_set_comment_extent(self: Cursor, value: SourceRange) -> None:
     self._comment_extent = value
 
 
-def Cursor_cached_raw_comment(self: Cursor) -> Optional[str]:
+def cursor_cached_raw_comment(self: Cursor) -> Optional[str]:
     """
     Provides a caching mechanism to a Cursor's raw comment instead of looking
     it up each time it's called.
@@ -92,7 +86,7 @@ def Cursor_cached_raw_comment(self: Cursor) -> Optional[str]:
     return self._raw_comment
 
 
-def Cursor_set_raw_comment(self: Cursor, value: str) -> None:
+def cursor_set_raw_comment(self: Cursor, value: str) -> None:
     """
     Provides a mechanism to a set a Cursor's raw comment. For things like
     macros clang doesn't provide a mechanism to associate comments. So it may
@@ -101,7 +95,7 @@ def Cursor_set_raw_comment(self: Cursor, value: str) -> None:
     self._raw_comment = value
 
 
-def Cursor_tu(self: Cursor) -> TranslationUnit:
+def cursor_tu(self: Cursor) -> TranslationUnit:
     """
     Provide the cursor's translation unit in a "public"
     The Cursors have translation units as protected, underscore, but one
@@ -112,7 +106,6 @@ def Cursor_tu(self: Cursor) -> TranslationUnit:
 
 # List of functions which are in the native libclang but aren't normally
 # provided by the python bindings of clang.
-# pylint: disable=protected-access
 FUNCTION_LIST: List[Tuple] = [
     ("clang_Location_isFromMainFile", [cindex.SourceLocation], bool),
     ("clang_Cursor_isMacroFunctionLike", [cindex.Cursor], bool),
@@ -145,10 +138,8 @@ def override_methods() -> None:
     pythonic and or more efficient.
     """
     cindex.Cursor._raw_comment = None
-    # Not sure why pylint chokes here
-    # pylint: disable=assignment-from-no-return,too-many-function-args
-    cindex.Cursor.raw_comment = property(Cursor_cached_raw_comment).setter(
-        Cursor_set_raw_comment
+    cindex.Cursor.raw_comment = property(cursor_cached_raw_comment).setter(
+        cursor_set_raw_comment
     )
 
 
@@ -156,16 +147,14 @@ def add_new_methods() -> None:
     """
     Add new methods to the classes in clang.
     """
-    cindex.SourceLocation.isFromMainFile = SourceLocation_isFromMainFile
+    cindex.SourceLocation.isFromMainFile = source_location_is_from_main_file
     cindex.Cursor._comment_extent = None
-    # Not sure why pylint chokes here
-    # pylint: disable=assignment-from-no-return,too-many-function-args
-    cindex.Cursor.comment_extent = property(Cursor_comment_extent).setter(
-        Cursor_set_comment_extent
+    cindex.Cursor.comment_extent = property(cursor_comment_extent).setter(
+        cursor_set_comment_extent
     )
-    cindex.Cursor.getParsedComment = Cursor_getParsedComment
-    cindex.Cursor.is_macro_function_like = Cursor_is_macro_function_like
-    cindex.Cursor.tu = property(Cursor_tu)
+    cindex.Cursor.getParsedComment = cursor_get_parsed_comment
+    cindex.Cursor.is_macro_function_like = cursor_is_macro_function_like
+    cindex.Cursor.tu = property(cursor_tu)
 
 
 def add_dll_entry_points() -> None:
@@ -176,7 +165,6 @@ def add_dll_entry_points() -> None:
     cindex_list = getattr(cindex, "FUNCTION_LIST", None)
     # the function list was named `functionList` in clang 20 and before
     if cindex_list is None:  # pragma: no cover
-        # pylint: disable=no-member
         cindex_list = cindex.functionList
     # Create a sequence of all of the currently known function names in cindex.
     known_names = tuple(f[0] for f in cindex_list)

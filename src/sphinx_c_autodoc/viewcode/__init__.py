@@ -27,11 +27,10 @@ The processing idea:
 """
 
 from dataclasses import dataclass
-from typing import Any, Dict, Iterator, Tuple, List, Optional
+from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 from docutils import nodes
-from docutils.nodes import Node, Element
-
+from docutils.nodes import Element, Node
 from sphinx import addnodes
 from sphinx.application import Sphinx
 from sphinx.environment import BuildEnvironment
@@ -42,7 +41,6 @@ from sphinx.util.nodes import make_refnode
 try:
     from sphinx.util.display import status_iterator
 except ImportError:  # pragma: no cover
-    # pylint: disable=no-name-in-module
     from sphinx.util import status_iterator  # type: ignore
 
 from sphinx_c_autodoc import ViewCodeListing
@@ -104,7 +102,6 @@ def missing_reference(
         The cross refernce node to use.
 
     """
-    # pylint: disable=unused-argument
     if node["reftype"] == f"{C_DOMAIN_LINK_PREFIX}viewcode":
         assert app.builder is not None
         # We have to wait until here to see if the module actually exists as a

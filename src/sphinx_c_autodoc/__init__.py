@@ -15,26 +15,24 @@ It is composed of multiple directives and settings:
 import json
 import os
 import re
-
 from dataclasses import dataclass, field
 from itertools import groupby
+from typing import Any, ClassVar, Dict, List, Optional, Tuple, cast
 
-from typing import Any, List, Optional, Tuple, Dict, cast
-
-from docutils.statemachine import ViewList, StringList
-from docutils import nodes
 import sphinx
-from sphinx.domains.c import CObject
+from docutils import nodes
+from docutils.statemachine import StringList, ViewList
 from sphinx.application import Sphinx
-from sphinx.util import logging
-from sphinx.util.docstrings import prepare_docstring
+from sphinx.domains.c import CObject
 from sphinx.ext.autodoc import (
     Documenter,
-    members_option,
     bool_option,
     member_order_option,
+    members_option,
 )
 from sphinx.ext.autodoc.directive import DocumenterBridge
+from sphinx.util import logging
+from sphinx.util.docstrings import prepare_docstring
 
 from sphinx_c_autodoc import loader
 from sphinx_c_autodoc.domains.c import patch_c_domain
@@ -69,14 +67,12 @@ logger = logging.getLogger(__name__)
 
 
 class CObjectDocumenter(Documenter):
-    # pylint: disable=line-too-long
     """
     A C object autodocument class to work with
     `autodoc <https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc>`_
     extension for sphinx.
     """
 
-    # pylint: enable=line-too-long
     domain = "c"
 
     # Filler type, this base class isn't used directly
@@ -86,7 +82,7 @@ class CObjectDocumenter(Documenter):
     # objects
     priority = 11
 
-    option_spec = {
+    option_spec: ClassVar[dict] = {
         "members": members_option,
         "noindex": bool_option,
         "private-members": bool_option,
@@ -195,7 +191,7 @@ class CObjectDocumenter(Documenter):
             tuple: (str, [str]) The module name, and the object names (if any).
         """
         if base:
-            return modname, parents + [base]
+            return modname, [*parents, base]
 
         return modname, []
 

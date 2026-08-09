@@ -10,9 +10,9 @@ In particular:
 
 """
 
-from sphinx.domains.c import CObject, ASTDeclaration
 from sphinx.addnodes import desc_signature
-from sphinx.ext.autodoc import identity, bool_option
+from sphinx.domains.c import ASTDeclaration, CObject
+from sphinx.ext.autodoc import bool_option, identity
 
 
 def patch_c_domain() -> None:
