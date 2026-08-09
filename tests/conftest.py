@@ -68,6 +68,7 @@ def sphinx_state(local_app):
     statemachine = RSTStateMachine(state_classes=state_classes, initial_state="Body")
     statemachine.input_lines = StringList([""] * 40)
     statemachine.reporter = document.reporter
+    statemachine.node = document
     state = statemachine.get_state()
     state.document = document
     state.memo = Struct(
