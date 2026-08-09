@@ -80,7 +80,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        check: ["pylint", "pycodestyle", "black", "mypy"]
+        check: ["pylint", "pycodestyle", "ruff", "mypy"]
     steps:
       - uses: actions/checkout@v7
       - name: Cache LLVM and Clang

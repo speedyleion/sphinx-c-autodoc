@@ -75,6 +75,7 @@ class CObjectDocumenter(Documenter):
     `autodoc <https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#module-sphinx.ext.autodoc>`_
     extension for sphinx.
     """
+
     # pylint: enable=line-too-long
     domain = "c"
 

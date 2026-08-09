@@ -24,8 +24,7 @@ def get_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "-o",
         "--output-path",
-        help="Directory to place the output files. If it does not exist, it is "
-        "created",
+        help="Directory to place the output files. If it does not exist, it is created",
     )
     parser.add_argument(
         "-f",
