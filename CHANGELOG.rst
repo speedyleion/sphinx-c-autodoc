@@ -5,8 +5,16 @@ Change Log
 This document records all notable changes to `sphinx-c-autodoc <https://sphinx-c-autodoc.readthedocs.io/en/latest/>`_.
 This project adheres to `Semantic Versioning <https://semver.org/>`_.
 
-`v1.6.1-dev`_ (unreleased)
+`v1.7.1-dev`_ (unreleased)
 ==========================
+
+`v1.7.0`_ (2026-08-08)
+==========================
+
+Added
+-----
+
+* Support for Clang 21
 
 `v1.6.0`_ (2025-11-15)
 ==========================
@@ -240,7 +248,8 @@ Fixes
 * Initial public release
 
 
-.. _v1.6.1-dev: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.5.0...main
+.. _v1.7.1-dev: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.7.0...main
+.. _v1.7.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.6.0...v1.7.0
 .. _v1.6.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.5.0...v1.6.0
 .. _v1.5.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.4.0...v1.5.0
 .. _v1.4.0: https://github.com/speedyleion/sphinx-c-autodoc/compare/v1.3.0...v1.4.0
