@@ -1,7 +1,7 @@
 sphinx-c-autodoc
 ================
 
-|build-status| |coverage| |black| |docs|
+|build-status| |coverage| |ruff| |docs|
 
 Dual-licensed under MIT or the `UNLICENSE <https://unlicense.org>`_.
 
@@ -74,9 +74,9 @@ Similar Tools
     :alt: Coverage
     :target: https://codecov.io/gh/speedyleion/sphinx-c-autodoc
 
-.. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+.. |ruff| image:: https://img.shields.io/badge/code%20style-ruff-d7ff64.svg
     :alt: Code Style
-    :target: https://github.com/psf/black
+    :target: https://github.com/astral-sh/ruff
 
 .. |docs| image:: https://readthedocs.org/projects/sphinx-c-autodoc/badge/?version=latest
     :alt: Documentation Status
