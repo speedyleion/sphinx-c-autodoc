@@ -27,7 +27,7 @@ The processing idea:
 """
 
 from dataclasses import dataclass
-from typing import Any, Dict, Iterator, List, Optional, Tuple
+from typing import Any, Dict, Iterator, List, Optional, Tuple, cast
 
 from docutils import nodes
 from docutils.nodes import Element, Node
@@ -41,7 +41,7 @@ from sphinx.util.nodes import make_refnode
 try:
     from sphinx.util.display import status_iterator
 except ImportError:  # pragma: no cover
-    from sphinx.util import status_iterator  # type: ignore
+    from sphinx.util import status_iterator
 
 from sphinx_c_autodoc import ViewCodeListing
 
@@ -323,7 +323,7 @@ def _get_highlighted_source(app: Sphinx, code: str) -> List[str]:
         List[str]: The code lines with necessary markup to be highlighted.
         The first line of the `code` will be in index ``1`` of the list.
     """
-    highlighter = app.builder.highlighter  # type: ignore
+    highlighter = cast(Any, app.builder).highlighter
     highlighted_code = highlighter.highlight_block(code, "c", linenos=False)
 
     lines = highlighted_code.splitlines()
@@ -470,7 +470,7 @@ def _add_pending_back_reference(
     assert app.builder.env is not None
 
     env = app.builder.env
-    code_listing = env._viewcode_c_modules.get(module)  # type: ignore
+    code_listing = cast(Any, env)._viewcode_c_modules.get(module)
     if code_listing is None:
         return
 

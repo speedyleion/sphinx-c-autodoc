@@ -1008,7 +1008,7 @@ def comment_nodes(cursor: Cursor, children: List[Cursor]) -> None:
         prev_child = child
 
     first_child = children[0] if children else None
-    cursor.raw_comment = get_file_comment(cursor, first_child)
+    cast(Any, cursor).raw_comment = get_file_comment(cursor, first_child)
 
 
 def comment_node(node: Optional[Cursor], token: Token, trailing: bool = False) -> None:
@@ -1041,8 +1041,9 @@ def comment_node(node: Optional[Cursor], token: Token, trailing: bool = False) -
     if trailing != token.spelling.startswith(TRAILING_COMMENT_START):
         return
 
-    node.raw_comment = token.spelling
-    node.comment_extent = token.extent
+    dynamic_node = cast(Any, node)
+    dynamic_node.raw_comment = token.spelling
+    dynamic_node.comment_extent = token.extent
 
 
 def parse_comment(comment: Union[Token, PsuedoToken]) -> str:
