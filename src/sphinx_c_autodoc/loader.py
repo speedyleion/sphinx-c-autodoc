@@ -9,7 +9,7 @@ import textwrap
 
 from collections import OrderedDict, namedtuple
 from itertools import takewhile
-from typing import Any, List, Optional, Union, Dict, Tuple, Sequence
+from typing import Any, List, Optional, Union, Dict, Tuple, Sequence, cast
 
 from bs4 import BeautifulSoup
 from bs4.element import Tag
@@ -164,7 +164,7 @@ class DocumentedObject:
         Get the documentation paragraph of the item
         """
         if self.soup is not None:
-            root = self.soup.contents[0]
+            root = cast(Tag, self.soup.contents[0])
             body = self.get_paragraph(root.find("abstract", recursive=False))
             body += self.get_paragraph(root.find("discussion", recursive=False))
             return body
@@ -206,12 +206,13 @@ class DocumentedObject:
         if self.soup is None:
             return None
 
-        root = self.soup.contents[0]
+        root = cast(Tag, self.soup.contents[0])
 
         # It seems with different versions of clang the newlines will at times
         # be kept around from some declarations. This causes problems with
         # sphinx as the signature should remain all in one line.
-        lines = root.declaration.text.splitlines()
+        declaration_tag = cast(Tag, root.find("declaration"))
+        lines = declaration_tag.text.splitlines()
         declaration = " ".join(line.strip() for line in lines)
         return declaration
 
@@ -414,7 +415,7 @@ class DocumentedFunction(DocumentedObject):
         """
         if self.soup is None:
             return None
-        root = self.soup.contents[0]
+        root = cast(Tag, self.soup.contents[0])
 
         if not root.find("parameters", recursive=False) and not root.find(
             "resultdiscussion"
@@ -429,7 +430,7 @@ class DocumentedFunction(DocumentedObject):
         body = body.replace("\n", "\n\n")
 
         for param in root.find_all("parameter"):
-            name = param.find("name").text
+            name = cast(Tag, param.find("name")).text
             param_doc = self.get_paragraph(param.discussion)
             body += f"\n:param {name}: {param_doc}"
 
