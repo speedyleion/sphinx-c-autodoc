@@ -41,7 +41,9 @@ class CAutoDocString(GoogleDocstring):
             docstring,
             config,  # type: ignore
             app,  # type: ignore
-            what,
+            # GoogleDocString is originally for Python code so its type is
+            # _AutodocObjType, but we're working with C code.
+            what,  # type: ignore
             name,
             obj,
             options,
