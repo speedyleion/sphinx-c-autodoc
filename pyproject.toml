@@ -28,6 +28,8 @@ sphinx-c-apidoc = 'sphinx_c_autodoc.apidoc:main'
 
 [tool.uv]
 exclude-newer = "14 days"
+# Work around bug where uv would drop current time in lock file 
+required-version = ">=0.11.8"
 
 [dependency-groups]
 dev = [
