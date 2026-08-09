@@ -132,10 +132,8 @@ class CObjectDocumenter(Documenter):
         """
         c_autodoc_re = re.compile(r"^([\w\/\\.]+)(::([\w.]+\.)?(\w+))?\s*$")
 
-        try:
-            match = c_autodoc_re.match(self.name)
-            fullname, _, path, base = match.groups()  # type: ignore
-        except AttributeError:
+        match = c_autodoc_re.match(self.name)
+        if match is None:
             logger.warning(
                 "invalid signature for auto%s (%r)",
                 self.objtype,
@@ -143,6 +141,7 @@ class CObjectDocumenter(Documenter):
                 type="c_autodoc",
             )
             return False
+        fullname, _, path, base = match.groups()
 
         parents: List[str]
         if path is None:
@@ -150,11 +149,9 @@ class CObjectDocumenter(Documenter):
         else:
             parents = path.rstrip(".").split(".")
 
-        # The implementation of self.resolve_name() always returns back a str,
-        # but typing wise it says optional to be nsync with the Sphinx definition.
-        self.modname, self.objpath = self.resolve_name(  # type: ignore
-            fullname, parents, path, base
-        )
+        modname, self.objpath = self.resolve_name(fullname, parents, path, base)
+        assert modname is not None
+        self.modname = modname
 
         self.fullname = self.modname
         return True
@@ -229,7 +226,7 @@ class CObjectDocumenter(Documenter):
         self.env.note_dependency(rel_filename)
 
         source_dict = getattr(self.env, "_viewcode_c_modules", {})
-        self.env._viewcode_c_modules = source_dict  # type: ignore
+        cast(Any, self.env)._viewcode_c_modules = source_dict
 
         # TODO The :attr:`temp_data` is reset for each document ideally want to
         # use or make an attribute on `self.env` that is reset per run or just
@@ -238,7 +235,7 @@ class CObjectDocumenter(Documenter):
             Dict[str, Any], self.env.temp_data.setdefault("c:loaded_modules", {})
         )
 
-        if filename not in modules_dict:  # type: ignore
+        if filename not in modules_dict:
             with open(filename, encoding="utf-8") as f:
                 contents = [f.read()]
 
@@ -264,7 +261,7 @@ class CObjectDocumenter(Documenter):
         if self.objpath:
             for obj in self.objpath:
                 self.object_name = obj
-                self.object = self.object.children[self.object_name]  # type: ignore
+                self.object = self.object.children[self.object_name]
 
         return True
 
@@ -330,7 +327,7 @@ class CObjectDocumenter(Documenter):
 
         return False, object_members
 
-    def filter_members(  # type: ignore[override]
+    def filter_members(  # ty: ignore[invalid-method-override]
         self, members: List[Tuple[str, Any]], want_all: bool
     ) -> List[Tuple[str, Any, bool]]:
         """Filter the given member list.
@@ -437,7 +434,7 @@ class CTypeDocumenter(CObjectDocumenter):
         # Sphinx 8.1 compatibility. Sphinx 8.2 moved most of the logic from
         # `generate()` to `_generate()`
         if sphinx.version_info < (8, 2):  # pragma: no cover
-            self.generate = self._generate  # type: ignore
+            cast(Any, self).generate = self._generate
             self._super_generate = super().generate
         else:
             self._super_generate = super()._generate
@@ -644,7 +641,7 @@ class CStructDocumenter(CTypeDocumenter):
     objtype = "cstruct"
     directivetype = "struct"
 
-    def filter_members(  # type: ignore[override]
+    def filter_members(
         self, members: List[Tuple[str, Any]], want_all: bool
     ) -> List[Tuple[str, Any, bool]]:
         """Filter the given member list.

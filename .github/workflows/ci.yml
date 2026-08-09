@@ -80,7 +80,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        check: ["ruff-lint", "ruff-format", "mypy"]
+        check: ["ruff-lint", "ruff-format", "ty"]
     steps:
       - uses: actions/checkout@v7
       - name: Cache LLVM and Clang

@@ -36,7 +36,24 @@ line-length = 88
 target-version = "py310"
 
 [tool.ruff.lint]
-select = ["B", "E", "F", "I", "N", "PL", "RUF", "W"]
+select = [
+    "ANN001",
+    "ANN002",
+    "ANN003",
+    "ANN201",
+    "ANN202",
+    "ANN204",
+    "ANN205",
+    "ANN206",
+    "B",
+    "E",
+    "F",
+    "I",
+    "N",
+    "PL",
+    "RUF",
+    "W",
+]
 ignore = ["E111", "E114", "E117", "W191"]
 
 [tool.ruff.lint.pylint]
@@ -45,7 +62,7 @@ max-args = 10
 [dependency-groups]
 dev = [
     "ruff==0.16.0",
-    "mypy==2.3.0",
+    "ty==0.0.63",
     "pytest==9.1.1",
     "pytest-cov==7.1.0",
     "sphinxcontrib-autoprogram==0.1.9",

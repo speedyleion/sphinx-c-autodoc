@@ -10,6 +10,8 @@ In particular:
 
 """
 
+from typing import Any, cast
+
 from sphinx.addnodes import desc_signature
 from sphinx.domains.c import ASTDeclaration, CObject
 from sphinx.ext.autodoc import bool_option, identity
@@ -40,4 +42,4 @@ def patch_c_domain() -> None:
 
         return ast
 
-    CObject.handle_signature = _new_handle_signature  # type: ignore
+    cast(Any, CObject).handle_signature = _new_handle_signature

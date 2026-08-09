@@ -4,7 +4,7 @@ similar to the `Attributes` section in python objects.
 """
 
 from functools import partial
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union, cast
 
 from sphinx.application import Sphinx
 from sphinx.config import Config
@@ -32,15 +32,13 @@ class CAutoDocString(GoogleDocstring):
         if not hasattr(self, "_sections"):
             self._sections = self.get_default_sections()
 
-        # The GoogleDocstring is using the implied optional `config: Config = None`
-        # and mypy complains that these shouldn't be optional
         super().__init__(
             docstring,
-            config,  # type: ignore
-            app,  # type: ignore
+            config,
+            app,
             # GoogleDocString is originally for Python code so its type is
             # _AutodocObjType, but we're working with C code.
-            what,  # type: ignore
+            cast(Any, what),
             name,
             obj,
             options,

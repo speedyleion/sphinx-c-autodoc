@@ -7,7 +7,7 @@ functionality.
 # This module deliberately accesses private cindex members while containing the
 # monkey-patching in one place for other consumers.
 
-from typing import List, Optional, Tuple
+from typing import Any, List, Optional, Tuple, cast
 
 from clang import cindex
 from clang.cindex import Cursor, SourceLocation, SourceRange, TranslationUnit
@@ -137,8 +137,9 @@ def override_methods() -> None:
     Override some methods and properties in the bindings to make them more
     pythonic and or more efficient.
     """
-    cindex.Cursor._raw_comment = None
-    cindex.Cursor.raw_comment = property(cursor_cached_raw_comment).setter(
+    cursor_class = cast(Any, cindex.Cursor)
+    cursor_class._raw_comment = None
+    cursor_class.raw_comment = property(cursor_cached_raw_comment).setter(
         cursor_set_raw_comment
     )
 
@@ -147,14 +148,17 @@ def add_new_methods() -> None:
     """
     Add new methods to the classes in clang.
     """
-    cindex.SourceLocation.isFromMainFile = source_location_is_from_main_file
-    cindex.Cursor._comment_extent = None
-    cindex.Cursor.comment_extent = property(cursor_comment_extent).setter(
+    source_location_class = cast(Any, cindex.SourceLocation)
+    source_location_class.isFromMainFile = source_location_is_from_main_file
+
+    cursor_class = cast(Any, cindex.Cursor)
+    cursor_class._comment_extent = None
+    cursor_class.comment_extent = property(cursor_comment_extent).setter(
         cursor_set_comment_extent
     )
-    cindex.Cursor.getParsedComment = cursor_get_parsed_comment
-    cindex.Cursor.is_macro_function_like = cursor_is_macro_function_like
-    cindex.Cursor.tu = property(cursor_tu)
+    cursor_class.getParsedComment = cursor_get_parsed_comment
+    cursor_class.is_macro_function_like = cursor_is_macro_function_like
+    cursor_class.tu = property(cursor_tu)
 
 
 def add_dll_entry_points() -> None:
@@ -165,7 +169,7 @@ def add_dll_entry_points() -> None:
     cindex_list = getattr(cindex, "FUNCTION_LIST", None)
     # the function list was named `functionList` in clang 20 and before
     if cindex_list is None:  # pragma: no cover
-        cindex_list = cindex.functionList
+        cindex_list = cast(Any, cindex).functionList
     # Create a sequence of all of the currently known function names in cindex.
     known_names = tuple(f[0] for f in cindex_list)
 
