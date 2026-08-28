@@ -24,7 +24,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v9.0.0
         with:
-          version: "0.12.3"
+          version: "0.12.5"
       - name: Install dependencies
         run: |
           uv tool install twine
