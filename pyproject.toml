@@ -69,7 +69,7 @@ dev = [
     "types-docutils==0.22.3.20260724",
     "furo>=2024.0.0",
     "sphinx>=8.2 ; python_full_version >= '3.11'",
-    "tox==4.58.0",
+    "tox==4.60.0",
     "tox-uv==1.36.0",
 ]
 
