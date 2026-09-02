@@ -35,7 +35,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v9.0.0
         with:
-          version: "0.12.3"
+          version: "0.12.5"
           enable-cache: true
           cache-suffix: ${{ matrix.python-version }}
       - name: Test with tox
@@ -62,7 +62,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v9.0.0
         with:
-          version: "0.12.3"
+          version: "0.12.5"
           enable-cache: true
           cache-suffix: "coverage"
       - name: Test with tox
@@ -99,7 +99,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v9.0.0
         with:
-          version: "0.12.3"
+          version: "0.12.5"
           enable-cache: true
           cache-suffix: "check"
       - name: Static code checks
@@ -126,7 +126,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v9.0.0
         with:
-          version: "0.12.3"
+          version: "0.12.5"
           enable-cache: true
           cache-suffix: "docs"
       - name: Build docs
@@ -158,7 +158,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v9.0.0
         with:
-          version: "0.12.3"
+          version: "0.12.5"
           enable-cache: true
           cache-suffix: ${{ matrix.sphinx-version }}
       - name: Test with tox
