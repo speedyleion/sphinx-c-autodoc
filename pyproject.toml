@@ -74,5 +74,5 @@ dev = [
 ]
 
 [build-system]
-requires = ["flit_core ==4.0.2"]
+requires = ["flit_core ==4.1.0"]
 build-backend = "flit_core.buildapi"
