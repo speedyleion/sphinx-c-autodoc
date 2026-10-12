@@ -148,7 +148,7 @@ jobs:
       - name: Install LLVM and Clang
         uses: KyleMayes/install-llvm-action@v2
         with:
-          version: "14.0.6"
+          version: "14.0"
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
       - name: Symlink libclang.so
         run: |
