@@ -13,10 +13,10 @@ classifiers = [
     "License :: OSI Approved :: The Unlicense (Unlicense)",
     "License :: OSI Approved :: MIT License",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
-    "sphinx>=4.0",
-    "clang>=12",
+    "sphinx>=5.0",
+    "clang>=14",
     "beautifulsoup4",
 ]
 [project.urls]
@@ -33,7 +33,7 @@ required-version = ">=0.11.8"
 
 [tool.ruff]
 line-length = 88
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = [
@@ -68,7 +68,6 @@ dev = [
     "sphinxcontrib-autoprogram==0.1.9",
     "types-docutils==0.23.0.20260923",
     "furo>=2024.0.0",
-    "sphinx>=8.2 ; python_full_version >= '3.11'",
     "tox==4.64.4",
     "tox-uv==1.36.0",
 ]

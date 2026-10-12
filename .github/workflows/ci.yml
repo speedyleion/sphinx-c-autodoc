@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.11", "3.12", "3.13", "3.14", "3.15"]
     steps:
       - uses: actions/checkout@v7
       - name: Set up Python ${{ matrix.python-version }}
@@ -136,7 +136,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        sphinx-version: ["four"]
+        sphinx-version: ["five"]
     steps:
       - uses: actions/checkout@v7
       - name: Cache LLVM and Clang
@@ -144,15 +144,15 @@ jobs:
         uses: actions/cache@v6
         with:
           path: llvm/lib/libclang.so*
-          key: llvm-12
+          key: llvm-14
       - name: Install LLVM and Clang
         uses: KyleMayes/install-llvm-action@v2
         with:
-          version: "12.0"
+          version: "14.0"
           cached: ${{ steps.cache-llvm.outputs.cache-hit }}
       - name: Symlink libclang.so
         run: |
-          sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-12.so
+          sudo ln -s ${{ env.LLVM_PATH }}/lib/libclang.so /usr/lib/x86_64-linux-gnu/libclang-14.so
           sudo apt-get update
           sudo apt install libtinfo5
       - name: Install uv
