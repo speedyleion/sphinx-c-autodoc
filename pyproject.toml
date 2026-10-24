@@ -68,7 +68,7 @@ dev = [
     "sphinxcontrib-autoprogram==0.1.9",
     "types-docutils==0.23.0.20260923",
     "furo>=2024.0.0",
-    "tox==4.65.0",
+    "tox==4.65.2",
     "tox-uv==1.36.1",
 ]
 
