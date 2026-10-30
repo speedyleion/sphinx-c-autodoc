@@ -62,7 +62,7 @@ max-args = 10
 [dependency-groups]
 dev = [
     "ruff==0.17.0",
-    "ty==0.0.86",
+    "ty==0.0.89",
     "pytest==9.1.1",
     "pytest-cov==7.1.0",
     "sphinxcontrib-autoprogram==0.1.9",
