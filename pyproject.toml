@@ -63,7 +63,7 @@ max-args = 10
 dev = [
     "ruff==0.17.3",
     "ty==0.0.89",
-    "pytest==9.1.1",
+    "pytest==9.2.0",
     "pytest-cov==7.1.0",
     "sphinxcontrib-autoprogram==0.1.9",
     "types-docutils==0.23.0.20261030",
