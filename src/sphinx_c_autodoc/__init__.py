@@ -327,7 +327,7 @@ class CObjectDocumenter(Documenter):
 
         return False, object_members
 
-    def filter_members(  # ty: ignore[invalid-method-override]
+    def filter_members(  # ty: ignore[incompatible-method-override]
         self, members: List[Tuple[str, Any]], want_all: bool
     ) -> List[Tuple[str, Any, bool]]:
         """Filter the given member list.
